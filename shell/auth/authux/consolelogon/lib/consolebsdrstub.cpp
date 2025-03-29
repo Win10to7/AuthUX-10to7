@@ -20,15 +20,15 @@ public:
 	ConsoleBSDRStub();
 	~ConsoleBSDRStub() override;
 
-	HRESULT Start(IUserSettingManager* settingsManager, ILogonUIStateInfo* stateInfo) override;
-    HRESULT get_ScaleFactor(UINT* value) override;
-    HRESULT get_WasClicked(bool* value) override;
-    HRESULT AddApplication(IShutdownBlockingApp* blockingApp) override;
-    HRESULT RemoveApplication(UINT appid) override;
-    HRESULT add_Resolved(ITypedEventHandler<IBlockedShutdownResolverUX *, BlockedShutdownResolution>* handler, EventRegistrationToken* token) override;
-    HRESULT remove_Resolved(EventRegistrationToken token) override;
-    HRESULT Hide() override;
-    HRESULT Stop() override;
+	HRESULT STDMETHODCALLTYPE Start(IUserSettingManager* settingsManager, ILogonUIStateInfo* stateInfo) override;
+	HRESULT STDMETHODCALLTYPE get_ScaleFactor(UINT* value) override;
+	HRESULT STDMETHODCALLTYPE get_WasClicked(bool* value) override;
+	HRESULT STDMETHODCALLTYPE AddApplication(IShutdownBlockingApp* blockingApp) override;
+	HRESULT STDMETHODCALLTYPE RemoveApplication(UINT appid) override;
+	HRESULT STDMETHODCALLTYPE add_Resolved(ITypedEventHandler<IBlockedShutdownResolverUX*, BlockedShutdownResolution>* handler, EventRegistrationToken* token) override;
+	HRESULT STDMETHODCALLTYPE remove_Resolved(EventRegistrationToken token) override;
+	HRESULT STDMETHODCALLTYPE Hide() override;
+	HRESULT STDMETHODCALLTYPE Stop() override;
 private:
 	EventSource<ITypedEventHandler<IBlockedShutdownResolverUX*, BlockedShutdownResolution>> _Resolved;
 
