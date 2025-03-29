@@ -337,6 +337,14 @@
     <ResourceCompile Include="shell\auth\authux\consolelogon\dll\consolelogon.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="dui70\DirectUI\DirectUI.vcxproj">
+      <Project>{0B7DE49A-33C6-41B1-A9CE-D353031F8454}</Project>
+    </ProjectReference>
+	<ProjectReference Include="dui70\DUser\DUser.vcxproj">
+      <Project>{11541c39-bde1-4aa4-8fc3-d1c209267802}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
     <None Include="packages.config" />
     <None Include="shell\auth\authux\consolelogon\dll\ConsoleLogon.def" />
   </ItemGroup>
