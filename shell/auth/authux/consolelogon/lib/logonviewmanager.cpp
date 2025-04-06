@@ -15,6 +15,7 @@
 #include "serializationfailedview.h"
 #include "statusview.h"
 #include "userselectionview.h"
+#include "logonframe.h"
 
 using namespace Microsoft::WRL;
 
@@ -737,14 +738,17 @@ HRESULT LogonViewManager::ShowSecurityOptionsUIThread(
 {
 	RETURN_IF_FAILED(DestroyCurrentView()); // 686
 
-	ComPtr<SecurityOptionsView> view;
-	RETURN_IF_FAILED(MakeAndInitialize<SecurityOptionsView>(&view, options, completion)); // 689
+	//ComPtr<SecurityOptionsView> view;
+	//RETURN_IF_FAILED(MakeAndInitialize<SecurityOptionsView>(&view, options, completion)); // 689
 
-	RETURN_IF_FAILED(view->SecurityOptionsView::Advise(this)); // 691
+	//RETURN_IF_FAILED(view->Advise(this)); // 691
 
-	RETURN_IF_FAILED(SetActiveView(view.Get())); // 693
+	//RETURN_IF_FAILED(SetActiveView(view.Get())); // 693
 
-	m_currentView.Swap(view.Get());
+	CLogonFrame::GetSingleton()->ShowSecurityOptions(options,completion);
+
+	m_currentView.Reset();
+	//m_currentView.Swap(view.Get());
 	m_currentViewType = LogonView::SecurityOptions;
 	return S_OK;
 }
@@ -1004,7 +1008,7 @@ HRESULT LogonViewManager::ShowStatusView(HSTRING status)
 {
 	RETURN_IF_FAILED(DestroyCurrentView()); // 969
 
-	ComPtr<LCPD::IUser> selectedUser;
+	/*ComPtr<LCPD::IUser> selectedUser;
 	if (m_credProvDataModel.Get())
 	{
 		ComPtr<IInspectable> selectedUserOrV1;
@@ -1014,16 +1018,18 @@ HRESULT LogonViewManager::ShowStatusView(HSTRING status)
 		{
 			selectedUserOrV1.As(&selectedUser);
 		}
-	}
+	}*/
 
-	ComPtr<StatusView> statusView;
-	RETURN_IF_FAILED(MakeAndInitialize<StatusView>(&statusView, status, selectedUser.Get())); // 983
+	//ComPtr<StatusView> statusView;
+	//RETURN_IF_FAILED(MakeAndInitialize<StatusView>(&statusView, status, selectedUser.Get())); // 983
 
-	RETURN_IF_FAILED(statusView->StatusView::Advise(this)); // 985
+	//RETURN_IF_FAILED(statusView->StatusView::Advise(this)); // 985
 
-	RETURN_IF_FAILED(SetActiveView(statusView.Get())); // 987
+	//RETURN_IF_FAILED(SetActiveView(statusView.Get())); // 987
 
-	m_currentView.Swap(statusView.Get());
+	CLogonFrame::GetSingleton()->ShowStatusMessage(WindowsGetStringRawBuffer(status, nullptr));
+
+	m_currentView.Reset();
 	m_currentViewType = LogonView::Status;
 	return S_OK;
 }

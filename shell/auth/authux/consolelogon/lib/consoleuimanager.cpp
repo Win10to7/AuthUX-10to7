@@ -2,6 +2,15 @@
 
 #include "consoleuimanager.h"
 
+#include "animationstrip.h"
+#include "combobox.h"
+#include "labeledcheckbox.h"
+#include "logonframe.h"
+#include "restrictededit.h"
+#include "DirectUI/DirectUI.h"
+#include "ShellScalingApi.h"
+#include "zoomableelement.h"
+
 using namespace Microsoft::WRL;
 
 ConsoleUIManager::ConsoleUIManager()
@@ -141,6 +150,30 @@ DWORD ConsoleUIManager::UIThreadHostThreadProc()
 	HANDLE stdIn = GetStdHandle(STD_INPUT_HANDLE);
 	HANDLE waitHandles[] = { m_UIThreadQuitEvent.get(), stdIn };
 
+	SetProcessDpiAwareness(PROCESS_SYSTEM_DPI_AWARE);
+	CoInitializeEx(nullptr, 0);
+	DirectUI::InitProcessPriv(14, HINST_THISCOMPONENT, false, true, true);
+
+	DirectUI::InitThread(2);
+	DirectUI::RegisterAllControls();
+
+	CDUIAnimationStrip::Register();
+	CLogonFrame::Register();
+	CDUIUserTileElement::Register();
+	CDUIZoomableElement::Register();
+	CDUIRestrictedEdit::Register();
+	CDUIComboBox::Register();
+	UserList::Register();
+	CDUIFieldContainer::Register();
+	CDUILabeledCheckbox::Register();
+
+	CLogonNativeHWNDHost* nativeHWNDHost = nullptr;
+	THROW_IF_FAILED(CLogonNativeHWNDHost::Create(0,0,GetSystemMetrics(SM_CXSCREEN),GetSystemMetrics(SM_CYSCREEN),&nativeHWNDHost));
+
+	CLogonFrame::Create(nativeHWNDHost);
+
+	//CLogonFrame::GetSingleton()->ShowStatusMessage(L"Welcome");
+
 	while (dwIndex == WAIT_IO_COMPLETION)
 	{
 		CoWaitForMultipleHandles(
@@ -162,6 +195,22 @@ DWORD ConsoleUIManager::UIThreadHostThreadProc()
 
 			dwIndex = WAIT_IO_COMPLETION;
 		}
+		else if (dwIndex == 2)
+		{
+			MSG Msg {};
+			while ( PeekMessageW(&Msg, nullptr, 0, 0, PM_REMOVE) )
+			{
+				if (Msg.message == WM_QUIT)
+				{
+					break;
+				}
+
+				TranslateMessage(&Msg);
+				DispatchMessageW(&Msg);
+			}
+
+			dwIndex = WAIT_IO_COMPLETION;
+		}
 	}
 
 	if (m_Dispatcher.Get())
@@ -174,6 +223,10 @@ DWORD ConsoleUIManager::UIThreadHostThreadProc()
 
 		m_Dispatcher.Reset();
 	}
+
+	DirectUI::UnInitThread();
+	DirectUI::UnInitProcessPriv(HINST_THISCOMPONENT);
+	CoUninitialize();
 
 	FreeConsole();
 	return 0;

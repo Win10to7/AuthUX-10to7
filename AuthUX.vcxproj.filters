@@ -120,6 +120,39 @@
     <ClCompile Include="shell\auth\authux\consolelogon\lib\userselectionview.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="shell\auth\authux\consolelogon\lib\animationstrip.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="shell\auth\authux\consolelogon\lib\backgroundfetcher.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="shell\auth\authux\consolelogon\lib\combobox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="shell\auth\authux\consolelogon\lib\fieldcontainer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="shell\auth\authux\consolelogon\lib\labeledcheckbox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="shell\auth\authux\consolelogon\lib\logonframe.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="shell\auth\authux\consolelogon\lib\logonnativehwndhost.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="shell\auth\authux\consolelogon\lib\restrictededit.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="shell\auth\authux\consolelogon\lib\userlist.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="shell\auth\authux\consolelogon\lib\usertileelement.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="shell\auth\authux\consolelogon\lib\zoomableelement.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="shell\auth\authux\consolelogon\dll\pch.h">
@@ -263,6 +296,42 @@
     <ClInclude Include="shell\auth\authux\consolelogon\lib\userselectionview.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="shell\auth\authux\consolelogon\lib\animationstrip.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="shell\auth\authux\consolelogon\lib\backgroundfetcher.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="shell\auth\authux\consolelogon\lib\combobox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="shell\auth\authux\consolelogon\lib\duiutil.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="shell\auth\authux\consolelogon\lib\fieldcontainer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="shell\auth\authux\consolelogon\lib\labeledcheckbox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="shell\auth\authux\consolelogon\lib\logonframe.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="shell\auth\authux\consolelogon\lib\logonnativehwndhost.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="shell\auth\authux\consolelogon\lib\restrictededit.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="shell\auth\authux\consolelogon\lib\userlist.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="shell\auth\authux\consolelogon\lib\usertileelement.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="shell\auth\authux\consolelogon\lib\zoomableelement.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="shell\auth\authux\consolelogon\dll\consolelogon.rc">
@@ -274,5 +343,8 @@
       <Filter>Source Files</Filter>
     </None>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="$(MSBuildThisFileDirectory)..\..\natvis\wil.natvis" />
   </ItemGroup>
 </Project>
