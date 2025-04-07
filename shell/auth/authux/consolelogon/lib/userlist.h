@@ -17,11 +17,12 @@ public:
 	static HRESULT Register();
 
 	HRESULT Configure(DirectUI::DUIXmlParser* parser);
-	HRESULT AddTileFromData(Microsoft::WRL::ComPtr<IInspectable> tileData);
+	HRESULT AddTileFromData(Microsoft::WRL::ComPtr<LCPD::ICredential> credential, HSTRING userName);
 	void DeselectAllTiles();
 	void HideAllTiles();
 	void FindAndSetKeyFocus();
 	void EnableList();
+	void DestroyAllTiles();
 
 	HRESULT ZoomTile(CDUIUserTileElement* userTile);
 	HRESULT UnzoomList(CDUIUserTileElement* userTile);

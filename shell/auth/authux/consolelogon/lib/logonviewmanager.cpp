@@ -1,5 +1,6 @@
 ﻿#include "pch.h"
 
+#include <initguid.h>
 #include "logonviewmanager.h"
 
 #include <WtsApi32.h>
@@ -615,7 +616,7 @@ HRESULT LogonViewManager::LockUIThread(
 	m_currentViewType = LogonView::Locked;
 	m_showCredentialViewOnInitComplete = false;
 
-	RETURN_IF_FAILED(StartCredProvsIfNecessary(reason, allowDirectUserSwitching,0)); // 588
+	RETURN_IF_FAILED(StartCredProvsIfNecessary(reason, allowDirectUserSwitching,nullptr)); // 588
 
 	return S_OK;
 }
@@ -886,8 +887,14 @@ HRESULT LogonViewManager::CleanupUIThread(WI::AsyncDeferral<WI::CNoResult> compl
 	return S_OK;
 }
 
+DEFINE_GUID(CLSID_PasswordCredentialProvider,        0x60B78E88, 0xEAD8, 0x445C, 0x9C, 0xFD, 0x0B, 0x87, 0xF7, 0x4E, 0xA6, 0xCD);
+
 HRESULT LogonViewManager::ShowCredentialView()
 {
+	RETURN_IF_FAILED(DestroyCurrentView()); // 918
+
+	CLogonFrame::GetSingleton()->m_LogonUserList->DestroyAllTiles();
+
 	if (m_credentialsChangedToken.value)
 	{
 		ComPtr<WFC::IObservableVector<LCPD::Credential*>> credentials;
@@ -901,6 +908,83 @@ HRESULT LogonViewManager::ShowCredentialView()
 		RETURN_IF_FAILED(m_selectedGroup->remove_SelectedCredentialChanged(m_selectedCredentialChangedToken)); // 859
 		m_selectedCredentialChangedToken.value = 0;
 	}
+
+	ComPtr<WFC::IObservableVector<IInspectable*>> observableUsersAndCreds;
+	RETURN_IF_FAILED(m_credProvDataModel->get_UsersAndV1Credentials(&observableUsersAndCreds));
+
+	ComPtr<WFC::IVector<IInspectable*>> usersAndCreds;
+	RETURN_IF_FAILED(observableUsersAndCreds.As(&usersAndCreds));
+
+	UINT size;
+	RETURN_IF_FAILED(usersAndCreds->get_Size(&size));
+
+	for (UINT i = 0; i < size; i++)
+	{
+		ComPtr<IInspectable> data;
+		RETURN_IF_FAILED(usersAndCreds->GetAt(i, &data));
+
+		ComPtr<LCPD::ICredential> selectedCred;
+		if (SUCCEEDED(data.As(&selectedCred)))
+		{
+			Wrappers::HString label;
+			RETURN_IF_FAILED(selectedCred->get_LogoLabel(label.ReleaseAndGetAddressOf()));
+
+			CLogonFrame::GetSingleton()->m_LogonUserList->AddTileFromData(selectedCred,label);
+
+			continue;
+		}
+		selectedCred.Reset();
+
+		ComPtr<LCPD::IUser> user;
+		RETURN_IF_FAILED(data.As(&user));
+
+		Wrappers::HString userName;
+		RETURN_IF_FAILED(user->get_DisplayName(userName.ReleaseAndGetAddressOf()));
+
+		ComPtr<LCPD::ICredentialGroup> credGroup;
+		RETURN_IF_FAILED(user.As(&credGroup)); // 875
+
+
+		RETURN_IF_FAILED(credGroup->get_SelectedCredential(&selectedCred));
+		if (selectedCred.Get() == nullptr)
+		{
+			ComPtr<WFC::IObservableVector<LCPD::Credential*>> obcredentials;
+			RETURN_IF_FAILED(credGroup->get_Credentials(&obcredentials));
+
+			ComPtr<WFC::IVector<LCPD::Credential*>> credentials;
+			RETURN_IF_FAILED(obcredentials.As(&credentials));
+
+			UINT credsize;
+			RETURN_IF_FAILED(credentials->get_Size(&credsize));
+
+			for (UINT x = 0; x < credsize; x++)
+			{
+				ComPtr<LCPD::ICredential> cred;
+				RETURN_IF_FAILED(credentials->GetAt(i, &cred));
+
+				GUID guid;
+				RETURN_IF_FAILED(cred->get_ProviderId(&guid));
+
+				if (guid == CLSID_PasswordCredentialProvider)
+				{
+					selectedCred = cred;
+					break;
+				}
+			}
+		}
+
+		RETURN_HR_IF_NULL_MSG(E_FAIL,selectedCred.Get(),"FAILED TO GET CREDENTIAL FOR USER");
+
+		CLogonFrame::GetSingleton()->m_LogonUserList->AddTileFromData(selectedCred,userName);
+
+	}
+
+	CLogonFrame::GetSingleton()->SwitchToUserList(CLogonFrame::GetSingleton()->m_LogonUserList);
+
+	m_currentView.Reset();
+	m_currentViewType = LogonView::UserSelection;
+
+	return S_OK;
 
 	ComPtr<IInspectable> selectedUserOrV1;
 	RETURN_IF_FAILED(m_credProvDataModel->get_SelectedUserOrV1Credential(&selectedUserOrV1)); // 864
@@ -976,14 +1060,15 @@ HRESULT LogonViewManager::ShowCredProvSelection(LCPD::ICredentialGroup* group, H
 {
 	RETURN_IF_FAILED(DestroyCurrentView()); // 935
 
-	ComPtr<CredProvSelectionView> credProvSelectionView;
-	RETURN_IF_FAILED(MakeAndInitialize<CredProvSelectionView>(&credProvSelectionView, group, userName)); // 938
+	//ComPtr<CredProvSelectionView> credProvSelectionView;
+	//RETURN_IF_FAILED(MakeAndInitialize<CredProvSelectionView>(&credProvSelectionView, group, userName)); // 938
 
-	RETURN_IF_FAILED(credProvSelectionView->CredProvSelectionView::Advise(this)); // 940
+	//RETURN_IF_FAILED(credProvSelectionView->CredProvSelectionView::Advise(this)); // 940
 
-	RETURN_IF_FAILED(SetActiveView(credProvSelectionView.Get())); // 942
+	//RETURN_IF_FAILED(SetActiveView(credProvSelectionView.Get())); // 942
 
-	m_currentView.Swap(credProvSelectionView.Get());
+	//m_currentView.Swap(credProvSelectionView.Get());
+	m_currentView = nullptr;
 	m_currentViewType = LogonView::CredProvSelection;
 	return S_OK;
 }
@@ -992,14 +1077,14 @@ HRESULT LogonViewManager::ShowSelectedCredentialView(LCPD::ICredential* credenti
 {
 	RETURN_IF_FAILED(DestroyCurrentView()); // 952
 
-	ComPtr<SelectedCredentialView> selectedCredentialView;
-	RETURN_IF_FAILED(MakeAndInitialize<SelectedCredentialView>(&selectedCredentialView, m_currentReason, credential, userName)); // 955
+	//ComPtr<SelectedCredentialView> selectedCredentialView;
+	//RETURN_IF_FAILED(MakeAndInitialize<SelectedCredentialView>(&selectedCredentialView, m_currentReason, credential, userName)); // 955
 
-	RETURN_IF_FAILED(selectedCredentialView->SelectedCredentialView::Advise(this)); // 957
+	//RETURN_IF_FAILED(selectedCredentialView->SelectedCredentialView::Advise(this)); // 957
 
-	RETURN_IF_FAILED(SetActiveView(selectedCredentialView.Get())); // 959
+	//RETURN_IF_FAILED(SetActiveView(selectedCredentialView.Get())); // 959
 
-	m_currentView.Swap(selectedCredentialView.Get());
+	m_currentView = nullptr;
 	m_currentViewType = LogonView::SelectedCredential;
 	return S_OK;
 }
@@ -1082,7 +1167,7 @@ HRESULT LogonViewManager::ShowSerializationFailedView(HSTRING caption, HSTRING m
 	ComPtr<SerializationFailedView> serializationFailedView;
 	RETURN_IF_FAILED(MakeAndInitialize<SerializationFailedView>(&serializationFailedView, caption, message, selectedUser.Get())); // 1037
 
-	RETURN_IF_FAILED(serializationFailedView->SerializationFailedView::Advise(this)); // 1039
+	RETURN_IF_FAILED(serializationFailedView->Advise(this)); // 1039
 
 	RETURN_IF_FAILED(SetActiveView(serializationFailedView.Get())); // 1041
 

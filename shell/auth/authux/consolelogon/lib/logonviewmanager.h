@@ -4,7 +4,7 @@
 
 #include "consoleuimanager.h"
 
-class LogonViewManager final
+class DECLSPEC_UUID("0bd5f9b3-c467-4545-a2c7-354647461905") LogonViewManager final
 	: public Microsoft::WRL::RuntimeClass<Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::WinRtClassicComMix>
 		, ConsoleUIManager
 		, WF::ITypedEventHandler<LCPD::CredProvDataModel*, LCPD::CredentialSerialization*>

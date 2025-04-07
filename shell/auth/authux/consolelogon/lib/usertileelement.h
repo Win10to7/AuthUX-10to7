@@ -6,6 +6,19 @@
 #include "DirectUI/DirectUI.h"
 #include "logoninterfaces.h"
 
+//wrapper struct to wrap the field datasource so that you can insert fake fields such as for Locked text or the user name text
+struct CFieldWrapper
+{
+	Microsoft::WRL::ComPtr<LCPD::ICredentialField> m_dataSourceCredentialField;
+
+	// used when m_dataSourceCredentialField is null
+	CoTaskMemNativeString m_label;
+	LCPD::CredentialTextSize m_size;
+	//
+
+	bool m_isSelectorField;
+};
+
 class CDUIUserTileElement : public DirectUI::Button
 {
 public:
@@ -35,6 +48,8 @@ public:
 	DirectUI::Element** m_elementsArray;
 	CDUIFieldContainer** m_containersArray;
 
+	CCoSimpleArray<CFieldWrapper*> fieldsArray;
+
 	class UserList* m_owningUserList;
 
 	DirectUI::DUIXmlParser* m_xmlParser;
@@ -42,7 +57,7 @@ public:
 	DirectUI::Button* m_submitButton;
 
 private:
-	HRESULT _SetFieldInitialVisibility(DirectUI::Element* field, Microsoft::WRL::ComPtr<LCPD::ICredentialField> fieldData);
+	HRESULT _SetFieldInitialVisibility(DirectUI::Element* field, CFieldWrapper* fieldData);
 
 	HRESULT _CreateElementArrays();
 	UINT _FindFieldInsertionIndex(int fieldIndex);
@@ -62,5 +77,5 @@ private:
 	HRESULT _CreateFieldsForDeselected();
 	HRESULT _CreateFieldsForSelected();
 
-
+	friend class UserList;
 };

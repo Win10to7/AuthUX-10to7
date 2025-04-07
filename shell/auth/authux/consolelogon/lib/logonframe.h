@@ -3,6 +3,7 @@
 #include "pch.h"
 
 #include "logonnativehwndhost.h"
+#include "logonviewmanager.h"
 #include "DirectUI/DirectUI.h"
 #include "userlist.h"
 
@@ -33,35 +34,39 @@ public:
 
 	void ShowStatusMessage(const wchar_t* message);
 
+	void SwitchToUserList(class UserList* userList);
+
 	CLogonNativeHWNDHost* m_nativeHost;
-	DirectUI::Element* m_CurrentWindow = 0;
+	DirectUI::Element* m_CurrentWindow = nullptr;
 	DirectUI::DUIXmlParser* m_xmlParser;
 
-	DirectUI::Element* m_Window = 0;
-	DirectUI::Element* m_Options = 0;
-	DirectUI::Element* m_SwitchUser = 0;
-	DirectUI::Element* m_OtherTiles = 0;
-	DirectUI::Element* m_Ok = 0;
-	DirectUI::Element* m_Yes = 0;
-	DirectUI::Element* m_No = 0;
-	DirectUI::Element* m_Cancel = 0;
-	DirectUI::Element* m_ShutDownFrame = 0;
-	DirectUI::Element* m_ShowPLAP = 0;
-	DirectUI::Element* m_DisconnectPLAP = 0;
-	DirectUI::Element* m_Accessibility = 0;
-	DirectUI::Element* m_MessageFrame = 0;
-	DirectUI::Element* m_FullMessageFrame = 0;
-	DirectUI::Element* m_ShortMessageFrame = 0;
-	DirectUI::Element* m_ConnectMessageFrame = 0;
-	DirectUI::Element* m_Status = 0;
-	DirectUI::Element* m_StatusText = 0;
-	DirectUI::Element* m_SecurityOptions = 0;
-	DirectUI::Element* m_Locked = 0;
-	DirectUI::Element* m_WaitAnimation = 0;
+	DirectUI::Element* m_Window = nullptr;
+	DirectUI::Element* m_Options = nullptr;
+	DirectUI::Element* m_SwitchUser = nullptr;
+	DirectUI::Element* m_OtherTiles = nullptr;
+	DirectUI::Element* m_Ok = nullptr;
+	DirectUI::Element* m_Yes = nullptr;
+	DirectUI::Element* m_No = nullptr;
+	DirectUI::Element* m_Cancel = nullptr;
+	DirectUI::Element* m_ShutDownFrame = nullptr;
+	DirectUI::Element* m_ShowPLAP = nullptr;
+	DirectUI::Element* m_DisconnectPLAP = nullptr;
+	DirectUI::Element* m_Accessibility = nullptr;
+	DirectUI::Element* m_MessageFrame = nullptr;
+	DirectUI::Element* m_FullMessageFrame = nullptr;
+	DirectUI::Element* m_ShortMessageFrame = nullptr;
+	DirectUI::Element* m_ConnectMessageFrame = nullptr;
+	DirectUI::Element* m_Status = nullptr;
+	DirectUI::Element* m_StatusText = nullptr;
+	DirectUI::Element* m_SecurityOptions = nullptr;
+	DirectUI::Element* m_Locked = nullptr;
+	DirectUI::Element* m_WaitAnimation = nullptr;
 
 	UserList* m_activeUserList;
 	UserList* m_LogonUserList;
 	UserList* m_PLAPUserList;
+
+	Microsoft::WRL::ComPtr<LogonViewManager> m_consoleUIManager;
 
 	bool isHighContrast = false;
 
@@ -76,7 +81,6 @@ private:
 	void _SelectMode(DirectUI::Element* elementToHost, bool isVisible);
 	void _ShowCursor(bool bShow);
 	void _DisplayStatusMessage(const wchar_t* message, bool showSpinner);
-	void _SwitchToUserList(class UserList* userList);
 	void _DisplayLogonDialog(const wchar_t* messageCaptionContent, const wchar_t* messageContent, WORD flags);
 
 	static CLogonFrame* _pSingleton;

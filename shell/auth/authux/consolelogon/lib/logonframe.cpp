@@ -481,7 +481,7 @@ void CLogonFrame::_DisplayStatusMessage(const wchar_t* message, bool showSpinner
 		EndDefer(cookie);
 }
 
-void CLogonFrame::_SwitchToUserList(class UserList* userList)
+void CLogonFrame::SwitchToUserList(class UserList* userList)
 {
 	DWORD cookie;
 	StartDefer(&cookie);
