@@ -603,6 +603,8 @@ HRESULT LogonViewManager::LockUIThread(
 
 	RETURN_IF_FAILED(DestroyCurrentView()); // 573
 	m_currentReason = reason;
+	CLogonFrame::GetSingleton()->m_currentReason = reason;
+	CLogonFrame::GetSingleton()->m_consoleUIManager = this;
 	m_unlockTrigger = unlockTrigger;
 
 	ComPtr<LockedView> lockView;
@@ -629,6 +631,8 @@ HRESULT LogonViewManager::RequestCredentialsUIThread(
 
 	m_unlockTrigger.Reset();
 	m_currentReason = reason;
+	CLogonFrame::GetSingleton()->m_currentReason = reason;
+	CLogonFrame::GetSingleton()->m_consoleUIManager = this;
 	m_requestCredentialsComplete = wil::make_unique_nothrow<WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IRequestCredentialsData>>>(completion);
 	RETURN_IF_NULL_ALLOC(m_requestCredentialsComplete); // 598
 
@@ -893,6 +897,12 @@ HRESULT LogonViewManager::ShowCredentialView()
 {
 	RETURN_IF_FAILED(DestroyCurrentView()); // 918
 
+	auto zoomedTile = CLogonFrame::GetSingleton()->m_LogonUserList->GetZoomedTile();
+	if (zoomedTile)
+	{
+		CLogonFrame::GetSingleton()->m_LogonUserList->UnzoomList(zoomedTile);
+	}
+
 	CLogonFrame::GetSingleton()->m_LogonUserList->DestroyAllTiles();
 
 	if (m_credentialsChangedToken.value)
@@ -929,7 +939,8 @@ HRESULT LogonViewManager::ShowCredentialView()
 			Wrappers::HString label;
 			RETURN_IF_FAILED(selectedCred->get_LogoLabel(label.ReleaseAndGetAddressOf()));
 
-			CLogonFrame::GetSingleton()->m_LogonUserList->AddTileFromData(selectedCred,label);
+			LOG_HR_MSG(E_FAIL,"added credential %s\n", label.GetRawBuffer(nullptr));
+			CLogonFrame::GetSingleton()->m_LogonUserList->AddTileFromData(selectedCred,nullptr,label);
 
 			continue;
 		}
@@ -968,20 +979,75 @@ HRESULT LogonViewManager::ShowCredentialView()
 				if (guid == CLSID_PasswordCredentialProvider)
 				{
 					selectedCred = cred;
+					credGroup->put_SelectedCredential(selectedCred.Get());
 					break;
 				}
 			}
+			LOG_HR_MSG(E_FAIL,"DEFAULTING TO PASSWORD CRED for %s\n", userName.GetRawBuffer(nullptr));
 		}
 
 		RETURN_HR_IF_NULL_MSG(E_FAIL,selectedCred.Get(),"FAILED TO GET CREDENTIAL FOR USER");
 
-		CLogonFrame::GetSingleton()->m_LogonUserList->AddTileFromData(selectedCred,userName);
+		LOG_HR_MSG(E_FAIL,"selected Cred for %s\n", userName.GetRawBuffer(nullptr));
+		CLogonFrame::GetSingleton()->m_LogonUserList->AddTileFromData(selectedCred,user,userName);
 
 	}
 
+	ComPtr<IInspectable> selectedUserOrCred;
+	RETURN_IF_FAILED(m_credProvDataModel->get_SelectedUserOrV1Credential(&selectedUserOrCred));
+
 	CLogonFrame::GetSingleton()->SwitchToUserList(CLogonFrame::GetSingleton()->m_LogonUserList);
 
-	m_currentView.Reset();
+	if (selectedUserOrCred.Get())
+	{
+		ComPtr<LCPD::IUser> selectedUser;
+		ComPtr<LCPD::ICredential> selectedCredential;
+		Wrappers::HString userName;
+		if (SUCCEEDED(selectedUserOrCred.As(&selectedUser)))
+		{
+			RETURN_IF_FAILED(selectedUser->get_DisplayName(userName.ReleaseAndGetAddressOf())); // 873
+
+			RETURN_IF_FAILED(selectedUser.As(&m_selectedGroup)); // 875
+
+			ComPtr<WFC::IObservableVector<LCPD::Credential*>> credentials;
+			RETURN_IF_FAILED(m_selectedGroup->get_Credentials(&credentials)); // 878
+			RETURN_IF_FAILED(credentials->add_VectorChanged(this, &m_credentialsChangedToken)); // 879
+
+			RETURN_IF_FAILED(m_selectedGroup->add_SelectedCredentialChanged(this, &m_selectedCredentialChangedToken)); // 881
+			LOG_HR_MSG(E_FAIL,"called add_SelectedCredentialChanged");
+
+			RETURN_IF_FAILED(m_selectedGroup->get_SelectedCredential(&selectedCredential)); // 883
+		}
+		else
+		{
+			m_selectedGroup.Reset();
+
+			RETURN_IF_FAILED(selectedUserOrCred.As(&selectedCredential)); // 889
+			RETURN_IF_FAILED(selectedCredential->get_LogoLabel(userName.ReleaseAndGetAddressOf())); // 890
+
+			if (!userName.Get())
+			{
+				CoTaskMemNativeString defaultV1Label;
+				RETURN_IF_FAILED(defaultV1Label.Initialize(HINST_THISCOMPONENT, IDS_USER)); // 895
+				RETURN_IF_FAILED(defaultV1Label.Get() ? userName.Set(defaultV1Label.Get()) : E_POINTER); // 896
+			}
+		}
+
+		LOG_HR_MSG(E_FAIL,"there is a selectedUserOrCred %s , we should zoom it!\n", userName.GetRawBuffer(nullptr));
+
+		auto tileToZoom = CLogonFrame::GetSingleton()->m_LogonUserList->FindTileByCredential(selectedCredential);
+
+		RETURN_HR_IF_NULL_MSG(E_FAIL,tileToZoom,"FAILED TO FIND TILE FOR SELECTEDCREDENTIAL");
+
+		CLogonFrame::GetSingleton()->m_LogonUserList->ZoomTile(tileToZoom);
+
+		m_currentView = nullptr;
+		m_currentViewType = LogonView::SelectedCredential;
+
+		return S_OK;
+	}
+
+	m_currentView = nullptr;
 	m_currentViewType = LogonView::UserSelection;
 
 	return S_OK;

@@ -4,6 +4,12 @@
 #include "DirectUI/DirectUI.h"
 #include "logoninterfaces.h"
 
+/*
+: public Microsoft::WRL::Implements<Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::WinRtClassicComMix>
+, ControlBase
+, WF::ITypedEventHandler<LCPD::ICredentialField*, LCPD::CredentialFieldChangeKind>
+*/
+
 class CDUIFieldContainer : public DirectUI::Element
 {
 public:

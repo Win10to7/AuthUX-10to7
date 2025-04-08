@@ -17,13 +17,14 @@ public:
 	static HRESULT Register();
 
 	HRESULT Configure(DirectUI::DUIXmlParser* parser);
-	HRESULT AddTileFromData(Microsoft::WRL::ComPtr<LCPD::ICredential> credential, HSTRING userName);
+	HRESULT AddTileFromData(const Microsoft::WRL::ComPtr<LCPD::ICredential>& credential, const Microsoft::WRL::ComPtr<LCPD::IUser> user, HSTRING userName);
 	void DeselectAllTiles();
 	void HideAllTiles();
 	void FindAndSetKeyFocus();
 	void EnableList();
 	void DestroyAllTiles();
 
+	CDUIUserTileElement* FindTileByCredential(const Microsoft::WRL::ComPtr<LCPD::ICredential>& credential);
 	HRESULT ZoomTile(CDUIUserTileElement* userTile);
 	HRESULT UnzoomList(CDUIUserTileElement* userTile);
 	CDUIUserTileElement* GetZoomedTile();

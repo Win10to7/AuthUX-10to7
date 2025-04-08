@@ -40,7 +40,7 @@ HRESULT UserList::Configure(DirectUI::DUIXmlParser* parser)
 	return S_OK;
 }
 
-HRESULT UserList::AddTileFromData(Microsoft::WRL::ComPtr<LCPD::ICredential> credential, HSTRING userName)
+HRESULT UserList::AddTileFromData(const Microsoft::WRL::ComPtr<LCPD::ICredential>& credential, const Microsoft::WRL::ComPtr<LCPD::IUser> user, HSTRING userName)
 {
 	CDUIUserTileElement* userTile;
 	RETURN_IF_FAILED(m_xmlParser->CreateElement(L"UserTileTemplate", nullptr, this, nullptr, (DirectUI::Element**)&userTile));
@@ -49,6 +49,8 @@ HRESULT UserList::AddTileFromData(Microsoft::WRL::ComPtr<LCPD::ICredential> cred
 
 	userTile->m_scenario = LCPD::CredProvScenario_Logon;
 	userTile->m_owningUserList = this;
+	userTile->m_dataSourceCredential = credential;
+	userTile->m_dataSourceUser = user;
 
 	//userTile->SetActive(7);
 	//userTile->SetActive(bIsActive ? 3 : 0);
@@ -59,7 +61,7 @@ HRESULT UserList::AddTileFromData(Microsoft::WRL::ComPtr<LCPD::ICredential> cred
 	UINT numFields;
 	RETURN_IF_FAILED(fields->get_Size(&numFields));
 
-	for (int i = 0; i < static_cast<int>(numFields); ++i)
+	for (int i = numFields - 1; i >= 0; --i)
 	{
 		Microsoft::WRL::ComPtr<LCPD::ICredentialField> dataSource;
 		RETURN_IF_FAILED(fields->GetAt(i, &dataSource));
@@ -71,12 +73,22 @@ HRESULT UserList::AddTileFromData(Microsoft::WRL::ComPtr<LCPD::ICredential> cred
 		RETURN_IF_FAILED(userTile->fieldsArray.Add(fieldWrapper));
 	}
 
-	CFieldWrapper* usernameField = DirectUI::HNewAndZero<CFieldWrapper>();
-	usernameField->m_isSelectorField = true;
-	usernameField->m_label.Initialize(WindowsGetStringRawBuffer(userName, nullptr));
-	usernameField->m_size = LCPD::CredentialTextSize_Small;
+	if (CLogonFrame::GetSingleton()->m_currentReason != LC::LogonUIRequestReason_LogonUIChange)
+	{
+		CFieldWrapper* usernameField = DirectUI::HNewAndZero<CFieldWrapper>();
+		usernameField->m_isSelectorField = true;
+		usernameField->m_label.Initialize(WindowsGetStringRawBuffer(userName, nullptr));
+		usernameField->m_size = LCPD::CredentialTextSize_Small;
 
-	RETURN_IF_FAILED(userTile->fieldsArray.Add(usernameField));
+		RETURN_IF_FAILED(userTile->fieldsArray.Add(usernameField));
+
+		CFieldWrapper* zoomedUsernameField = DirectUI::HNewAndZero<CFieldWrapper>();
+		zoomedUsernameField->m_isSelectorField = false;
+		zoomedUsernameField->m_label.Initialize(WindowsGetStringRawBuffer(userName, nullptr));
+		zoomedUsernameField->m_size = LCPD::CredentialTextSize_Large;
+
+		RETURN_IF_FAILED(userTile->fieldsArray.Add(zoomedUsernameField));
+	}
 
 	int width = 180;
 	userTile->SetWidth(MulDiv(width, GetScreenDPI(), 96));
@@ -165,6 +177,29 @@ void UserList::DestroyAllTiles()
 	EndDefer(cookie);
 }
 
+CDUIUserTileElement* UserList::FindTileByCredential(const Microsoft::WRL::ComPtr<LCPD::ICredential>& credential)
+{
+	CDUIUserTileElement* ret = nullptr;
+
+	DirectUI::Value* childVal;
+	auto Children = m_UserListSelector->GetChildren(&childVal);
+	if (Children)
+	{
+		for (UINT i = 0; i < Children->GetSize(); ++i)
+		{
+			auto Child = (CDUIUserTileElement*)Children->GetItem(i);
+			if (Child->m_dataSourceCredential == credential)
+			{
+				ret = Child;
+				break;
+			}
+		}
+	}
+	childVal->Release();
+
+	return ret;
+}
+
 HRESULT STDMETHODCALLTYPE SetOneElementZoomed(DirectUI::Element* a1, LPVOID a2)
 {
 	if (IsElementOfClass(a1, L"ZoomableElement"))
@@ -217,13 +252,15 @@ HRESULT UserList::ZoomTile(CDUIUserTileElement* userTile)
 
     	LCPD::CredentialFieldKind kind = LCPD::CredentialFieldKind_StaticText;
     	bool bHidden = false;
+    	bool isVisibleInSelectedTile = true;
     	if (fieldData->m_dataSourceCredentialField)
     	{
     		RETURN_IF_FAILED(fieldData->m_dataSourceCredentialField->get_Kind(&kind));
     		RETURN_IF_FAILED(fieldData->m_dataSourceCredentialField->get_IsHidden(&bHidden));
+    		RETURN_IF_FAILED(fieldData->m_dataSourceCredentialField->get_IsVisibleInSelectedTile(&isVisibleInSelectedTile));
     	}
 
-        bool bShouldHide = fieldData->m_isSelectorField && kind != LCPD::CredentialFieldKind_TileImage || bHidden;
+        bool bShouldHide = fieldData->m_isSelectorField && kind != LCPD::CredentialFieldKind_TileImage || !(!bHidden && isVisibleInSelectedTile != 0);
 
         DirectUI::Element* element = userTile->m_elementsArray[i];
         if (userTile->m_containersArray[i])
@@ -244,7 +281,8 @@ HRESULT UserList::ZoomTile(CDUIUserTileElement* userTile)
     userTile->SetTileZoomed(true);
     userTile->m_bTileZoomed = true;
 
-    userTile->SetWidth(GetSystemMetrics(SM_CXSCREEN)); // ???
+    userTile->SetWidth(GetSystemMetrics(SM_CXSCREEN));
+    m_UserListSelector->SetWidth(GetSystemMetrics(SM_CXSCREEN));
 
     DWORD cookie2;
     userTile->StartDefer(&cookie2);
@@ -261,10 +299,14 @@ HRESULT UserList::ZoomTile(CDUIUserTileElement* userTile)
 
     //todo: password field text setkeyfocus
 
-    //CLogonFrame::GetSingleton()->_SetOptions(257 & ~0x20u);
+    //CLogonFrame::GetSingleton()->SetOptions(257 & ~0x20u);
+	if (CLogonFrame::GetSingleton()->m_currentReason == LC::LogonUIRequestReason_LogonUIChange)
+		CLogonFrame::GetSingleton()->SetOptions(32 | 256 | 64);
+	else
+		CLogonFrame::GetSingleton()->SetOptions(1 | 256 | 64);
 
-	//pHost->Host(UserListSelector);
-	//pHost->Host(CLogonFrame::_pSingleton);
+	//CLogonFrame::GetSingleton()->m_nativeHost->Host(m_UserListSelector);
+	//CLogonFrame::GetSingleton()->m_nativeHost->Host(CLogonFrame::GetSingleton());
 
     if (cookie)
         EndDefer(cookie);
@@ -292,13 +334,15 @@ HRESULT UserList::UnzoomList(CDUIUserTileElement* userTile)
 
 		LCPD::CredentialFieldKind kind = LCPD::CredentialFieldKind_StaticText;
 		bool bHidden = false;
+		bool isVisibleInDeselectedTile = true;
 		if (fieldData->m_dataSourceCredentialField)
 		{
 			RETURN_IF_FAILED(fieldData->m_dataSourceCredentialField->get_Kind(&kind));
 			RETURN_IF_FAILED(fieldData->m_dataSourceCredentialField->get_IsHidden(&bHidden));
+			RETURN_IF_FAILED(fieldData->m_dataSourceCredentialField->get_IsVisibleInDeselectedTile(&isVisibleInDeselectedTile));
 		}
 
-		bool bShouldHide = !fieldData->m_isSelectorField && kind != LCPD::CredentialFieldKind_TileImage || bHidden;
+		bool bShouldHide = !fieldData->m_isSelectorField && kind != LCPD::CredentialFieldKind_TileImage || !(!bHidden && isVisibleInDeselectedTile != 0);
 
 		DirectUI::Element* element = userTile->m_elementsArray[i];
 		if (userTile->m_containersArray[i])
@@ -330,12 +374,12 @@ HRESULT UserList::UnzoomList(CDUIUserTileElement* userTile)
 
 	_SetUnzoomedWidth();
 
-	//CLogonFrame::_pSingleton->_SetOptions(256 | 0x40);
+	CLogonFrame::GetSingleton()->SetOptions(256 | 0x40);
 }
 
 CDUIUserTileElement* UserList::GetZoomedTile()
 {
-	CDUIUserTileElement* ret = 0;
+	CDUIUserTileElement* ret = nullptr;
 
 	DirectUI::Value* childVal;
 	auto Children = m_UserListSelector->GetChildren(&childVal);

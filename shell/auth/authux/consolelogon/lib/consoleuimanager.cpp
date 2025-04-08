@@ -172,8 +172,8 @@ DWORD ConsoleUIManager::UIThreadHostThreadProc()
 
 	CLogonFrame::Create(nativeHWNDHost);
 
-	Microsoft::WRL::ComPtr<ConsoleUIManager> logonManager = this;
-	logonManager.As(&CLogonFrame::GetSingleton()->m_consoleUIManager);
+	//Microsoft::WRL::ComPtr<ConsoleUIManager> logonManager = this;
+	//logonManager.As(&CLogonFrame::GetSingleton()->m_consoleUIManager);
 
 	//CLogonFrame::GetSingleton()->ShowStatusMessage(L"Welcome");
 

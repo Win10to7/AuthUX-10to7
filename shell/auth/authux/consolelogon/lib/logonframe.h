@@ -28,6 +28,8 @@ public:
 	HRESULT CreateStyleParser(DirectUI::DUIXmlParser** outParser) override;
 	void OnEvent(DirectUI::Event* pEvent) override;
 
+	void SetOptions(int optionsFlag);
+
 	void SetBackgroundGraphics();
 	void ShowSecurityOptions(LC::LogonUISecurityOptions SecurityOptsFlag, WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::ILogonUISecurityOptionsResult>> completion);
 	HRESULT OnSecurityOptionSelected(LC::LogonUISecurityOptions SecurityOpt);
@@ -67,6 +69,7 @@ public:
 	UserList* m_PLAPUserList;
 
 	Microsoft::WRL::ComPtr<LogonViewManager> m_consoleUIManager;
+	LC::LogonUIRequestReason m_currentReason;
 
 	bool isHighContrast = false;
 
@@ -77,7 +80,6 @@ private:
 	bool _ShowBackgroundBitmap();
 	void _SetSoftKeyboardAllowed(bool allowed);
 	void _SetBrandingGraphic();
-	void _SetOptions(int a2);
 	void _SelectMode(DirectUI::Element* elementToHost, bool isVisible);
 	void _ShowCursor(bool bShow);
 	void _DisplayStatusMessage(const wchar_t* message, bool showSpinner);

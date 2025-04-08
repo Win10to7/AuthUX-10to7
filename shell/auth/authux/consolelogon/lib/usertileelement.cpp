@@ -9,6 +9,21 @@
 
 DirectUI::IClassInfo* CDUIUserTileElement::Class = nullptr;
 
+CDUIUserTileElement::~CDUIUserTileElement()
+{
+	for (int i = fieldsArray.GetSize() - 1; i >= 0; --i)
+	{
+		CFieldWrapper* field;
+		if (FAILED(fieldsArray.GetAt(i,field)))
+			continue;
+
+		fieldsArray.RemoveAt(i);
+		DirectUI::HDelete(field);
+	}
+
+	DirectUI::Button::~Button();
+}
+
 DirectUI::IClassInfo* CDUIUserTileElement::GetClassInfoW()
 {
 	return Class;
@@ -86,8 +101,21 @@ HRESULT CDUIUserTileElement::_SetFieldInitialVisibility(DirectUI::Element* field
 	if (fieldData->m_dataSourceCredentialField.Get() != nullptr)
 		RETURN_IF_FAILED(fieldData->m_dataSourceCredentialField->get_Kind(&kind));
 
-	if (kind == LCPD::CredentialFieldKind_CommandLink)
-		isVisible = true;
+	bool bIsVisibleInDeselectedTile = true;
+	bool bIsVisibleInSelectedTile = true;
+	bool isHidden = false;
+
+	if (fieldData->m_dataSourceCredentialField.Get() != nullptr)
+	{
+		RETURN_IF_FAILED(fieldData->m_dataSourceCredentialField->get_IsVisibleInDeselectedTile(&bIsVisibleInDeselectedTile));
+		RETURN_IF_FAILED(fieldData->m_dataSourceCredentialField->get_IsVisibleInSelectedTile(&bIsVisibleInSelectedTile));
+		RETURN_IF_FAILED(fieldData->m_dataSourceCredentialField->get_IsHidden(&isHidden));
+	}
+
+	/*if (kind == LCPD::CredentialFieldKind_CommandLink)
+	{
+		isVisible = !isHidden && (GetTileZoomed() ? bIsVisibleInSelectedTile : bIsVisibleInDeselectedTile);
+	}
 	else if (kind == LCPD::CredentialFieldKind_StaticText)
 	{
 		LCPD::CredentialTextSize size = fieldData->m_size;
@@ -101,12 +129,21 @@ HRESULT CDUIUserTileElement::_SetFieldInitialVisibility(DirectUI::Element* field
 		}
 
 		if (GetTileZoomed() && size == LCPD::CredentialTextSize_Large)
+		{
+
 			isVisible = true;
+		}
 		else if (!GetTileZoomed() && size == LCPD::CredentialTextSize_Small)
+		{
+
 			isVisible = true;
+		}
 		else
 			isVisible = false;
-	}
+
+		isVisible = isVisible && !isHidden && (GetTileZoomed() ? bIsVisibleInSelectedTile : bIsVisibleInDeselectedTile);
+	}*/
+	isVisible = !isHidden && ((bIsVisibleInSelectedTile) != 0);
 
 	RETURN_IF_FAILED(field->SetLayoutPos(isVisible ? -1 : -3));
 
@@ -232,8 +269,8 @@ HRESULT CDUIUserTileElement::_CreateStringField(int index, DirectUI::Element* Pa
 	CFieldWrapper* fieldData;
 	RETURN_IF_FAILED(fieldsArray.GetAt(index,fieldData));
 
-	DirectUI::Element* element;
-	RETURN_IF_FAILED(CDUIZoomableElement::Create(Parent,nullptr,&element));
+	CDUIZoomableElement* element;
+	RETURN_IF_FAILED(CDUIZoomableElement::Create(Parent,nullptr,reinterpret_cast<DirectUI::Element**>(&element)));
 	//RETURN_IF_FAILED(DirectUI::Element::Create(0,Parent,0,&element));
 	auto scopeExit = wil::scope_exit([&]() -> void {element->Destroy(true);});
 	if (!fieldData->m_isSelectorField)
@@ -255,9 +292,13 @@ HRESULT CDUIUserTileElement::_CreateStringField(int index, DirectUI::Element* Pa
 
 		label.Free();
 		RETURN_IF_FAILED(label.Initialize(content.GetRawBuffer(nullptr)));
+
+		RETURN_IF_FAILED(element->Advise(fieldData->m_dataSourceCredentialField.Get()));
 	}
 	else
 		label.Initialize(fieldData->m_label);
+
+	LOG_HR_MSG(E_FAIL,"Creating String field %s\n",label.Get());
 
 	if (label.GetCount() > 0)
 	{
@@ -330,6 +371,8 @@ HRESULT CDUIUserTileElement::_CreateEditField(int index, DirectUI::Element* Pare
 
 	StringStringAllocCopy(label.GetRawBuffer(nullptr), &restrictedEdit->m_hintText);
 
+	LOG_HR_MSG(E_FAIL,"Creating Edit field %s\n",label.GetRawBuffer(0));
+
 	const wchar_t* textClass = L"ClearTextEdit";
 	if (bIsPasswordField)
 		textClass = L"PasswordEdit";
@@ -378,6 +421,8 @@ HRESULT CDUIUserTileElement::_CreateCommandLinkField(int index, DirectUI::Elemen
 	if (label.Length() > 0)
 		RETURN_IF_FAILED(element->SetAccName(label.GetRawBuffer(nullptr)));
 
+	LOG_HR_MSG(E_FAIL,"Creating CommandLink field %s\n",label.GetRawBuffer(0));
+
 	//set tooltip here, but i cba
 
 	RETURN_IF_FAILED(element->SetClass(L"Link")); //nvm, i guess we want the class to be link now...
@@ -412,6 +457,8 @@ HRESULT CDUIUserTileElement::_CreateTileImageField(const wchar_t* pszLabel, HBIT
 
 	RETURN_IF_FAILED(hr);
 
+	LOG_HR_MSG(E_FAIL,"Creating TileImage field %s\n", pszLabel);
+
 	if (pszLabel)
 		RETURN_IF_FAILED(PictureContainer->SetAccName(pszLabel));
 
@@ -436,6 +483,8 @@ HRESULT CDUIUserTileElement::_CreateSubmitButton(int index, DirectUI::Button** o
 	RETURN_IF_FAILED(fieldData->m_dataSourceCredentialField->get_Label(label.ReleaseAndGetAddressOf()));
 
 	RETURN_IF_FAILED(static_cast<CDUIFieldContainer*>(m_containersArray[index])->ShowSubmitButton(label.GetRawBuffer(nullptr),outButton));
+
+	LOG_HR_MSG(E_FAIL,"Creating _CreateSubmitButton field %i\n", index);
 
 	*outElement = *outButton;
 	//*OutContainer = containersArray[index];
@@ -478,6 +527,8 @@ HRESULT CDUIUserTileElement::_CreateCheckboxField(int index, DirectUI::Element* 
 	if (label.Length() > 0)
 		checkbox->SetAccName(label.GetRawBuffer(nullptr));
 
+	LOG_HR_MSG(E_FAIL,"Creating checkbox field %s\n", label.GetRawBuffer(nullptr));
+
 	HRESULT hr = *OutContainer ? (*OutContainer)->AddField(checkbox) : _AddField(checkbox, index, this, OutContainer);
 	RETURN_IF_FAILED(hr);
 
@@ -512,12 +563,14 @@ HRESULT CDUIUserTileElement::_CreateComboBoxField(int index, DirectUI::Element* 
 
 	UINT numItems;
 	RETURN_IF_FAILED(items->get_Size(&numItems));
-
+	LOG_HR_MSG(E_FAIL,"Creating checkbox field");
 	for (int i = 0; i < numItems; ++i)
 	{
 		Microsoft::WRL::Wrappers::HString item;
 		RETURN_IF_FAILED(items->GetAt(i,item.ReleaseAndGetAddressOf()));
 		RETURN_HR_IF(E_FAIL, comboBox->AddStringEx(item.GetRawBuffer(nullptr)) == -1);
+
+		LOG_HR_MSG(E_FAIL,"checkbox field item %i %s\n",i, item.GetRawBuffer(nullptr));
 	}
 
 	int initialSelection;
@@ -653,8 +706,12 @@ HRESULT CDUIUserTileElement::_CreateFieldsForSelected()
 		else
 		{
 			//not sure if we need to handle anything here
+			LOG_HR_MSG(E_FAIL,"CASE FOR NOT SURE IF NEEDED TO BE HANDLED HAS BEEN HIT!!");
 		}
-
+	}
+	else
+	{
+		LOG_HR_MSG(E_FAIL,"SUBMITBUTTONFIELD IS NULL");
 	}
 
 	for (int i = 0; i < fieldsArray.GetSize(); ++i)
@@ -694,20 +751,27 @@ HRESULT CDUIUserTileElement::_CreateFieldsForSelected()
 			break;
 		case LCPD::CredentialFieldKind_TileImage:
 			//tileIndex = i;
-				break;
+			break;
 		case LCPD::CredentialFieldKind_CheckBox:
 			RETURN_IF_FAILED(_CreateCheckboxField(i, this, &m_elementsArray[i], &m_containersArray[i]));
 			break;
 		case LCPD::CredentialFieldKind_ComboBox:
 			RETURN_IF_FAILED(_CreateComboBoxField(i, this, &m_elementsArray[i], &m_containersArray[i]));
 			break;
-			//case CredentialFieldKind_SubmitButton:
-			//	submitButtonIndex = i;
-			//	break;
+		//case CredentialFieldKind_SubmitButton:
+		//	submitButtonIndex = i;
+		//	break;
 		}
 	}
 	if (submitButtonIndex != -1)
+	{
 		RETURN_IF_FAILED(m_containersArray[submitButtonIndex]->ShowSubmitButton(L"Submit",&m_submitButton));
+
+	}
+	else
+	{
+		LOG_HR_MSG(E_FAIL,"submitButtonIndex == -1");
+	}
 	//RETURN_IF_FAILED(_CreateSubmitButton(submitButtonIndex, &submitButton, &elementsArray[submitButtonIndex]));
 
 	m_bHasMadeSelectedFields = true;

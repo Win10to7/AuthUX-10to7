@@ -23,6 +23,8 @@ class CDUIUserTileElement : public DirectUI::Button
 {
 public:
 
+	~CDUIUserTileElement() override;
+
 	static DirectUI::IClassInfo* Class;
 	DirectUI::IClassInfo* GetClassInfoW() override;
 	static DirectUI::IClassInfo* GetClassInfoPtr();
@@ -78,4 +80,5 @@ private:
 	HRESULT _CreateFieldsForSelected();
 
 	friend class UserList;
+	friend class CDUIZoomableElement;
 };

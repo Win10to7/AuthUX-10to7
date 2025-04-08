@@ -1,7 +1,19 @@
 ﻿#include "pch.h"
 #include "zoomableelement.h"
 
+#include "usertileelement.h"
+
 DirectUI::IClassInfo* CDUIZoomableElement::Class = nullptr;
+
+CDUIZoomableElement::CDUIZoomableElement() : m_index(-1)
+	, m_owningElement(nullptr)
+	, m_token(0)
+{
+}
+
+CDUIZoomableElement::~CDUIZoomableElement()
+{
+}
 
 DirectUI::IClassInfo* CDUIZoomableElement::GetClassInfoW()
 {
@@ -59,10 +71,50 @@ HRESULT CDUIZoomableElement::SetElementZoomed(bool v)
 	return hr;
 }
 
+HRESULT CDUIZoomableElement::Advise(LCPD::ICredentialField* dataSource)
+{
+	m_FieldInfo = dataSource;
+
+	RETURN_IF_FAILED(m_FieldInfo->add_FieldChanged(this, &m_token)); // 19
+	return S_OK;
+}
+
+HRESULT CDUIZoomableElement::UnAdvise()
+{
+	if (m_FieldInfo)
+	{
+		RETURN_IF_FAILED(m_FieldInfo->remove_FieldChanged(m_token)); // 25
+
+		m_FieldInfo.Reset();
+	}
+
+	return S_OK;
+}
+
+void CDUIZoomableElement::OnDestroy()
+{
+	Element::OnDestroy();
+	UnAdvise();
+}
+
+HRESULT CDUIZoomableElement::Invoke(LCPD::ICredentialField* sender, LCPD::CredentialFieldChangeKind args)
+{
+	LOG_HR_MSG(E_FAIL,"CDUIZoomableElement::Invoke\n");
+	if (m_owningElement && m_owningElement->m_containersArray[m_index])
+	{
+		CFieldWrapper* fieldData;
+		m_owningElement->fieldsArray.GetAt(m_index,fieldData);
+		m_owningElement->_SetFieldInitialVisibility(m_owningElement->m_containersArray[m_index],fieldData);
+		LOG_HR_MSG(E_FAIL,"CDUIZoomableElement::Invoke _SetFieldInitialVisibility\n");
+	}
+
+	return S_OK;
+}
+
 HRESULT CDUIZoomableElement::Register()
 {
 	static const DirectUI::PropertyInfo* const s_rgProperties[] =
-{
+	{
 		&impElementZoomedProp
 	};
 	return DirectUI::ClassInfo<CDUIZoomableElement, DirectUI::Element>::RegisterGlobal(HINST_THISCOMPONENT, L"ZoomableElement", s_rgProperties, ARRAYSIZE(s_rgProperties));

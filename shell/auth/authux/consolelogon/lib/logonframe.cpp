@@ -1,7 +1,11 @@
 #include "pch.h"
 #include "logonframe.h"
+
+#include <WtsApi32.h>
+
 #include "logoninterfaces.h"
 #include "userlist.h"
+#include "usertileelement.h"
 #include "backgroundfetcher.h"
 #include "duiutil.h"
 
@@ -94,13 +98,78 @@ HRESULT CLogonFrame::CreateStyleParser(DirectUI::DUIXmlParser** outParser)
 
 void CLogonFrame::OnEvent(DirectUI::Event* pEvent)
 {
-	if (pEvent->peTarget == m_SwitchUser && pEvent->uidType == DirectUI::Button::Click())
+	//if (pEvent->peTarget == m_SwitchUser && pEvent->uidType == DirectUI::Button::Click())
+	//{
+	//	//m_activeUserList->UnzoomList(m_activeUserList->GetZoomedTile());
+	//	//m_consoleUIManager->m_credProvDataModel->put_SelectedUserOrV1Credential(nullptr);
+	//	return DirectUI::HWNDElement::OnEvent(pEvent);
+	//}
+
+	if (pEvent->uidType == DirectUI::Button::Click() && m_CurrentWindow == m_activeUserList && pEvent->nStage == DirectUI::GMF_BUBBLED)
 	{
-		m_activeUserList->UnzoomList(m_activeUserList->GetZoomedTile());
+		if (IsElementOfClass(pEvent->peTarget,L"UserTile"))
+		{
+			CDUIUserTileElement* tile = static_cast<CDUIUserTileElement*>(pEvent->peTarget);
+			if (tile->m_dataSourceCredential.Get())
+			{
+				m_consoleUIManager->m_credProvDataModel->put_SelectedUserOrV1Credential(tile->m_dataSourceUser.Get());
+				//HRESULT hr = BeginInvoke(m_consoleUIManager->m_Dispatcher.Get(), [=]() -> void
+				//{
+				//	UNREFERENCED_PARAMETER(this);
+				//	thisRef->m_credProvDataModel->put_SelectedUserOrV1Credential(tile->m_dataSourceCredential.Get());
+				//});
+			}
+			else
+			{
+				LOG_HR(E_FAIL,"TILE HAD NO CREDENTIAL DATASOURCE");
+			}
+		}
+
+		if (pEvent->peTarget == m_Cancel && m_currentReason == LC::LogonUIRequestReason_LogonUIChange)
+		{
+			LOG_HR_IF_NULL_MSG(E_FAIL,m_consoleUIManager.Get(),"m_consoleUIManager IS NULL!!!");
+			if (m_consoleUIManager.Get() && m_consoleUIManager->m_requestCredentialsComplete.get())
+			{
+				ComPtr<LogonViewManager> thisRef = m_consoleUIManager;
+				HRESULT hr = BeginInvoke(m_consoleUIManager->m_Dispatcher.Get(), [=]() -> void
+				{
+					UNREFERENCED_PARAMETER(this);
+					thisRef->m_requestCredentialsComplete->Complete(HRESULT_FROM_WIN32(ERROR_CANCELLED));
+					thisRef->ClearCredentialStateUIThread();
+					thisRef->m_requestCredentialsComplete.reset();
+				});
+
+				//m_consoleUIManager->m_requestCredentialsComplete = nullptr;
+			}
+		}
+		else if (pEvent->peTarget == m_SwitchUser)
+		{
+			if (!GetSystemMetrics(SM_REMOTESESSION))
+			{
+				ComPtr<LogonViewManager> thisRef = m_consoleUIManager;
+				HRESULT hr = BeginInvoke(m_consoleUIManager->m_Dispatcher.Get(), [=]() -> void
+				{
+					UNREFERENCED_PARAMETER(this);
+					if (m_currentReason == LC::LogonUIRequestReason_LogonUIUnlock)
+					{
+						//RETURN_IF_FAILED(thisRef->m_userSettingManager->put_IsLockScreenAllowed(FALSE)); // 281
+						if (SUCCEEDED(thisRef->m_userSettingManager->put_IsLockScreenAllowed(FALSE)))
+							WTSDisconnectSession(nullptr, WTS_CURRENT_SESSION, FALSE);
+					}
+					else if (m_currentReason == LC::LogonUIRequestReason_LogonUILogon)
+					{
+						//RETURN_IF_FAILED(thisRef->m_credProvDataModel->put_SelectedUserOrV1Credential(nullptr)); // 286
+						thisRef->m_credProvDataModel->put_SelectedUserOrV1Credential(nullptr); // 286
+					}
+				});
+
+			}
+		}
+
 		return DirectUI::HWNDElement::OnEvent(pEvent);
 	}
 
-	if (pEvent->uidType == DirectUI::Button::Click() && m_CurrentWindow == m_SecurityOptions && m_SecurityOptionsCompletion)
+	if (pEvent->uidType == DirectUI::Button::Click() && m_CurrentWindow == m_SecurityOptions && m_SecurityOptionsCompletion && pEvent->nStage == DirectUI::GMF_BUBBLED)
 	{
 		LC::LogonUISecurityOptions options;
 		if (pEvent->peTarget->GetID() == DirectUI::StrToID(L"SecurityLock"))
@@ -117,6 +186,11 @@ void CLogonFrame::OnEvent(DirectUI::Event* pEvent)
 			options = LC::LogonUISecurityOptions_Cancel;
 
 		OnSecurityOptionSelected(options);
+	}
+
+	if (pEvent->uidType == DirectUI::Button::Click() && m_CurrentWindow == m_LogonUserList)
+	{
+
 	}
 
 	return DirectUI::HWNDElement::OnEvent(pEvent);
@@ -179,7 +253,7 @@ void CLogonFrame::ShowSecurityOptions(LC::LogonUISecurityOptions SecurityOptsFla
 		//SecurityOptsFlag &= 0xFFFFFE0F;
 		optsFlag = 96;
 	}
-	_SetOptions(optsFlag | 0x100);
+	SetOptions(optsFlag | 0x100);
 	//if (!_IsSwitchUserAllowed())
 	//    SecurityOptsFlag &= ~0x200u;
 	bool bPastFirst = false;
@@ -285,7 +359,7 @@ HRESULT CLogonFrame::_Initialize(CLogonNativeHWNDHost* Host, DirectUI::Element* 
     SetVisible(true);
     SetActive(7);
 
-    _SetOptions(0);
+    SetOptions(0);
     m_nativeHost->Host(this);
 
     RETURN_IF_FAILED(_InitializeUserLists());
@@ -379,7 +453,7 @@ void CLogonFrame::_SetBrandingGraphic()
 	graphic->Release();
 }
 
-void CLogonFrame::_SetOptions(int optionsFlag)
+void CLogonFrame::SetOptions(int optionsFlag)
 {
 	struct OptionFlags
 	{
@@ -475,7 +549,7 @@ void CLogonFrame::_DisplayStatusMessage(const wchar_t* message, bool showSpinner
 	m_WaitAnimation->SetVisible(showSpinner);
 
 	SetContentAndAcc(m_StatusText, message);
-	_SetOptions(0);
+	SetOptions(0);
 
 	if (cookie)
 		EndDefer(cookie);
@@ -501,11 +575,12 @@ void CLogonFrame::SwitchToUserList(class UserList* userList)
 
 	userList->SetActive(7);
 
-	_SetOptions(256 | 0x40);
+	SetOptions(256 | 0x40);
 
 	//ShowPLAP->SetVisible(userList == LogonUserList);
 
 	userList->SetVisible(true);
+	userList->_SetUnzoomedWidth();
 
 	if (cookie)
 		EndDefer(cookie);
