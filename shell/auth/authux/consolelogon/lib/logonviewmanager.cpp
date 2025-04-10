@@ -5,17 +5,8 @@
 
 #include <WtsApi32.h>
 
-#include "comboboxselectionview.h"
-#include "credprovselectionview.h"
 #include "EventDispatcher.h"
-#include "lockedview.h"
-#include "messageview.h"
 #include "optionaldependencyprovider.h"
-#include "securityoptionsview.h"
-#include "selectedcredentialview.h"
-#include "serializationfailedview.h"
-#include "statusview.h"
-#include "userselectionview.h"
 #include "logonframe.h"
 #include "logonguids.h"
 
@@ -1101,14 +1092,14 @@ HRESULT LogonViewManager::ShowUserSelection()
 {
 	RETURN_IF_FAILED(DestroyCurrentView()); // 918
 
-	ComPtr<UserSelectionView> userSelectionView;
-	RETURN_IF_FAILED(MakeAndInitialize<UserSelectionView>(&userSelectionView, m_credProvDataModel.Get())); // 921
+	//ComPtr<UserSelectionView> userSelectionView;
+	//RETURN_IF_FAILED(MakeAndInitialize<UserSelectionView>(&userSelectionView, m_credProvDataModel.Get())); // 921
+//
+	//RETURN_IF_FAILED(userSelectionView->UserSelectionView::Advise(this)); // 923
+//
+	//RETURN_IF_FAILED(SetActiveView(userSelectionView.Get())); // 925
 
-	RETURN_IF_FAILED(userSelectionView->UserSelectionView::Advise(this)); // 923
-
-	RETURN_IF_FAILED(SetActiveView(userSelectionView.Get())); // 925
-
-	m_currentView.Swap(userSelectionView.Get());
+	m_currentView = nullptr;
 	m_currentViewType = LogonView::UserSelection;
 	return S_OK;
 }

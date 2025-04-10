@@ -126,7 +126,6 @@ HRESULT ConsoleUIManager::UIThreadHostStartThreadProc()
 
 	RETURN_IF_FAILED(hr = MakeNotificationDispatcher<CNotificationDispatcher>(&m_Dispatcher)); // 219
 
-	RETURN_IF_WIN32_BOOL_FALSE(AllocConsole()); // 221
 	return S_OK;
 }
 
@@ -147,8 +146,7 @@ DWORD ConsoleUIManager::UIThreadHostThreadProc()
 {
 	DWORD dwIndex = WAIT_IO_COMPLETION;
 
-	HANDLE stdIn = GetStdHandle(STD_INPUT_HANDLE);
-	HANDLE waitHandles[] = { m_UIThreadQuitEvent.get(), stdIn };
+	HANDLE waitHandles[] = { m_UIThreadQuitEvent.get() };
 
 	SetProcessDpiAwareness(PROCESS_SYSTEM_DPI_AWARE);
 	CoInitializeEx(nullptr, 0);
@@ -172,33 +170,12 @@ DWORD ConsoleUIManager::UIThreadHostThreadProc()
 
 	CLogonFrame::Create(nativeHWNDHost);
 
-	//Microsoft::WRL::ComPtr<ConsoleUIManager> logonManager = this;
-	//logonManager.As(&CLogonFrame::GetSingleton()->m_consoleUIManager);
-
-	//CLogonFrame::GetSingleton()->ShowStatusMessage(L"Welcome");
-
 	while (dwIndex == WAIT_IO_COMPLETION)
 	{
 		CoWaitForMultipleHandles(
 			COWAIT_ALERTABLE | COWAIT_INPUTAVAILABLE | COWAIT_DISPATCH_CALLS | COWAIT_DISPATCH_WINDOW_MESSAGES,
 			INFINITE, ARRAYSIZE(waitHandles), waitHandles, &dwIndex);
 		if (dwIndex == 1)
-		{
-			INPUT_RECORD input;
-			DWORD numInputEventsRead;
-			while (PeekConsoleInputW(stdIn, &input, 1, &numInputEventsRead))
-			{
-				if (!numInputEventsRead || !ReadConsoleInputW(stdIn, &input, 1, &numInputEventsRead))
-				{
-					break;
-				}
-
-				HandleIncomingInput(input);
-			}
-
-			dwIndex = WAIT_IO_COMPLETION;
-		}
-		else if (dwIndex == 2)
 		{
 			MSG Msg {};
 			while ( PeekMessageW(&Msg, nullptr, 0, 0, PM_REMOVE) )
@@ -231,6 +208,6 @@ DWORD ConsoleUIManager::UIThreadHostThreadProc()
 	DirectUI::UnInitProcessPriv(HINST_THISCOMPONENT);
 	CoUninitialize();
 
-	FreeConsole();
+	//FreeConsole();
 	return 0;
 }

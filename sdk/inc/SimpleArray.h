@@ -15,6 +15,15 @@ public:
     }
 };
 
+class CSimpleArrayCaseInsensitiveOrdinalStringCompareHelper
+{
+public:
+    int Compare(const WCHAR* psz1, const WCHAR* psz2) const
+    {
+        return CompareStringOrdinal(psz1, -1, psz2, -1, TRUE) - CSTR_EQUAL;
+    }
+};
+
 template <typename T>
 class CSimpleArrayStandardMergeHelper
 {
@@ -52,7 +61,7 @@ public:
         return hr;
     }
 
-    T* GetData() { return _parray; }
+    T* GetData() const { return _parray; }
     T* begin() { return _parray; }
     T* begin() const { return _parray; }
     T* end() { return _parray + _celem; }
@@ -146,7 +155,7 @@ public:
     {
         for (size_t iElement = 0; iElement < _celem; ++iElement)
         {
-            callback(_parray[iElement]);
+            callback(iElement, _parray[iElement]);
         }
     }
 };
@@ -328,7 +337,7 @@ public:
         size_t cElemGrowTo = max(this->_celem, iElem) + 1;
         if (cElemGrowTo > _celemCapacity)
         {
-            hr = _EnsureCapacity(cElemGrowTo, iElem);
+            hr = _EnsureCapacity(cElemGrowTo);
         }
 
         if (SUCCEEDED(hr))
@@ -359,7 +368,7 @@ public:
 
         if (this->_celem == _celemCapacity)
         {
-            hr = _EnsureCapacity(_celemCapacity + 1, 0);
+            hr = _EnsureCapacity(_celemCapacity + 1);
         }
 
         if (SUCCEEDED(hr))
@@ -493,7 +502,7 @@ template <
     size_t MaxSize = UINT_MAX - 1,
     typename CompareHelper = CSimpleArrayStandardCompareHelper<T>
 >
-class CLocalSimpleArray : public CTSimpleArray<T, MaxSize, CTPolicyLocalMem<T>, CompareHelper> // Name assumed
+class CLocalSimpleArray : public CTSimpleArray<T, MaxSize, CTPolicyLocalMem<T>, CompareHelper>
 {
 };
 
@@ -525,6 +534,22 @@ template <
     typename CompareHelper = CSimpleArrayStandardCompareHelper<T*>
 >
 class CSimplePointerArrayNewMem : public CSimplePointerArray<T, CTContainer_PolicyNewMem, CompareHelper>
+{
+};
+
+template <
+    typename T,
+    typename CompareHelper = CSimpleArrayStandardCompareHelper<T*>
+>
+class CSimplePointerArrayCoTaskMem : public CSimplePointerArray<T, CTPolicyCoTaskMem<T>, CompareHelper>
+{
+};
+
+template <
+    typename T,
+    typename CompareHelper = CSimpleArrayStandardCompareHelper<T*>
+>
+class CSimplePointerArrayLocalMem : public CSimplePointerArray<T, CTPolicyLocalMem<T>, CompareHelper>
 {
 };
 

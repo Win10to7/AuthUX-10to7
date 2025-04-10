@@ -11,7 +11,7 @@ public:
 	template <typename ...TArgs>
 	CRefCountedObject(TArgs&& ...args)
 		: T(std::forward<TArgs>(args)...)
-		, _cRef(1)
+		, _cRef(0)
 	{
 	}
 
