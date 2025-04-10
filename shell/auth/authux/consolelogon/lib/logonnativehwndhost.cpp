@@ -1,21 +1,12 @@
 ﻿#include "pch.h"
 #include "logonnativehwndhost.h"
 
+#include "duiutil.h"
+
 CLogonNativeHWNDHost::CLogonNativeHWNDHost()
 	: m_scenario(LCPD::CredProvScenario_Logon)
 {
 
-}
-
-HRESULT HRESULTFromLastErrorError()
-{
-	DWORD lastErrorDWORD = GetLastError();
-	if (!lastErrorDWORD)
-		lastErrorDWORD = 1;
-	HRESULT result = static_cast<WORD>(lastErrorDWORD) | 0x80070000;
-	if (lastErrorDWORD <= 0)
-		return static_cast<HRESULT>(lastErrorDWORD);
-	return result;
 }
 
 HRESULT CLogonNativeHWNDHost::Create(int dx, int dy, int dwidth, int dheight, CLogonNativeHWNDHost** out)

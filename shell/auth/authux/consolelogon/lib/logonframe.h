@@ -41,6 +41,8 @@ public:
 	void DisplayLogonDialog(const wchar_t* messageCaptionContent, const wchar_t* messageContent, WORD flags);
 	HRESULT OnMessageOptionPressed(MessageOptionFlag flag);
 
+	void ShowLockedScreen();
+
 	CLogonNativeHWNDHost* m_nativeHost;
 	DirectUI::Element* m_CurrentWindow = nullptr;
 	DirectUI::DUIXmlParser* m_xmlParser;

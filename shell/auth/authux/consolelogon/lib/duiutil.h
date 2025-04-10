@@ -24,6 +24,32 @@ static HRESULT SetContentAndAcc(DirectUI::Element* element, const wchar_t* conte
 	return result;
 }
 
+static HRESULT HRESULTFromLastErrorError()
+{
+	DWORD lastErrorDWORD = GetLastError();
+	if (!lastErrorDWORD)
+		lastErrorDWORD = 1;
+	HRESULT result = static_cast<WORD>(lastErrorDWORD) | 0x80070000;
+	if (lastErrorDWORD <= 0)
+		return static_cast<HRESULT>(lastErrorDWORD);
+	return result;
+}
+
+static HRESULT SetContentAndAccFromResources(DirectUI::Element *element, UINT residContent, UINT residAcc)
+{
+	WCHAR content[128];
+	WCHAR acc[128];
+
+	int StringW = LoadStringW(HINST_THISCOMPONENT, residContent, content, 128);
+	int v6 = LoadStringW(HINST_THISCOMPONENT, residAcc, acc, 128);
+	if ( StringW <= 0 || v6 <= 0 )
+		return HRESULTFromLastErrorError();
+	HRESULT result = element->SetContentString(content);
+	if (SUCCEEDED(result))
+		return element->SetAccName(acc);
+	return result;
+}
+
 static UINT GetScreenDPI()
 {
 	UINT DPI;

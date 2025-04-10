@@ -715,6 +715,29 @@ HRESULT CLogonFrame::OnMessageOptionPressed(MessageOptionFlag flag)
 	return S_OK;
 }
 
+void CLogonFrame::ShowLockedScreen()
+{
+	DWORD cookie;
+	StartDefer(&cookie);
+
+	SetBackgroundGraphics();
+	_SelectMode(m_Locked, true);
+	SetOptions(MessageOptionFlag::Accessibility);
+
+	HWND hwnd = GetHWND();
+	EnableWindow(hwnd, true);
+
+	auto LockedMessage = m_Locked->FindDescendent(DirectUI::StrToID(L"LockedMessage"));
+	auto LockedSubMessage = m_Locked->FindDescendent(DirectUI::StrToID(L"LockedSubMessage"));
+
+	SetContentAndAccFromResources(LockedMessage,12007,12007);
+	SetContentAndAcc(LockedSubMessage, L"");
+	SetActive(3);
+
+	if (cookie)
+		EndDefer(cookie);
+}
+
 static bool LoadIconAsContent(DirectUI::Element* elm, const wchar_t* lpIconName)
 {
 	HICON IconW = LoadIconW(nullptr, lpIconName);

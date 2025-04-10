@@ -302,17 +302,6 @@ HRESULT LogonViewManager::OnNavigation()
 
 HRESULT LogonViewManager::ShowComboBox(LCPD::IComboBoxField* dataSource)
 {
-	RETURN_IF_FAILED(DestroyCurrentView()); // 311
-
-	ComPtr<ComboboxSelectionView> comboBoxView;
-	RETURN_IF_FAILED(MakeAndInitialize<ComboboxSelectionView>(&comboBoxView, dataSource)); // 314
-
-	RETURN_IF_FAILED(comboBoxView->ComboboxSelectionView::Advise(this)); // 316
-
-	RETURN_IF_FAILED(ConsoleUIManager::SetActiveView(comboBoxView.Get())); // 318
-
-	m_currentView.Swap(comboBoxView.Get());
-	m_currentViewType = LogonView::ComboBox;
 	return S_OK;
 }
 
@@ -608,14 +597,17 @@ HRESULT LogonViewManager::LockUIThread(
 	CLogonFrame::GetSingleton()->m_consoleUIManager = this;
 	m_unlockTrigger = unlockTrigger;
 
-	ComPtr<LockedView> lockView;
-	RETURN_IF_FAILED(MakeAndInitialize<LockedView>(&lockView)); // 578
+	CLogonFrame::GetSingleton()->ShowLockedScreen();
 
-	RETURN_IF_FAILED(lockView->Advise(this)); // 580
+	//ComPtr<LockedView> lockView;
+	//RETURN_IF_FAILED(MakeAndInitialize<LockedView>(&lockView)); // 578
+	//
+	//RETURN_IF_FAILED(lockView->Advise(this)); // 580
+	//
+	//RETURN_IF_FAILED(SetActiveView(lockView.Get())); // 582
 
-	RETURN_IF_FAILED(SetActiveView(lockView.Get())); // 582
-
-	m_currentView.Swap(lockView.Get());
+	//m_currentView.Swap(lockView.Get());
+	m_currentView = nullptr;
 	m_currentViewType = LogonView::Locked;
 	m_showCredentialViewOnInitComplete = false;
 
