@@ -930,6 +930,21 @@ HRESULT LogonViewManager::ShowCredentialView()
 
 		CLogonFrame::GetSingleton()->m_LogonUserList->ZoomTile(tileToZoom);
 
+		ComPtr<LCPD::IOptionalDependencyProvider> optionalDependencyProvider;
+		RETURN_IF_FAILED(MakeAndInitialize<OptionalDependencyProvider>(&optionalDependencyProvider, m_currentReason, m_autoLogonManager.Get(), m_userSettingManager.Get(), m_displayStateProvider.Get())); // 1084
+
+		ComPtr<LCPD::ICredProvDefaultSelector> defaultSelector;
+		RETURN_IF_FAILED(optionalDependencyProvider->GetOptionalDependency(LCPD::OptionalDependencyKind_DefaultSelector,&defaultSelector));
+
+		BOOLEAN bautosubmit = false;
+		RETURN_IF_FAILED(defaultSelector->AllowAutoSubmitOnSelection(selectedUser.Get(),&bautosubmit));
+
+		bool bIsLocalNoPassword = false;
+		RETURN_IF_FAILED(selectedUser->get_IsLocalNoPasswordUser(&bIsLocalNoPassword));
+
+		if (bautosubmit && bIsLocalNoPassword && m_currentReason != LC::LogonUIRequestReason_LogonUIChange)
+			selectedCredential->Submit();
+
 		m_currentViewType = LogonView::SelectedCredential;
 
 		return S_OK;
