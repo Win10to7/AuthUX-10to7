@@ -1012,6 +1012,23 @@ IUserTileStore : IUnknown
 	virtual HRESULT STDMETHODCALLTYPE FixCorruptedStoreIfNeeded() = 0;
 };
 
+enum class MessageOptionFlag
+{
+	None = 0x0,
+	Ok = 0x1,
+	Cancel = 0x2,
+	Yes = 0x4,
+	No = 0x8,
+	SwitchUser = 16, //CUSTOM, NOT IN CONSOLELOGON
+	OtherTiles = 32,
+	ShutDownFrame = 64,
+	ShowPLAP = 128,
+	Accessibility = 256,
+	DisconnectPLAP = 512
+};
+
+DEFINE_ENUM_FLAG_OPERATORS(MessageOptionFlag);
+
 extern const __declspec(selectany) _Null_terminated_ WCHAR RuntimeClass_Windows_Internal_UI_Logon_CredProvData_CredProvDataModel[] = L"Windows.Internal.UI.Logon.CredProvData.CredProvDataModel";
 
 extern const __declspec(selectany) _Null_terminated_ WCHAR RuntimeClass_Windows_Internal_UI_Logon_Controller_RequestCredentialsData[] = L"Windows.Internal.UI.Logon.Controller.RequestCredentialsData";

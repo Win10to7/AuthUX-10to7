@@ -28,7 +28,7 @@ public:
 	HRESULT CreateStyleParser(DirectUI::DUIXmlParser** outParser) override;
 	void OnEvent(DirectUI::Event* pEvent) override;
 
-	void SetOptions(int optionsFlag);
+	void SetOptions(MessageOptionFlag optionsFlag);
 
 	void SetBackgroundGraphics();
 	void ShowSecurityOptions(LC::LogonUISecurityOptions SecurityOptsFlag, WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::ILogonUISecurityOptionsResult>> completion);
@@ -37,6 +37,9 @@ public:
 	void ShowStatusMessage(const wchar_t* message);
 
 	void SwitchToUserList(class UserList* userList);
+	void DisplayLogonDialog(const wchar_t* messageCaptionContent, const wchar_t* messageContent, WORD flags, WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IMessageDisplayResult>> completion);
+	void DisplayLogonDialog(const wchar_t* messageCaptionContent, const wchar_t* messageContent, WORD flags);
+	HRESULT OnMessageOptionPressed(MessageOptionFlag flag);
 
 	CLogonNativeHWNDHost* m_nativeHost;
 	DirectUI::Element* m_CurrentWindow = nullptr;
@@ -89,4 +92,5 @@ private:
 	static CLogonFrame* _pSingleton;
 
 	wistd::unique_ptr<WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::ILogonUISecurityOptionsResult>>> m_SecurityOptionsCompletion;
+	wistd::unique_ptr<WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IMessageDisplayResult>>> m_MessageDisplayResultCompletion;
 };

@@ -1189,25 +1189,25 @@ HRESULT LogonViewManager::ShowMessageView(
 	WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IMessageDisplayResult>> completion)
 {
 	RETURN_IF_FAILED(DestroyCurrentView()); // 997
-	ComPtr<LCPD::IUser> selectedUser;
-	if (m_credProvDataModel.Get())
-	{
-		ComPtr<IInspectable> selectedUserOrV1;
-		RETURN_IF_FAILED(m_credProvDataModel->get_SelectedUserOrV1Credential(&selectedUserOrV1)); // 1002
-		if (selectedUserOrV1.Get())
-		{
-			selectedUserOrV1.As(&selectedUser);
-		}
-	}
-
-	ComPtr<MessageView> messageView;
-	RETURN_IF_FAILED(MakeAndInitialize<MessageView>(&messageView, caption, message, messageBoxFlags, completion, selectedUser.Get())); // 1010
-
-	RETURN_IF_FAILED(messageView->MessageView::Advise(this)); // 1012
-
-	RETURN_IF_FAILED(SetActiveView(messageView.Get())); // 1014
-
-	m_currentView.Swap(messageView);
+	//ComPtr<LCPD::IUser> selectedUser;
+	//if (m_credProvDataModel.Get())
+	//{
+	//	ComPtr<IInspectable> selectedUserOrV1;
+	//	RETURN_IF_FAILED(m_credProvDataModel->get_SelectedUserOrV1Credential(&selectedUserOrV1)); // 1002
+	//	if (selectedUserOrV1.Get())
+	//	{
+	//		selectedUserOrV1.As(&selectedUser);
+	//	}
+	//}
+	CLogonFrame::GetSingleton()->DisplayLogonDialog(WindowsGetStringRawBuffer(caption,nullptr),WindowsGetStringRawBuffer(message,nullptr),messageBoxFlags,completion);
+	//ComPtr<MessageView> messageView;
+	//RETURN_IF_FAILED(MakeAndInitialize<MessageView>(&messageView, caption, message, messageBoxFlags, completion, selectedUser.Get())); // 1010
+	//
+	//RETURN_IF_FAILED(messageView->MessageView::Advise(this)); // 1012
+	//
+	//RETURN_IF_FAILED(SetActiveView(messageView.Get())); // 1014
+	//
+	//m_currentView.Swap(messageView);
 	m_currentViewType = LogonView::Message;
 	return S_OK;
 }
@@ -1218,25 +1218,27 @@ HRESULT LogonViewManager::ShowSerializationFailedView(HSTRING caption, HSTRING m
 {
 	RETURN_IF_FAILED(DestroyCurrentView()); // 1024
 
-	ComPtr<LCPD::IUser> selectedUser;
-	if (m_credProvDataModel.Get())
-	{
-		ComPtr<IInspectable> selectedUserOrV1;
-		RETURN_IF_FAILED(m_credProvDataModel->get_SelectedUserOrV1Credential(&selectedUserOrV1)); // 1029
-		if (selectedUserOrV1.Get())
-		{
-			selectedUserOrV1.As(&selectedUser);
-		}
-	}
+	//ComPtr<LCPD::IUser> selectedUser;
+	//if (m_credProvDataModel.Get())
+	//{
+	//	ComPtr<IInspectable> selectedUserOrV1;
+	//	RETURN_IF_FAILED(m_credProvDataModel->get_SelectedUserOrV1Credential(&selectedUserOrV1)); // 1029
+	//	if (selectedUserOrV1.Get())
+	//	{
+	//		selectedUserOrV1.As(&selectedUser);
+	//	}
+	//}
 
-	ComPtr<SerializationFailedView> serializationFailedView;
-	RETURN_IF_FAILED(MakeAndInitialize<SerializationFailedView>(&serializationFailedView, caption, message, selectedUser.Get())); // 1037
+	//ComPtr<SerializationFailedView> serializationFailedView;
+	//RETURN_IF_FAILED(MakeAndInitialize<SerializationFailedView>(&serializationFailedView, caption, message, selectedUser.Get())); // 1037
 
-	RETURN_IF_FAILED(serializationFailedView->Advise(this)); // 1039
+	CLogonFrame::GetSingleton()->DisplayLogonDialog(WindowsGetStringRawBuffer(caption,nullptr),WindowsGetStringRawBuffer(message,nullptr),16 | (int)MessageOptionFlag::Ok);
 
-	RETURN_IF_FAILED(SetActiveView(serializationFailedView.Get())); // 1041
-
-	m_currentView.Swap(serializationFailedView.Get());
+	//RETURN_IF_FAILED(serializationFailedView->Advise(this)); // 1039
+	//
+	//RETURN_IF_FAILED(SetActiveView(serializationFailedView.Get())); // 1041
+	//
+	//m_currentView.Swap(serializationFailedView.Get());
 	m_currentViewType = LogonView::SerializationFailed;
 	return S_OK;
 }

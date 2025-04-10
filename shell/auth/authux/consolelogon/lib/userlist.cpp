@@ -348,9 +348,9 @@ HRESULT UserList::ZoomTile(CDUIUserTileElement* userTile)
 
     //CLogonFrame::GetSingleton()->SetOptions(257 & ~0x20u);
 	if (CLogonFrame::GetSingleton()->m_currentReason == LC::LogonUIRequestReason_LogonUIChange)
-		CLogonFrame::GetSingleton()->SetOptions(32 | 256 | 64);
+		CLogonFrame::GetSingleton()->SetOptions(MessageOptionFlag::Cancel | MessageOptionFlag::Accessibility | MessageOptionFlag::ShutDownFrame);
 	else
-		CLogonFrame::GetSingleton()->SetOptions(1 | 256 | 64);
+		CLogonFrame::GetSingleton()->SetOptions(MessageOptionFlag::SwitchUser | MessageOptionFlag::Accessibility | MessageOptionFlag::ShutDownFrame);
 
 	//CLogonFrame::GetSingleton()->m_nativeHost->Host(m_UserListSelector);
 	//CLogonFrame::GetSingleton()->m_nativeHost->Host(CLogonFrame::GetSingleton());
@@ -422,7 +422,7 @@ HRESULT UserList::UnzoomList(CDUIUserTileElement* userTile)
 
 	_SetUnzoomedWidth();
 
-	CLogonFrame::GetSingleton()->SetOptions(256 | 0x40);
+	CLogonFrame::GetSingleton()->SetOptions(MessageOptionFlag::Accessibility | MessageOptionFlag::ShutDownFrame);
 }
 
 CDUIUserTileElement* UserList::GetZoomedTile()

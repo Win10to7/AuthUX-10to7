@@ -5,17 +5,6 @@
 #include "consoleuiview.h"
 #include "controlbase.h"
 
-enum class MessageOptionFlag
-{
-	None = 0x0,
-	Ok = 0x1,
-	Cancel = 0x2,
-	Yes = 0x4,
-	No = 0x8,
-};
-
-DEFINE_ENUM_FLAG_OPERATORS(MessageOptionFlag);
-
 class MessageOptionControl final : public Microsoft::WRL::RuntimeClass<ControlBase>
 {
 public:
