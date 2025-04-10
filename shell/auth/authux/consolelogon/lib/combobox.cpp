@@ -141,7 +141,10 @@ HRESULT CDUIComboBox::SetSelectionEx(int newSelection)
 {
 	LOG_HR_MSG(E_FAIL,"CDUIComboBox::SetSelectionEx %i\n",newSelection);
 	if (GetHWND())
+	{
+		SetSelection(9999);
 		return SetSelection(newSelection);
+	}
 
 	m_selection = newSelection;
 
