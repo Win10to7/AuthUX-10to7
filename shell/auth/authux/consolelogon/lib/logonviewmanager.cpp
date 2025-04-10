@@ -525,6 +525,9 @@ HRESULT LogonViewManager::RequestCredentialsUIThread(
 {
 	auto completeOnFailure = wil::scope_exit([this]() -> void { m_requestCredentialsComplete->Complete(E_UNEXPECTED); });
 
+	//if (m_unlockTrigger.Get())
+	//	m_unlockTrigger->TriggerUnlock();
+
 	m_unlockTrigger.Reset();
 	m_currentReason = reason;
 	CLogonFrame::GetSingleton()->m_currentReason = reason;
@@ -595,6 +598,9 @@ HRESULT LogonViewManager::ReportResultUIThread(
 	HSTRING displayName, HSTRING userSid,
 	WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IReportCredentialsData>> completion)
 {
+	//if (m_unlockTrigger.Get())
+	//	m_unlockTrigger->TriggerUnlock();
+
 	m_unlockTrigger.Reset();
 	m_requestCredentialsComplete.reset();
 
@@ -777,6 +783,9 @@ HRESULT LogonViewManager::CleanupUIThread(WI::AsyncDeferral<WI::CNoResult> compl
 
 HRESULT LogonViewManager::ShowCredentialView()
 {
+	//if (m_unlockTrigger.Get())
+	//	m_unlockTrigger->TriggerUnlock();
+
 	auto zoomedTile = CLogonFrame::GetSingleton()->m_LogonUserList->GetZoomedTile();
 	if (zoomedTile)
 	{

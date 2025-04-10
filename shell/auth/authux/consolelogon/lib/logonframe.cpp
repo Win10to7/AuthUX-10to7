@@ -730,7 +730,9 @@ void CLogonFrame::ShowLockedScreen()
 	auto LockedMessage = m_Locked->FindDescendent(DirectUI::StrToID(L"LockedMessage"));
 	auto LockedSubMessage = m_Locked->FindDescendent(DirectUI::StrToID(L"LockedSubMessage"));
 
-	SetContentAndAccFromResources(LockedMessage,12007,12007);
+	DWORD resId = m_currentReason == LC::LogonUIRequestReason_LogonUIUnlock ? 12002 : 12007;
+
+	SetContentAndAccFromResources(LockedMessage,resId,resId);
 	SetContentAndAcc(LockedSubMessage, L"");
 	SetActive(3);
 

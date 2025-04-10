@@ -1,6 +1,8 @@
 ﻿#include "pch.h"
 
 #include "consolelockaction.h"
+#include "duiutil.h"
+#include "logonframe.h"
 
 using namespace Microsoft::WRL;
 
@@ -16,12 +18,13 @@ class ConsoleLock final
 		, FtmBase
 	>
 {
-	InspectableClass(RuntimeClass_Windows_Internal_UI_Logon_Controller_ConsoleLockScreen, PartialTrust);
+	InspectableClass(RuntimeClass_Windows_Internal_UI_Logon_Controller_ConsoleLockScreen, FullTrust);
 
 public:
 	ConsoleLock();
 	~ConsoleLock() override;
 
+	STDMETHODIMP ShowWebDialogAsync(HSTRING a1, void** a2) override;
 	STDMETHODIMP LockAsync(LockOptions options, HSTRING domainName, HSTRING userName, HSTRING friendlyName, HSTRING unk, bool* setWin32kForegroundHardening, IUnlockTrigger** ppAction) override;
 	STDMETHODIMP Reset() override;
 	STDMETHODIMP PreShutdown() override;
@@ -35,14 +38,25 @@ ConsoleLock::~ConsoleLock()
 {
 }
 
+HRESULT ConsoleLock::ShowWebDialogAsync(HSTRING a1, void** a2)
+{
+	return S_OK;
+}
+
 HRESULT ConsoleLock::LockAsync(LockOptions options, HSTRING domainName, HSTRING userName, HSTRING friendlyName, HSTRING unk,
-	bool* setWin32kForegroundHardening, IUnlockTrigger** ppAction)
+                               bool* setWin32kForegroundHardening, IUnlockTrigger** ppAction)
 {
 	*ppAction = nullptr;
 	*setWin32kForegroundHardening = false;
+
+	BOOL disableCAD = TRUE;
+	RETURN_IF_FAILED(SHRegGetBOOLWithREGSAM(HKEY_LOCAL_MACHINE,L"Software\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon",L"DisableCAD",0,&disableCAD));
+	RETURN_HR_IF(E_NOTIMPL, disableCAD == TRUE);
+
 	RETURN_HR_IF(E_NOTIMPL, (options & LockOptions_SecureDesktop) == 0);
 
 	RETURN_IF_FAILED(MakeAndInitialize<ConsoleLockAction>(ppAction,domainName,userName,friendlyName)); // 36
+
 
 	return S_OK;
 }

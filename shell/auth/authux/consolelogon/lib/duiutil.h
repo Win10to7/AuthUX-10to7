@@ -218,3 +218,43 @@ static bool IsElementOfClass(DirectUI::Element* element, const wchar_t* classNam
 {
 	return _wcsicmp(element->GetClassInfoW()->GetName(), className) == 0;
 }
+
+
+static HRESULT SHRegGetBOOLWithREGSAM(HKEY key, LPCWSTR subKey, LPCWSTR value, REGSAM regSam, BOOL* data)
+{
+	DWORD dwType = REG_NONE;
+	DWORD dwData;
+	DWORD cbData = sizeof(dwData);
+	LSTATUS lRes = RegGetValueW(
+		key,
+		subKey,
+		value,
+		((regSam & 0x100) << 8) | RRF_RT_REG_DWORD | RRF_RT_REG_SZ | RRF_NOEXPAND,
+		&dwType,
+		&dwData,
+		&cbData
+	);
+	if (lRes != ERROR_SUCCESS)
+	{
+		if (lRes == ERROR_MORE_DATA)
+			return HRESULT_FROM_WIN32(ERROR_INVALID_DATA);
+		if (lRes > 0)
+			return HRESULT_FROM_WIN32(lRes);
+		return lRes;
+	}
+
+	if (dwType == REG_DWORD)
+	{
+		if (dwData > 1)
+			return HRESULT_FROM_WIN32(ERROR_INVALID_DATA);
+		*data = dwData == 1;
+	}
+	else
+	{
+		if (cbData != 4 || (WCHAR)dwData != L'0' && (WCHAR)dwData != L'1')
+			return HRESULT_FROM_WIN32(ERROR_INVALID_DATA);
+		*data = (WCHAR)dwData == L'1';
+	}
+
+	return S_OK;
+}

@@ -914,6 +914,7 @@ namespace Windows::Internal::UI::Logon
 		MIDL_INTERFACE("716a5b05-6e30-4f65-8a89-97de0fda0852")
 		ILockScreenHost : IInspectable
 		{
+			virtual HRESULT STDMETHODCALLTYPE ShowWebDialogAsync(HSTRING, void**/* Windows::Internal::UI::Logon::Controller::IWebDialogDismissTrigger** */) PURE;
 			virtual HRESULT STDMETHODCALLTYPE LockAsync(LockOptions, HSTRING, HSTRING, HSTRING,HSTRING, bool*, IUnlockTrigger**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE Reset() PURE;
 			virtual HRESULT STDMETHODCALLTYPE PreShutdown() PURE;
@@ -934,6 +935,7 @@ namespace Windows::Internal::UI::Logon
 			LockActivity_AboveLockApp=4
 		};
 
+		//MIDL_INTERFACE("bd4fd664-fd5e-4ea2-8a71-48a75a4529c0")
 		MIDL_INTERFACE("c1dee830-94c1-488c-82d0-3332c15a6f2d")
 		ILockInfo : IInspectable
 		{
@@ -945,6 +947,8 @@ namespace Windows::Internal::UI::Logon
 			virtual HRESULT STDMETHODCALLTYPE get_ShowSpeedBump(bool* ) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_RequireSecureGestureString(HSTRING* ) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_SpeedBumpString(HSTRING* ) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_IsLostMode(bool* ) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_LostModeMessage(HSTRING* ) PURE;
 			virtual HRESULT STDMETHODCALLTYPE add_UserActivity(WF::ITypedEventHandler<ILockInfo *,LockActivity>*, EventRegistrationToken*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE remove_UserActivity(struct EventRegistrationToken ) PURE;
 		};
