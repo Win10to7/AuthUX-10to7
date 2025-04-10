@@ -50,14 +50,7 @@ HRESULT LogonViewManager::Invoke(WFC::IObservableVector<LCPD::Credential*>* send
 {
 	if (m_currentViewType == LogonView::CredProvSelection)
 	{
-		Wrappers::HString userName;
-
-		ComPtr<LCPD::IUser> user;
-		RETURN_IF_FAILED(m_selectedGroup.As(&user)); // 218
-
-		RETURN_IF_FAILED(user->get_DisplayName(userName.ReleaseAndGetAddressOf())); // 220
-
-		RETURN_IF_FAILED(ShowCredProvSelection(m_selectedGroup.Get(), userName.Get())); // 222
+		RETURN_IF_FAILED(ShowCredentialView()); // 222
 	}
 
 	return S_OK;
@@ -67,7 +60,7 @@ HRESULT LogonViewManager::Invoke(WFC::IObservableVector<IInspectable*>* sender, 
 {
 	if (m_currentViewType == LogonView::UserSelection)
 	{
-		RETURN_IF_FAILED(ShowUserSelection()); // 205
+		RETURN_IF_FAILED(ShowCredentialView()); // 205
 	}
 
 	return S_OK;
@@ -502,7 +495,6 @@ HRESULT LogonViewManager::LockUIThread(
 {
 	m_requestCredentialsComplete.reset();
 
-	RETURN_IF_FAILED(DestroyCurrentView()); // 573
 	m_currentReason = reason;
 	CLogonFrame::GetSingleton()->m_currentReason = reason;
 	CLogonFrame::GetSingleton()->m_consoleUIManager = this;
@@ -645,19 +637,8 @@ HRESULT LogonViewManager::ShowSecurityOptionsUIThread(
 	LC::LogonUISecurityOptions options,
 	WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::ILogonUISecurityOptionsResult>> completion)
 {
-	RETURN_IF_FAILED(DestroyCurrentView()); // 686
-
-	//ComPtr<SecurityOptionsView> view;
-	//RETURN_IF_FAILED(MakeAndInitialize<SecurityOptionsView>(&view, options, completion)); // 689
-
-	//RETURN_IF_FAILED(view->Advise(this)); // 691
-
-	//RETURN_IF_FAILED(SetActiveView(view.Get())); // 693
-
 	CLogonFrame::GetSingleton()->ShowSecurityOptions(options,completion);
 
-
-	//m_currentView.Swap(view.Get());
 	m_currentViewType = LogonView::SecurityOptions;
 	return S_OK;
 }
@@ -790,15 +771,12 @@ HRESULT LogonViewManager::CleanupUIThread(WI::AsyncDeferral<WI::CNoResult> compl
 
 	m_inputSwitchControl.Reset();
 
-	RETURN_IF_FAILED(DestroyCurrentView()); // 841
 	completion.Complete(S_OK);
 	return S_OK;
 }
 
 HRESULT LogonViewManager::ShowCredentialView()
 {
-	RETURN_IF_FAILED(DestroyCurrentView()); // 918
-
 	auto zoomedTile = CLogonFrame::GetSingleton()->m_LogonUserList->GetZoomedTile();
 	if (zoomedTile)
 	{
@@ -951,133 +929,10 @@ HRESULT LogonViewManager::ShowCredentialView()
 	m_currentViewType = LogonView::UserSelection;
 
 	return S_OK;
-
-	ComPtr<IInspectable> selectedUserOrV1;
-	RETURN_IF_FAILED(m_credProvDataModel->get_SelectedUserOrV1Credential(&selectedUserOrV1)); // 864
-	if (selectedUserOrV1.Get())
-	{
-		ComPtr<LCPD::IUser> selectedUser;
-		ComPtr<LCPD::ICredential> selectedCredential;
-		Wrappers::HString userName;
-
-		if (SUCCEEDED(selectedUserOrV1.As(&selectedUser)))
-		{
-			RETURN_IF_FAILED(selectedUser->get_DisplayName(userName.ReleaseAndGetAddressOf())); // 873
-
-			RETURN_IF_FAILED(selectedUser.As(&m_selectedGroup)); // 875
-
-			ComPtr<WFC::IObservableVector<LCPD::Credential*>> credentials;
-			RETURN_IF_FAILED(m_selectedGroup->get_Credentials(&credentials)); // 878
-			RETURN_IF_FAILED(credentials->add_VectorChanged(this, &m_credentialsChangedToken)); // 879
-
-			RETURN_IF_FAILED(m_selectedGroup->add_SelectedCredentialChanged(this, &m_selectedCredentialChangedToken)); // 881
-
-			RETURN_IF_FAILED(m_selectedGroup->get_SelectedCredential(&selectedCredential)); // 883
-		}
-		else
-		{
-			m_selectedGroup.Reset();
-
-			RETURN_IF_FAILED(selectedUserOrV1.As(&selectedCredential)); // 889
-			RETURN_IF_FAILED(selectedCredential->get_LogoLabel(userName.ReleaseAndGetAddressOf())); // 890
-
-			if (!userName.Get())
-			{
-				CoTaskMemNativeString defaultV1Label;
-				RETURN_IF_FAILED(defaultV1Label.Initialize(HINST_THISCOMPONENT, IDS_USER)); // 895
-				RETURN_IF_FAILED(defaultV1Label.Get() ? userName.Set(defaultV1Label.Get()) : E_POINTER); // 896
-			}
-		}
-
-		if (selectedCredential.Get())
-		{
-			RETURN_IF_FAILED(ShowSelectedCredentialView(selectedCredential.Get(), userName.Get())); // 902
-		}
-		else
-		{
-			RETURN_IF_FAILED(ShowCredProvSelection(m_selectedGroup.Get(), userName.Get())); // 906
-		}
-	}
-	else
-	{
-		RETURN_IF_FAILED(ShowUserSelection()); // 911
-	}
-
-	return S_OK;
-}
-
-HRESULT LogonViewManager::ShowUserSelection()
-{
-	RETURN_IF_FAILED(DestroyCurrentView()); // 918
-
-	//ComPtr<UserSelectionView> userSelectionView;
-	//RETURN_IF_FAILED(MakeAndInitialize<UserSelectionView>(&userSelectionView, m_credProvDataModel.Get())); // 921
-//
-	//RETURN_IF_FAILED(userSelectionView->UserSelectionView::Advise(this)); // 923
-//
-	//RETURN_IF_FAILED(SetActiveView(userSelectionView.Get())); // 925
-
-
-	m_currentViewType = LogonView::UserSelection;
-	return S_OK;
-}
-
-HRESULT LogonViewManager::ShowCredProvSelection(LCPD::ICredentialGroup* group, HSTRING userName)
-{
-	RETURN_IF_FAILED(DestroyCurrentView()); // 935
-
-	//ComPtr<CredProvSelectionView> credProvSelectionView;
-	//RETURN_IF_FAILED(MakeAndInitialize<CredProvSelectionView>(&credProvSelectionView, group, userName)); // 938
-
-	//RETURN_IF_FAILED(credProvSelectionView->CredProvSelectionView::Advise(this)); // 940
-
-	//RETURN_IF_FAILED(SetActiveView(credProvSelectionView.Get())); // 942
-
-	//m_currentView.Swap(credProvSelectionView.Get());
-
-	m_currentViewType = LogonView::CredProvSelection;
-	return S_OK;
-}
-
-HRESULT LogonViewManager::ShowSelectedCredentialView(LCPD::ICredential* credential, HSTRING userName)
-{
-	RETURN_IF_FAILED(DestroyCurrentView()); // 952
-
-	//ComPtr<SelectedCredentialView> selectedCredentialView;
-	//RETURN_IF_FAILED(MakeAndInitialize<SelectedCredentialView>(&selectedCredentialView, m_currentReason, credential, userName)); // 955
-
-	//RETURN_IF_FAILED(selectedCredentialView->SelectedCredentialView::Advise(this)); // 957
-
-	//RETURN_IF_FAILED(SetActiveView(selectedCredentialView.Get())); // 959
-
-
-	m_currentViewType = LogonView::SelectedCredential;
-	return S_OK;
 }
 
 HRESULT LogonViewManager::ShowStatusView(HSTRING status)
 {
-	RETURN_IF_FAILED(DestroyCurrentView()); // 969
-
-	/*ComPtr<LCPD::IUser> selectedUser;
-	if (m_credProvDataModel.Get())
-	{
-		ComPtr<IInspectable> selectedUserOrV1;
-		RETURN_IF_FAILED(m_credProvDataModel->get_SelectedUserOrV1Credential(&selectedUserOrV1)); // 975
-
-		if (selectedUserOrV1.Get())
-		{
-			selectedUserOrV1.As(&selectedUser);
-		}
-	}*/
-
-	//ComPtr<StatusView> statusView;
-	//RETURN_IF_FAILED(MakeAndInitialize<StatusView>(&statusView, status, selectedUser.Get())); // 983
-
-	//RETURN_IF_FAILED(statusView->StatusView::Advise(this)); // 985
-
-	//RETURN_IF_FAILED(SetActiveView(statusView.Get())); // 987
-
 	CLogonFrame::GetSingleton()->ShowStatusMessage(WindowsGetStringRawBuffer(status, nullptr));
 
 	m_currentViewType = LogonView::Status;
@@ -1088,64 +943,17 @@ HRESULT LogonViewManager::ShowMessageView(
 	HSTRING caption, HSTRING message, UINT messageBoxFlags,
 	WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IMessageDisplayResult>> completion)
 {
-	RETURN_IF_FAILED(DestroyCurrentView()); // 997
-	//ComPtr<LCPD::IUser> selectedUser;
-	//if (m_credProvDataModel.Get())
-	//{
-	//	ComPtr<IInspectable> selectedUserOrV1;
-	//	RETURN_IF_FAILED(m_credProvDataModel->get_SelectedUserOrV1Credential(&selectedUserOrV1)); // 1002
-	//	if (selectedUserOrV1.Get())
-	//	{
-	//		selectedUserOrV1.As(&selectedUser);
-	//	}
-	//}
 	CLogonFrame::GetSingleton()->DisplayLogonDialog(WindowsGetStringRawBuffer(caption,nullptr),WindowsGetStringRawBuffer(message,nullptr),messageBoxFlags,completion);
-	//ComPtr<MessageView> messageView;
-	//RETURN_IF_FAILED(MakeAndInitialize<MessageView>(&messageView, caption, message, messageBoxFlags, completion, selectedUser.Get())); // 1010
-	//
-	//RETURN_IF_FAILED(messageView->MessageView::Advise(this)); // 1012
-	//
-	//RETURN_IF_FAILED(SetActiveView(messageView.Get())); // 1014
-	//
-	//m_currentView.Swap(messageView);
+
 	m_currentViewType = LogonView::Message;
 	return S_OK;
 }
 
-// ComPtr<LCPD::IUser> selectedUser;
-// ComPtr<IInspectable> selectedUserOrV1;
 HRESULT LogonViewManager::ShowSerializationFailedView(HSTRING caption, HSTRING message)
 {
-	RETURN_IF_FAILED(DestroyCurrentView()); // 1024
-
-	//ComPtr<LCPD::IUser> selectedUser;
-	//if (m_credProvDataModel.Get())
-	//{
-	//	ComPtr<IInspectable> selectedUserOrV1;
-	//	RETURN_IF_FAILED(m_credProvDataModel->get_SelectedUserOrV1Credential(&selectedUserOrV1)); // 1029
-	//	if (selectedUserOrV1.Get())
-	//	{
-	//		selectedUserOrV1.As(&selectedUser);
-	//	}
-	//}
-
-	//ComPtr<SerializationFailedView> serializationFailedView;
-	//RETURN_IF_FAILED(MakeAndInitialize<SerializationFailedView>(&serializationFailedView, caption, message, selectedUser.Get())); // 1037
-
 	CLogonFrame::GetSingleton()->DisplayLogonDialog(WindowsGetStringRawBuffer(caption,nullptr),WindowsGetStringRawBuffer(message,nullptr),16 | (int)MessageOptionFlag::Ok);
 
-	//RETURN_IF_FAILED(serializationFailedView->Advise(this)); // 1039
-	//
-	//RETURN_IF_FAILED(SetActiveView(serializationFailedView.Get())); // 1041
-	//
-	//m_currentView.Swap(serializationFailedView.Get());
 	m_currentViewType = LogonView::SerializationFailed;
-	return S_OK;
-}
-
-HRESULT LogonViewManager::DestroyCurrentView()
-{
-
 	return S_OK;
 }
 

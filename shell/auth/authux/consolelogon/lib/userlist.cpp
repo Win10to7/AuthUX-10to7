@@ -343,7 +343,7 @@ HRESULT UserList::ZoomTile(CDUIUserTileElement* userTile)
 		//userTile->SetKeyFocus();
 		EditFieldToFocus->SetKeyFocus();
 		//EditFieldToFocus->SetActive(7);
-		//SendMessageW(EditFieldToFocus->GetHWND(), 0xB1u, 0, -1);
+		SendMessageW(EditFieldToFocus->GetHWND(), 0xB1u, 0, -1);
 	}
 
     //CLogonFrame::GetSingleton()->SetOptions(257 & ~0x20u);

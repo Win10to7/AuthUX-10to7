@@ -98,15 +98,11 @@ private:
 	HRESULT ClearCredentialStateUIThread();
 	HRESULT CleanupUIThread(WI::AsyncDeferral<WI::CNoResult> completion);
 	HRESULT ShowCredentialView();
-	HRESULT ShowUserSelection();
-	HRESULT ShowCredProvSelection(LCPD::ICredentialGroup* group, HSTRING userName);
-	HRESULT ShowSelectedCredentialView(LCPD::ICredential* credential, HSTRING userName);
 	HRESULT ShowStatusView(HSTRING status);
 	HRESULT ShowMessageView(
 		HSTRING caption, HSTRING message, UINT messageBoxFlags,
 		WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IMessageDisplayResult>> completion);
 	HRESULT ShowSerializationFailedView(HSTRING caption, HSTRING message);
-	HRESULT DestroyCurrentView();
 	HRESULT StartCredProvsIfNecessary(LC::LogonUIRequestReason reason, BOOLEAN allowDirectUserSwitching, HSTRING unk);
 	HRESULT OnCredProvInitComplete();
 

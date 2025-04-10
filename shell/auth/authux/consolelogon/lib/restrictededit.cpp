@@ -126,7 +126,7 @@ void CDUIRestrictedEdit::SetKeyFocus()
 {
 	DirectUI::Edit::SetKeyFocus();
 	//TODO:
-	//if (false ) // CKeyboardNavigationTracker::s_bInKeyboardNavigation
+	if (false ) // CKeyboardNavigationTracker::s_bInKeyboardNavigation
 		SendMessageW(m_hwnd, EM_SETSEL, 0, -1);
 }
 
@@ -136,7 +136,7 @@ HWND CDUIRestrictedEdit::CreateHWND(HWND parentHwnd)
 	if (newHwnd)
 	{
 		if (m_hintText)
-			Edit_SetCueBannerText(newHwnd,m_hintText);
+			Edit_SetCueBannerTextFocused(newHwnd,m_hintText, true);
 
 		Edit_LimitText(newHwnd, m_maxTextLength);
 
