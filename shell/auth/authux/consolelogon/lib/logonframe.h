@@ -78,6 +78,7 @@ private:
 	HRESULT _InitializeUserLists();
 	bool _IsInstallUpdatesAndShutdownAllowed();
 	bool _ShowBackgroundBitmap();
+	bool _IsSwitchUserAllowed();
 	void _SetSoftKeyboardAllowed(bool allowed);
 	void _SetBrandingGraphic();
 	void _SelectMode(DirectUI::Element* elementToHost, bool isVisible);

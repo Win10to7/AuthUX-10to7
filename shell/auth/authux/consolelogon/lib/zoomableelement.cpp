@@ -104,8 +104,40 @@ HRESULT CDUIZoomableElement::Invoke(LCPD::ICredentialField* sender, LCPD::Creden
 	{
 		CFieldWrapper* fieldData;
 		m_owningElement->fieldsArray.GetAt(m_index,fieldData);
-		m_owningElement->_SetFieldInitialVisibility(m_owningElement->m_containersArray[m_index],fieldData);
-		LOG_HR_MSG(E_FAIL,"CDUIZoomableElement::Invoke _SetFieldInitialVisibility\n");
+
+		bool bShouldUpdateString = false;
+
+		if (args == LCPD::CredentialFieldChangeKind_State)
+		{
+			bool bOldVisibility = GetVisible();
+			m_owningElement->SetFieldVisibility(m_owningElement->m_containersArray[m_index],fieldData);
+			if (bOldVisibility != GetVisible())
+				bShouldUpdateString = true;
+		}
+		else if (args == LCPD::CredentialFieldChangeKind_SetString)
+		{
+			m_owningElement->SetFieldVisibility(m_owningElement->m_containersArray[m_index],fieldData);
+			bShouldUpdateString = true;
+		}
+		if (bShouldUpdateString)
+		{
+			Microsoft::WRL::Wrappers::HString label;
+			Microsoft::WRL::ComPtr<LCPD::ICredentialTextField> stringField;
+			if (SUCCEEDED(m_FieldInfo->QueryInterface(IID_PPV_ARGS(&stringField))))
+			{
+				RETURN_IF_FAILED(stringField->get_Content(label.ReleaseAndGetAddressOf()));
+			}
+			else
+				RETURN_IF_FAILED(m_FieldInfo->get_Label(label.ReleaseAndGetAddressOf()));
+
+			if (label.Length() > 0)
+			{
+				RETURN_IF_FAILED(SetContentString(label.GetRawBuffer(nullptr)));
+				RETURN_IF_FAILED(SetAccName(label.GetRawBuffer(nullptr)));
+			}
+		}
+		//m_owningElement->SetFieldInitialVisibility(m_owningElement->m_containersArray[m_index],fieldData);
+		//LOG_HR_MSG(E_FAIL,"CDUIZoomableElement::Invoke SetFieldInitialVisibility\n");
 	}
 
 	return S_OK;

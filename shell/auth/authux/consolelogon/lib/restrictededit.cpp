@@ -2,10 +2,20 @@
 #include "restrictededit.h"
 #include <windowsx.h>
 
+#include "usertileelement.h"
+
 static BYTE _uidCDUIRestrictedEditCapsLockWarning = 0;
 UID CDUIRestrictedEdit::s_CapsLockWarning = UID(&_uidCDUIRestrictedEditCapsLockWarning);
 
 DirectUI::IClassInfo* CDUIRestrictedEdit::Class = nullptr;
+
+CDUIRestrictedEdit::CDUIRestrictedEdit()
+{
+}
+
+CDUIRestrictedEdit::~CDUIRestrictedEdit()
+{
+}
 
 DirectUI::IClassInfo* CDUIRestrictedEdit::GetClassInfoW()
 {
@@ -116,7 +126,7 @@ void CDUIRestrictedEdit::SetKeyFocus()
 {
 	DirectUI::Edit::SetKeyFocus();
 	//TODO:
-	if (false ) // CKeyboardNavigationTracker::s_bInKeyboardNavigation
+	//if (false ) // CKeyboardNavigationTracker::s_bInKeyboardNavigation
 		SendMessageW(m_hwnd, EM_SETSEL, 0, -1);
 }
 
@@ -155,12 +165,85 @@ void CDUIRestrictedEdit::OnInput(DirectUI::InputEvent* inputEvent)
 	if (inputEvent->nDevice == DirectUI::GINPUT_KEYBOARD)
 	{
 		auto keyboardEvent = reinterpret_cast<DirectUI::KeyboardEvent*>(inputEvent);
+
+		if (keyboardEvent->nStage == DirectUI::GMF_BUBBLED && inputEvent->nCode == DirectUI::GMOUSE_UP && keyboardEvent->ch != VK_RETURN// VK_RETURN
+		|| inputEvent->nCode == DirectUI::GMOUSE_MOVE && keyboardEvent->ch == VK_DELETE// VK_DELETE
+		|| inputEvent->nCode == DirectUI::GMOUSE_UP && keyboardEvent->ch != VK_TAB )
+		{
+			WCHAR inputText[256];
+			inputText[0] = '\0';
+
+			DirectUI::Value* classVal;
+			auto editclass = GetClass(&classVal);
+			if (editclass && wcscmp(editclass,L"PasswordEdit") == 0)
+			{
+				GetEncodedContentString(inputText,256);
+			}
+			else
+			{
+				DirectUI::Value* contVal;
+				auto ContentString = GetContentString(&contVal);
+				wcscpy_s(inputText,ContentString);
+
+				contVal->Release();
+			}
+			classVal->Release();
+
+			if (m_fieldData.Get())
+			{
+				Microsoft::WRL::ComPtr<LCPD::ICredentialEditField> editField;
+				if (SUCCEEDED(m_fieldData->QueryInterface(IID_PPV_ARGS(&editField))))
+				{
+					Microsoft::WRL::Wrappers::HString content;
+					content.Set(inputText);
+
+					LOG_IF_FAILED(editField->put_Content(content));
+
+					LOG_HR_MSG(E_FAIL, "Put content %s",inputText);
+				}
+				else
+				{
+					LOG_HR(E_FAIL, "Failed to get editField");
+				}
+			}
+		}
+
 		if (keyboardEvent->nStage)
 			return;
 
 		if (keyboardEvent->nCode == DirectUI::GMOUSE_UP)
 		{
 			keyboardEvent->fHandled = keyboardEvent->ch == VK_RETURN;
+			if (keyboardEvent->ch == VK_RETURN && m_owningElement->m_dataSourceCredential.Get())
+			{
+				if (m_owningElement->m_containersArray[m_index]->m_SubmitButton)
+					LOG_IF_FAILED(m_owningElement->m_dataSourceCredential->Submit());
+				else
+				{
+					//find the next edit field (previous in array)
+
+					if ((m_index - 1) < 0 || (m_index - 1) >= m_owningElement->fieldsArray.GetSize())
+						return;
+
+					CFieldWrapper* nextField;
+					if (SUCCEEDED(m_owningElement->fieldsArray.GetAt(m_index - 1,nextField)))
+					{
+						LCPD::CredentialFieldKind kind = LCPD::CredentialFieldKind_StaticText;
+						if (nextField->m_dataSourceCredentialField)
+						{
+							LOG_IF_FAILED(nextField->m_dataSourceCredentialField->get_Kind(&kind));
+						}
+
+						//if (kind != LCPD::CredentialFieldKind_EditText)
+						//	return;
+
+						auto nextEdit = m_owningElement->m_elementsArray[m_index - 1];
+						if (nextEdit)
+							nextEdit->SetKeyFocus();
+					}
+				}
+			}
+
 			return;
 		}
 
@@ -187,6 +270,47 @@ void CDUIRestrictedEdit::OnInput(DirectUI::InputEvent* inputEvent)
 	}
 }
 
+HRESULT CDUIRestrictedEdit::Advise(LCPD::ICredentialField* dataSource)
+{
+	m_fieldData = dataSource;
+
+	RETURN_IF_FAILED(m_fieldData->add_FieldChanged(this, &m_token)); // 19
+	return S_OK;
+}
+
+HRESULT CDUIRestrictedEdit::UnAdvise()
+{
+	if (m_fieldData)
+	{
+		RETURN_IF_FAILED(m_fieldData->remove_FieldChanged(m_token)); // 25
+
+		m_fieldData.Reset();
+	}
+
+	return S_OK;
+}
+
+void CDUIRestrictedEdit::OnDestroy()
+{
+	Edit::OnDestroy();
+	UnAdvise();
+}
+
+HRESULT CDUIRestrictedEdit::Invoke(LCPD::ICredentialField* sender, LCPD::CredentialFieldChangeKind args)
+{
+	LOG_HR_MSG(E_FAIL,"CDUIRestrictedEdit::Invoke\n");
+	if (m_owningElement && m_owningElement->m_containersArray[m_index] && args == LCPD::CredentialFieldChangeKind_State)
+	{
+		CFieldWrapper* fieldData;
+		m_owningElement->fieldsArray.GetAt(m_index,fieldData);
+		m_owningElement->SetFieldVisibility(m_owningElement->m_containersArray[m_index],fieldData);
+		//m_owningElement->SetFieldInitialVisibility(m_owningElement->m_containersArray[m_index],fieldData);
+		LOG_HR_MSG(E_FAIL,"CDUIRestrictedEdit::Invoke SetFieldVisibility\n");
+	}
+
+	return S_OK;
+}
+
 void CDUIRestrictedEdit::_CheckCapsLock()
 {
 	bool bIsPasswordEdit = false;
@@ -196,12 +320,25 @@ void CDUIRestrictedEdit::_CheckCapsLock()
 	if (Class && wcscmp(Class, L"PasswordEdit") == 0)
 		bIsPasswordEdit = true;
 
-	//TODO!!!!!!
-	//if (bIsPasswordEdit)
-	//{
-	//    DirectUI::Event event;
-	//    event.uidType = CDUIRestrictedEdit::CapsLockWarning;
-	//}
+	CapsLockToggleEvent event;
+	event.uidType = CDUIRestrictedEdit::s_CapsLockWarning;
+	event.peTarget = this;
+	event.nStage = DirectUI::GMF_EVENT;
+	event.bFieldFocused = GetKeyFocused() && bIsPasswordEdit;
+
+	FireEvent(&event,true,false);
 
 	classValue->Release();
+}
+
+bool CDUIRestrictedEdit::_IsPasswordField()
+{
+	bool bIsPasswordEdit = false;
+	DirectUI::Value* classValue;
+	const wchar_t* Class = GetClass(&classValue);
+	if (Class && wcscmp(Class, L"PasswordEdit") == 0)
+		bIsPasswordEdit = true;
+	classValue->Release();
+
+	return bIsPasswordEdit;
 }

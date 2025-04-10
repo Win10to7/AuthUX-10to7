@@ -2,11 +2,27 @@
 #include "labeledcheckbox.h"
 
 #include "duiutil.h"
+#include "usertileelement.h"
 
 static BYTE _uidCDUILabeledCheckboxToggled = 0;
 UID CDUILabeledCheckbox::s_Toggled = UID(&_uidCDUILabeledCheckboxToggled);
 
 DirectUI::IClassInfo* CDUILabeledCheckbox::Class = nullptr;
+
+CDUILabeledCheckbox::CDUILabeledCheckbox() : m_checkbox(nullptr)
+	, m_label(nullptr)
+	, m_checkedBackgroundFill(nullptr)
+	, m_uncheckedBackgroundFill(nullptr)
+	, m_isChecked(FALSE)
+	, m_index(-1)
+	, m_owningElement(nullptr)
+	, m_token(0)
+{
+}
+
+CDUILabeledCheckbox::~CDUILabeledCheckbox()
+{
+}
 
 DirectUI::IClassInfo* CDUILabeledCheckbox::GetClassInfoW()
 {
@@ -73,7 +89,7 @@ HRESULT CDUILabeledCheckbox::Configure(bool isChecked, const wchar_t* labelText)
 	return S_OK;
 }
 
-void CDUILabeledCheckbox::SetChecked(bool newIsChecked)
+void CDUILabeledCheckbox::SetChecked(bool newIsChecked, bool bInformCred)
 {
 	m_isChecked = newIsChecked;
 
@@ -102,12 +118,27 @@ void CDUILabeledCheckbox::SetChecked(bool newIsChecked)
 		m_checkbox->SetAccState(unCheckedAccstate);
 
 	DirectUI::SetDefAction(m_checkbox, (unsigned int)(LOBYTE(m_isChecked) != 0) - 791);
+
+	if (m_FieldInfo.Get() && bInformCred)
+	{
+		Microsoft::WRL::ComPtr<LCPD::ICheckBoxField> checkboxField;
+		if (SUCCEEDED(m_FieldInfo->QueryInterface(IID_PPV_ARGS(&checkboxField))))
+		{
+			LOG_IF_FAILED(checkboxField->put_Checked(m_isChecked));
+		}
+		else
+		{
+			LOG_HR_MSG(E_FAIL,"Failed to get checkboxfield");
+		}
+	}
 }
 
 void CDUILabeledCheckbox::OnInput(DirectUI::InputEvent* inputEvent)
 {
 	if (inputEvent->nStage > DirectUI::GMF_ROUTED)
 		return DirectUI::Button::OnInput(inputEvent);
+
+	//bool bShouldUpdateCredField = false;
 
 	if (inputEvent->nDevice == DirectUI::GINPUT_KEYBOARD)
 	{
@@ -116,7 +147,7 @@ void CDUILabeledCheckbox::OnInput(DirectUI::InputEvent* inputEvent)
 		{
 			if (inputEvent->nCode == DirectUI::GMOUSE_DOWN)
 			{
-				SetChecked(m_isChecked == 0);
+				SetChecked(m_isChecked == 0, true);
 
 				DirectUI::Event event;
 				event.fHandled = m_isChecked;
@@ -134,7 +165,7 @@ void CDUILabeledCheckbox::OnInput(DirectUI::InputEvent* inputEvent)
 		{
 			if (inputEvent->nCode == DirectUI::GMOUSE_UP)
 			{
-				SetChecked(m_isChecked == 0);
+				SetChecked(m_isChecked == 0, true);
 
 				DirectUI::Event event;
 				event.fHandled = m_isChecked;
@@ -153,4 +184,77 @@ void CDUILabeledCheckbox::SetKeyFocus()
 {
 	if (GetVisible() && GetEnabled()) // guess
 		m_checkbox->SetKeyFocus();
+}
+
+HRESULT CDUILabeledCheckbox::Advise(LCPD::ICredentialField* dataSource)
+{
+	m_FieldInfo = dataSource;
+
+	RETURN_IF_FAILED(m_FieldInfo->add_FieldChanged(this, &m_token)); // 19
+	return S_OK;
+}
+
+HRESULT CDUILabeledCheckbox::UnAdvise()
+{
+	if (m_FieldInfo)
+	{
+		RETURN_IF_FAILED(m_FieldInfo->remove_FieldChanged(m_token)); // 25
+
+		m_FieldInfo.Reset();
+	}
+
+	return S_OK;
+}
+
+void CDUILabeledCheckbox::OnDestroy()
+{
+	Button::OnDestroy();
+	UnAdvise();
+}
+
+HRESULT CDUILabeledCheckbox::Invoke(LCPD::ICredentialField* sender, LCPD::CredentialFieldChangeKind args)
+{
+	LOG_HR_MSG(E_FAIL,"CDUILabeledCheckbox::Invoke\n");
+	if (m_owningElement && m_owningElement->m_containersArray[m_index])
+	{
+		CFieldWrapper* fieldData;
+		m_owningElement->fieldsArray.GetAt(m_index,fieldData);
+
+		bool bShouldUpdateString = false;
+
+		if (args == LCPD::CredentialFieldChangeKind_State)
+		{
+			bool bOldVisibility = GetVisible();
+			m_owningElement->SetFieldVisibility(m_owningElement->m_containersArray[m_index],fieldData);
+			if (bOldVisibility != GetVisible())
+				bShouldUpdateString = true;
+		}
+		else if (args == LCPD::CredentialFieldChangeKind_SetString || args == LCPD::CredentialFieldChangeKind_SetCheckbox)
+		{
+			m_owningElement->SetFieldVisibility(m_owningElement->m_containersArray[m_index],fieldData);
+			bShouldUpdateString = true;
+		}
+		if (bShouldUpdateString)
+		{
+			Microsoft::WRL::Wrappers::HString label;
+			Microsoft::WRL::ComPtr<LCPD::ICheckBoxField> checkBoxField;
+			if (SUCCEEDED(m_FieldInfo->QueryInterface(IID_PPV_ARGS(&checkBoxField))))
+			{
+				bool bIsChecked = false;
+				RETURN_IF_FAILED(checkBoxField->get_Checked(&bIsChecked));
+				SetChecked(bIsChecked);
+			}
+
+			RETURN_IF_FAILED(m_FieldInfo->get_Label(label.ReleaseAndGetAddressOf()));
+
+			if (label.Length() > 0)
+			{
+				RETURN_IF_FAILED(SetContentAndAcc(m_label,label.GetRawBuffer(nullptr)));
+			}
+		}
+		//m_owningElement->SetFieldInitialVisibility(m_owningElement->m_containersArray[m_index],fieldData);
+		//LOG_HR_MSG(E_FAIL,"CDUILabeledCheckbox::Invoke SetFieldInitialVisibility\n");
+	}
+
+	return S_OK;
 }

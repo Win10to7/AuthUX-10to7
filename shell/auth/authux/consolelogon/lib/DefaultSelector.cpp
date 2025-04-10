@@ -2,16 +2,12 @@
 
 #include "DefaultSelector.h"
 
-#include <initguid.h>
 #include <windows.foundation.collections.h>
 
+#include "logonguids.h"
 #include "windowscollections.h"
 
 using namespace Microsoft::WRL;
-
-DEFINE_GUID(CLSID_PasswordCredentialProvider,        0x60B78E88, 0xEAD8, 0x445C, 0x9C, 0xFD, 0x0B, 0x87, 0xF7, 0x4E, 0xA6, 0xCD);
-DEFINE_GUID(CLSID_CWLIDCredentialProvider,           0xF8A0B131, 0x5F68, 0x486C, 0x80, 0x40, 0x7E, 0x8F, 0xC3, 0xC8, 0x5B, 0xB6);
-DEFINE_GUID(CLSID_PicturePasswordCredentialProvider, 0x2135F72A, 0x90B5, 0x4ED3, 0xA7, 0xF1, 0x8B, 0xB7, 0x05, 0xAC, 0x27, 0x6A);
 
 HRESULT DefaultSelector::RuntimeClassInitialize(LC::IUserSettingManager* userSettingManager, LC::LogonUIRequestReason reason)
 {

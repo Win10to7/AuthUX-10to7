@@ -8,6 +8,8 @@
 #include "usertileelement.h"
 #include "backgroundfetcher.h"
 #include "duiutil.h"
+#include "logonguids.h"
+#include "slpublic.h"
 
 using namespace Microsoft::WRL;
 
@@ -121,7 +123,7 @@ void CLogonFrame::OnEvent(DirectUI::Event* pEvent)
 			}
 			else
 			{
-				LOG_HR(E_FAIL,"TILE HAD NO CREDENTIAL DATASOURCE");
+				LOG_HR_MSG(E_FAIL,"TILE HAD NO CREDENTIAL DATASOURCE");
 			}
 		}
 
@@ -199,6 +201,27 @@ void CLogonFrame::OnEvent(DirectUI::Event* pEvent)
 bool CLogonFrame::_ShowBackgroundBitmap()
 {
 	return GetSystemMetrics(SM_REMOTESESSION) != 0; //7 authui creates a com object of CSystemSettings and calls CSystemSettings::IsLogonWallpaperShown which does this.
+}
+
+BOOL SHWindowsPolicy(REFGUID rpolid)
+{
+	static BOOL(WINAPI* fSHWindowsPolicy)(REFGUID) = decltype(fSHWindowsPolicy)(GetProcAddress(LoadLibrary(L"SHLWAPI.dll"), MAKEINTRESOURCEA(618)));
+	return fSHWindowsPolicy(rpolid);
+}
+
+bool CLogonFrame::_IsSwitchUserAllowed()
+{
+	if ( !GetSystemMetrics(SM_REMOTESESSION) )
+	{
+		DWORD allowMultipleSessions;
+		if (SUCCEEDED(SLGetWindowsInformationDWORD(L"TerminalServices-RemoteConnectionManager-AllowMultipleSessions", &allowMultipleSessions)))
+		{
+			if ( allowMultipleSessions != 0 )
+				return !SHWindowsPolicy(POLID_HideFastUserSwitching);
+		}
+
+	}
+	return false;
 }
 
 void CLogonFrame::SetBackgroundGraphics()
@@ -464,10 +487,16 @@ void CLogonFrame::SetOptions(int optionsFlag)
 	DWORD cookie;
 	StartDefer(&cookie);
 
+	bool bAllowSwitchUser = _IsSwitchUserAllowed();
+
 	OptionFlags opts[] = { {1,m_SwitchUser},{2,m_OtherTiles},{4,m_Ok},{8,m_Yes},{16,m_No},{32,m_Cancel},{64,m_ShutDownFrame},{128,m_ShowPLAP},{256,m_Accessibility},{512,m_DisconnectPLAP}};
 	for (int i = 0; i < 10; ++i)
 	{
 		OptionFlags& opt = opts[i];
+
+		if (opt.Option == m_SwitchUser && bAllowSwitchUser == false)
+			continue;
+
 		bool Enable = (optionsFlag & opt.flag) != 0;
 		opt.Option->SetVisible(Enable);
 		opt.Option->SetEnabled(Enable);

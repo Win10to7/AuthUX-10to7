@@ -7,6 +7,11 @@
 #include "restrictededit.h"
 #include "zoomableelement.h"
 
+
+#include "advisablebutton.h"
+#include "logonguids.h"
+#include "wicutil.h"
+
 DirectUI::IClassInfo* CDUIUserTileElement::Class = nullptr;
 
 CDUIUserTileElement::~CDUIUserTileElement()
@@ -89,10 +94,32 @@ HRESULT CDUIUserTileElement::SetTileZoomed(bool v)
 
 void CDUIUserTileElement::OnEvent(DirectUI::Event* pEvent)
 {
+	if (m_capsLockWarning && pEvent->uidType == CDUIRestrictedEdit::s_CapsLockWarning)
+	{
+		int layoutPos = -3;
+		if ((GetKeyState(VK_CAPITAL) & 1) != 0 && reinterpret_cast<CapsLockToggleEvent*>(pEvent)->bFieldFocused) //fhandled is set to whether it is selected
+			layoutPos = 4;
+
+		LOG_HR_MSG(E_FAIL,"CDUIUserTileElement::OnEvent setting capslock layout pos to %i",layoutPos);
+
+		m_capsLockWarning->SetLayoutPos(m_bTileZoomed ? layoutPos : -3);
+		m_capsLockWarning->SetVisible(m_bTileZoomed);
+	}
+
+	if (pEvent->peTarget == m_submitButton && pEvent->uidType == DirectUI::Button::Click() && pEvent->nStage == DirectUI::GMF_BUBBLED)
+	{
+		if (m_dataSourceCredential.Get())
+			LOG_IF_FAILED(m_dataSourceCredential->Submit());
+		else
+		{
+			LOG_HR_MSG(E_FAIL,"m_dataSourceCredential is null");
+		}
+	}
+
 	Button::OnEvent(pEvent);
 }
 
-HRESULT CDUIUserTileElement::_SetFieldInitialVisibility(DirectUI::Element* field,
+HRESULT CDUIUserTileElement::SetFieldInitialVisibility(DirectUI::Element* field,
 	CFieldWrapper* fieldData)
 {
 	bool isVisible = false;
@@ -143,9 +170,33 @@ HRESULT CDUIUserTileElement::_SetFieldInitialVisibility(DirectUI::Element* field
 
 		isVisible = isVisible && !isHidden && (GetTileZoomed() ? bIsVisibleInSelectedTile : bIsVisibleInDeselectedTile);
 	}*/
-	isVisible = !isHidden && ((bIsVisibleInSelectedTile) != 0);
+	isVisible = !isHidden && ((GetTileZoomed() ? bIsVisibleInSelectedTile : bIsVisibleInDeselectedTile) != 0);
 
 	RETURN_IF_FAILED(field->SetLayoutPos(isVisible ? -1 : -3));
+
+	return field->SetVisible(isVisible);
+}
+
+HRESULT CDUIUserTileElement::SetFieldVisibility(DirectUI::Element* field, CFieldWrapper* fieldData)
+{
+	bool isVisible = false;
+
+	LCPD::CredentialFieldKind kind = LCPD::CredentialFieldKind_StaticText;
+	if (fieldData->m_dataSourceCredentialField.Get() != nullptr)
+		RETURN_IF_FAILED(fieldData->m_dataSourceCredentialField->get_Kind(&kind));
+
+	bool bIsVisibleInDeselectedTile = true;
+	bool bIsVisibleInSelectedTile = true;
+	bool isHidden = false;
+
+	if (fieldData->m_dataSourceCredentialField.Get() != nullptr)
+	{
+		RETURN_IF_FAILED(fieldData->m_dataSourceCredentialField->get_IsVisibleInDeselectedTile(&bIsVisibleInDeselectedTile));
+		RETURN_IF_FAILED(fieldData->m_dataSourceCredentialField->get_IsVisibleInSelectedTile(&bIsVisibleInSelectedTile));
+		RETURN_IF_FAILED(fieldData->m_dataSourceCredentialField->get_IsHidden(&isHidden));
+	}
+
+	isVisible = !isHidden;
 
 	return field->SetVisible(isVisible);
 }
@@ -273,7 +324,26 @@ HRESULT CDUIUserTileElement::_CreateStringField(int index, DirectUI::Element* Pa
 	RETURN_IF_FAILED(CDUIZoomableElement::Create(Parent,nullptr,reinterpret_cast<DirectUI::Element**>(&element)));
 	//RETURN_IF_FAILED(DirectUI::Element::Create(0,Parent,0,&element));
 	auto scopeExit = wil::scope_exit([&]() -> void {element->Destroy(true);});
-	if (!fieldData->m_isSelectorField)
+
+	bool bHasEditFieldBeforeThis = false;
+	for (int i = index; i < fieldsArray.GetSize(); i++)
+	{
+		CFieldWrapper* otherFieldData;
+		RETURN_IF_FAILED(fieldsArray.GetAt(i,otherFieldData));
+
+		LCPD::CredentialFieldKind kind = LCPD::CredentialFieldKind_StaticText;
+		if (otherFieldData->m_dataSourceCredentialField)
+		{
+			RETURN_IF_FAILED(otherFieldData->m_dataSourceCredentialField->get_Kind(&kind));
+		}
+
+		if (kind != LCPD::CredentialFieldKind_EditText)
+			continue;
+
+		bHasEditFieldBeforeThis = true;
+	}
+
+	if (!fieldData->m_isSelectorField && !bHasEditFieldBeforeThis)
 		element->SetPadding(0, MulDiv(-5, GetScreenDPI(), 96), 0, MulDiv(5, GetScreenDPI(), 96));
 
 	//element->SetMargin(1, 0, 1, 0);
@@ -292,6 +362,9 @@ HRESULT CDUIUserTileElement::_CreateStringField(int index, DirectUI::Element* Pa
 
 		label.Free();
 		RETURN_IF_FAILED(label.Initialize(content.GetRawBuffer(nullptr)));
+
+		element->m_index = index;
+		element->m_owningElement = this;
 
 		RETURN_IF_FAILED(element->Advise(fieldData->m_dataSourceCredentialField.Get()));
 	}
@@ -329,7 +402,7 @@ HRESULT CDUIUserTileElement::_CreateStringField(int index, DirectUI::Element* Pa
 
 	RETURN_IF_FAILED(hr);
 
-	_SetFieldInitialVisibility(*OutContainer,fieldData);
+	SetFieldInitialVisibility(*OutContainer,fieldData);
 
 	*outElement = element;
 
@@ -386,11 +459,16 @@ HRESULT CDUIUserTileElement::_CreateEditField(int index, DirectUI::Element* Pare
 	else
 		RETURN_IF_FAILED(restrictedEdit->SetContentString(content.GetRawBuffer(nullptr)));
 
+	restrictedEdit->m_index = index;
+	restrictedEdit->m_owningElement = this;
+
+	RETURN_IF_FAILED(restrictedEdit->Advise(fieldData->m_dataSourceCredentialField.Get()));
+
 	HRESULT hr = *OutContainer ? (*OutContainer)->AddField(restrictedEdit) : _AddField(restrictedEdit, index, this, OutContainer);
 	RETURN_IF_FAILED(hr);
 
 	*outElement = restrictedEdit;
-	_SetFieldInitialVisibility(*OutContainer, fieldData);
+	SetFieldInitialVisibility(*OutContainer, fieldData);
 
 	scopeExit.release();
 	return S_OK;
@@ -399,15 +477,21 @@ HRESULT CDUIUserTileElement::_CreateEditField(int index, DirectUI::Element* Pare
 HRESULT CDUIUserTileElement::_CreateCommandLinkField(int index, DirectUI::Element* Parent,
 	DirectUI::Element** outElement, CDUIFieldContainer** OutContainer)
 {
-	DirectUI::Element* element;
-	RETURN_IF_FAILED(DirectUI::Button::Create(3,Parent,0,&element));
+	CAdvisableButton* element;
+	RETURN_IF_FAILED(CAdvisableButton::Create(Parent,nullptr,reinterpret_cast<DirectUI::Element**>(&element)));
 	auto scopeExit = wil::scope_exit([&]() -> void {element->Destroy(true);});
 
 	CFieldWrapper* fieldData;
 	RETURN_IF_FAILED(fieldsArray.GetAt(index,fieldData));
 
 	Microsoft::WRL::Wrappers::HString label;
-	RETURN_IF_FAILED(fieldData->m_dataSourceCredentialField->get_Label(label.ReleaseAndGetAddressOf()));
+	Microsoft::WRL::ComPtr<LCPD::ICommandLinkField> commandLinkField;
+	if (SUCCEEDED(fieldData->m_dataSourceCredentialField->QueryInterface(IID_PPV_ARGS(&commandLinkField))))
+	{
+		RETURN_IF_FAILED(commandLinkField->get_Content(label.ReleaseAndGetAddressOf()));
+	}
+	else
+		RETURN_IF_FAILED(fieldData->m_dataSourceCredentialField->get_Label(label.ReleaseAndGetAddressOf()));
 
 	if (label.Length() > 0)
 		RETURN_IF_FAILED(element->SetContentString(label.GetRawBuffer(nullptr)));
@@ -431,23 +515,81 @@ HRESULT CDUIUserTileElement::_CreateCommandLinkField(int index, DirectUI::Elemen
 
 	RETURN_IF_FAILED(element->SetActive(3));
 
+	element->m_index = index;
+	element->m_owningElement = this;
+
+	RETURN_IF_FAILED(element->Advise(fieldData->m_dataSourceCredentialField.Get()));
+
 	HRESULT hr = *OutContainer ? (*OutContainer)->AddField(element) : _AddField(element, index, this, OutContainer);
 	RETURN_IF_FAILED(hr);
 
 	*outElement = element;
-	_SetFieldInitialVisibility(*OutContainer, fieldData);
+	SetFieldInitialVisibility(*OutContainer, fieldData);
 
 	scopeExit.release();
 
 	return S_OK;
 }
 
-HRESULT CDUIUserTileElement::_CreateTileImageField(const wchar_t* pszLabel, HBITMAP bitmap,
+HRESULT GetBitmapFromRandomStream(Microsoft::WRL::ComPtr<ABI::Windows::Storage::Streams::IRandomAccessStream> stream, HBITMAP* outBitmap)
+{
+	Microsoft::WRL::ComPtr<IStream> spStream;
+	RETURN_IF_FAILED(CreateStreamOverRandomAccessStream(stream.Get(),IID_PPV_ARGS(&spStream)));
+
+	Microsoft::WRL::ComPtr<IWICImagingFactory> spWICFactory;
+	RETURN_IF_FAILED(CoCreateInstance(CLSID_WICImagingFactory2, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&spWICFactory)));
+
+	Microsoft::WRL::ComPtr<IWICBitmapSource> spWICBitmapSource;
+	RETURN_IF_FAILED(LoadImageWithWIC(spWICFactory.Get(),spStream.Get(),LIWW_NONE,&spWICBitmapSource,nullptr,nullptr));
+
+	//HBITMAP hbmpImage;
+	RETURN_IF_FAILED(ConvertWICBitmapToHBITMAP(spWICFactory.Get(), spWICBitmapSource.Get(), outBitmap));
+	return S_OK;
+}
+
+HRESULT GetBitmapFromUserSID(CoTaskMemNativeString& SID, HBITMAP* outBitmap)
+{
+	Microsoft::WRL::ComPtr<IUserTileStore> tileStore;
+	RETURN_IF_FAILED(CoCreateInstance(CLSID_UserTileStore, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&tileStore)));
+
+	RETURN_IF_FAILED(tileStore->GetLargePicture(SID.Get(), outBitmap));
+
+	return S_OK;
+}
+
+HRESULT CDUIUserTileElement::_CreateTileImageField(const wchar_t* pszLabel, Microsoft::WRL::ComPtr<LCPD::ICredentialImageField>& tileImageDataSource,
 	DirectUI::Element** OutElement)
 {
 	DirectUI::Element* Picture = FindDescendent(DirectUI::StrToID(L"Picture"));
 	DirectUI::Element* PictureContainer = FindDescendent(DirectUI::StrToID(L"PictureContainer"));
 	DirectUI::Element* PictureOverlay = FindDescendent(DirectUI::StrToID(L"PictureOverlay"));
+
+	HBITMAP bitmap = LoadBitmapW(HINST_THISCOMPONENT,MAKEINTRESOURCEW(IDB_DEFAULTPFP));
+
+	BOOL bShouldUseFieldForImage = FALSE;
+	if (tileImageDataSource.Get())
+		RETURN_IF_FAILED(tileImageDataSource->get_IsLogoImageHidden(&bShouldUseFieldForImage));
+
+	if (tileImageDataSource.Get() && bShouldUseFieldForImage)
+	{
+		Microsoft::WRL::ComPtr<ABI::Windows::Storage::Streams::IRandomAccessStream> stream;
+		RETURN_IF_FAILED(tileImageDataSource->get_BitmapStream(&stream));
+
+		RETURN_IF_FAILED(GetBitmapFromRandomStream(stream,&bitmap));
+	}
+	else if (m_dataSourceUser.Get())
+	{
+		Microsoft::WRL::Wrappers::HString sid;
+		RETURN_IF_FAILED(m_dataSourceUser->get_Sid(sid.ReleaseAndGetAddressOf()));
+
+		CoTaskMemNativeString nativeSID;
+		nativeSID.Initialize(sid.GetRawBuffer(nullptr));
+		RETURN_IF_FAILED(GetBitmapFromUserSID(nativeSID, &bitmap));
+	}
+	else
+	{
+		bitmap = LoadBitmapW(HINST_THISCOMPONENT,MAKEINTRESOURCEW(IDB_DEFAULTPFP));
+	}
 
 	HRESULT hr = S_OK;
 	if (bitmap)
@@ -457,7 +599,13 @@ HRESULT CDUIUserTileElement::_CreateTileImageField(const wchar_t* pszLabel, HBIT
 
 	RETURN_IF_FAILED(hr);
 
-	LOG_HR_MSG(E_FAIL,"Creating TileImage field %s\n", pszLabel);
+	Microsoft::WRL::Wrappers::HString userName;
+	if (m_dataSourceUser.Get())
+	{
+		RETURN_IF_FAILED(m_dataSourceUser->get_DisplayName(userName.ReleaseAndGetAddressOf()));
+	}
+
+	LOG_HR_MSG(E_FAIL,"Creating TileImage field %s for user %s\n", pszLabel, userName.GetRawBuffer(nullptr));
 
 	if (pszLabel)
 		RETURN_IF_FAILED(PictureContainer->SetAccName(pszLabel));
@@ -488,7 +636,7 @@ HRESULT CDUIUserTileElement::_CreateSubmitButton(int index, DirectUI::Button** o
 
 	*outElement = *outButton;
 	//*OutContainer = containersArray[index];
-	return _SetFieldInitialVisibility(*outElement,fieldData);
+	return SetFieldInitialVisibility(*outElement,fieldData);
 }
 
 HRESULT CDUIUserTileElement::_CreateCheckboxField(int index, DirectUI::Element* Parent, DirectUI::Element** outElement,
@@ -527,13 +675,18 @@ HRESULT CDUIUserTileElement::_CreateCheckboxField(int index, DirectUI::Element* 
 	if (label.Length() > 0)
 		checkbox->SetAccName(label.GetRawBuffer(nullptr));
 
+	checkbox->m_index = index;
+	checkbox->m_owningElement = this;
+
+	RETURN_IF_FAILED(checkbox->Advise(fieldData->m_dataSourceCredentialField.Get()));
+
 	LOG_HR_MSG(E_FAIL,"Creating checkbox field %s\n", label.GetRawBuffer(nullptr));
 
 	HRESULT hr = *OutContainer ? (*OutContainer)->AddField(checkbox) : _AddField(checkbox, index, this, OutContainer);
 	RETURN_IF_FAILED(hr);
 
 	*outElement = checkbox;
-	_SetFieldInitialVisibility(*OutContainer, fieldData);
+	SetFieldInitialVisibility(*OutContainer, fieldData);
 
 	scopeExit.release();
 	scopeExit2.release();
@@ -552,37 +705,18 @@ HRESULT CDUIUserTileElement::_CreateComboBoxField(int index, DirectUI::Element* 
 	RETURN_IF_FAILED(CDUIComboBox::Create(Parent,0,(DirectUI::Element**)&comboBox));
 	auto scopeExit = wil::scope_exit([&]() -> void {comboBox->Destroy(true);});
 
-	Microsoft::WRL::ComPtr<LCPD::IComboBoxField> comboBoxField;
-	RETURN_IF_FAILED(fieldData->m_dataSourceCredentialField->QueryInterface(IID_PPV_ARGS(&comboBoxField)));
+	comboBox->m_index = index;
+	comboBox->m_owningElement = this;
 
-	Microsoft::WRL::ComPtr<WFC::IObservableVector<HSTRING>> observableItems;
-	RETURN_IF_FAILED(comboBoxField->get_Items(&observableItems));
+	RETURN_IF_FAILED(comboBox->Advise(fieldData->m_dataSourceCredentialField.Get()));
 
-	Microsoft::WRL::ComPtr<WFC::IVector<HSTRING>> items;
-	RETURN_IF_FAILED(observableItems.As<WFC::IVector<HSTRING>>(&items));
-
-	UINT numItems;
-	RETURN_IF_FAILED(items->get_Size(&numItems));
-	LOG_HR_MSG(E_FAIL,"Creating checkbox field");
-	for (int i = 0; i < numItems; ++i)
-	{
-		Microsoft::WRL::Wrappers::HString item;
-		RETURN_IF_FAILED(items->GetAt(i,item.ReleaseAndGetAddressOf()));
-		RETURN_HR_IF(E_FAIL, comboBox->AddStringEx(item.GetRawBuffer(nullptr)) == -1);
-
-		LOG_HR_MSG(E_FAIL,"checkbox field item %i %s\n",i, item.GetRawBuffer(nullptr));
-	}
-
-	int initialSelection;
-	RETURN_IF_FAILED(comboBoxField->get_SelectedIndex(&initialSelection));
-
-	RETURN_IF_FAILED(comboBox->SetSelectionEx(initialSelection));
+	RETURN_IF_FAILED(comboBox->Build());
 
 	HRESULT hr = *OutContainer ? (*OutContainer)->AddField(comboBox) : _AddField(comboBox, index, this, OutContainer);
 	RETURN_IF_FAILED(hr);
 
 	*outElement = comboBox;
-	_SetFieldInitialVisibility(*OutContainer, fieldData);
+	SetFieldInitialVisibility(*OutContainer, fieldData);
 
 	scopeExit.release();
 
@@ -649,7 +783,7 @@ HRESULT CDUIUserTileElement::_CreateFieldsForDeselected()
 			RETURN_IF_FAILED(field->m_dataSourceCredentialField->get_Kind(&kind));
 		}
 
-		if (field->m_isSelectorField)
+		if (field->m_isSelectorField || kind == LCPD::CredentialFieldKind_TileImage)
 		{
 			switch (kind)
 			{
@@ -658,9 +792,19 @@ HRESULT CDUIUserTileElement::_CreateFieldsForDeselected()
 
 			case LCPD::CredentialFieldKind_TileImage:
 				{
-					//TODO: take from IUserTileImage
-					HBITMAP bitmap = LoadBitmapW(HINST_THISCOMPONENT,MAKEINTRESOURCEW(IDB_DEFAULTPFP));
-					if (SUCCEEDED(_CreateTileImageField(L"", bitmap, &m_elementsArray[i])))
+					Microsoft::WRL::ComPtr<LCPD::ICredentialImageField> imageField = nullptr;
+					RETURN_IF_FAILED(field->m_dataSourceCredentialField->QueryInterface(IID_PPV_ARGS(&imageField)));
+
+					//LCPD::UserTileImageSize tileSize;
+					//RETURN_IF_FAILED(imageField->get_Size(&tileSize));
+
+					//if (tileSize == LCPD::UserTileImageSize_Large)
+					//{
+					//	LOG_HR_MSG(E_FAIL,"SKIPPING LARGE TILE");
+					//	break;
+					//}
+					LOG_HR_MSG(E_FAIL,"_CreateFieldsForDeselected CreateImageField");
+					if (SUCCEEDED(_CreateTileImageField(L"", imageField, &m_elementsArray[i])))
 						bHasTileImageField = true;
 					break;
 				}
@@ -674,8 +818,29 @@ HRESULT CDUIUserTileElement::_CreateFieldsForDeselected()
 
 	if (!bHasTileImageField)
 	{
-		HBITMAP bitmap = LoadBitmapW(HINST_THISCOMPONENT,MAKEINTRESOURCEW(IDB_DEFAULTPFP));
-		return _CreateTileImageField(L"",bitmap,nullptr);
+		//HBITMAP bitmap = LoadBitmapW(HINST_THISCOMPONENT,MAKEINTRESOURCEW(IDB_DEFAULTPFP));
+		Microsoft::WRL::ComPtr<LCPD::ICredentialImageField> imageField = nullptr;
+		//if (m_dataSourceUser.Get())
+		//{
+		//	RETURN_IF_FAILED(m_dataSourceUser->get_LargeUserTileImage(&imageField));
+		//	if (imageField.Get() == nullptr)
+		//	{
+		//		RETURN_IF_FAILED(m_dataSourceUser->get_SmallUserTileImage(&imageField));
+		//	}
+		//}
+		//if (m_dataSourceCredential.Get() && imageField.Get() == nullptr)
+		//{
+		//	RETURN_IF_FAILED(m_dataSourceCredential->get_LargeUserTileImage(&imageField));
+		//	if (imageField.Get() == nullptr)
+		//	{
+		//		RETURN_IF_FAILED(m_dataSourceCredential->get_SmallUserTileImage(&imageField));
+		//	}
+		//	if (imageField.Get() == nullptr)
+		//	{
+		//		RETURN_IF_FAILED(m_dataSourceCredential->get_ExtraSmallUserTileImage(&imageField));
+		//	}
+		//}
+		return _CreateTileImageField(L"",imageField,nullptr);
 	}
 
 	return S_OK;
@@ -714,13 +879,12 @@ HRESULT CDUIUserTileElement::_CreateFieldsForSelected()
 		LOG_HR_MSG(E_FAIL,"SUBMITBUTTONFIELD IS NULL");
 	}
 
+	bool bHasTileImageField = false;
+
 	for (int i = 0; i < fieldsArray.GetSize(); ++i)
 	{
 		CFieldWrapper* field;
 		RETURN_IF_FAILED(fieldsArray.GetAt(i,field));
-
-		if (field->m_isSelectorField)
-			continue;
 
 		LCPD::CredentialFieldKind kind = LCPD::CredentialFieldKind_StaticText;
 		if (field->m_dataSourceCredentialField)
@@ -733,6 +897,9 @@ HRESULT CDUIUserTileElement::_CreateFieldsForSelected()
 			if (fieldId != -1 && fieldId == adjacentSubmitButtonIndex)
 				submitButtonIndex = i;
 		}
+
+		if (field->m_isSelectorField && kind != LCPD::CredentialFieldKind_TileImage)
+			continue;
 
 		switch (kind)
 		{
@@ -750,8 +917,17 @@ HRESULT CDUIUserTileElement::_CreateFieldsForSelected()
 			RETURN_IF_FAILED(_CreateEditField(i, this, &m_elementsArray[i], &m_containersArray[i]));
 			break;
 		case LCPD::CredentialFieldKind_TileImage:
-			//tileIndex = i;
-			break;
+			{
+				LOG_HR_MSG(E_FAIL,"_CreateFieldsForSelected has an ImageField!");
+
+				Microsoft::WRL::ComPtr<LCPD::ICredentialImageField> imageField = nullptr;
+				RETURN_IF_FAILED(field->m_dataSourceCredentialField->QueryInterface(IID_PPV_ARGS(&imageField)));
+
+				if (SUCCEEDED(_CreateTileImageField(L"", imageField, &m_elementsArray[i])))
+					bHasTileImageField = true;
+				//tileIndex = i;
+				break;
+			}
 		case LCPD::CredentialFieldKind_CheckBox:
 			RETURN_IF_FAILED(_CreateCheckboxField(i, this, &m_elementsArray[i], &m_containersArray[i]));
 			break;
@@ -775,6 +951,33 @@ HRESULT CDUIUserTileElement::_CreateFieldsForSelected()
 	//RETURN_IF_FAILED(_CreateSubmitButton(submitButtonIndex, &submitButton, &elementsArray[submitButtonIndex]));
 
 	m_bHasMadeSelectedFields = true;
+
+	if (!bHasTileImageField)
+	{
+		//HBITMAP bitmap = LoadBitmapW(HINST_THISCOMPONENT,MAKEINTRESOURCEW(IDB_DEFAULTPFP));
+		Microsoft::WRL::ComPtr<LCPD::ICredentialImageField> imageField = nullptr;
+		//if (m_dataSourceUser.Get())
+		//{
+		//	RETURN_IF_FAILED(m_dataSourceUser->get_LargeUserTileImage(&imageField));
+		//	if (imageField.Get() == nullptr)
+		//	{
+		//		RETURN_IF_FAILED(m_dataSourceUser->get_SmallUserTileImage(&imageField));
+		//	}
+		//}
+		//if (m_dataSourceCredential.Get() && imageField.Get() == nullptr)
+		//{
+		//	RETURN_IF_FAILED(m_dataSourceCredential->get_LargeUserTileImage(&imageField));
+		//	if (imageField.Get() == nullptr)
+		//	{
+		//		RETURN_IF_FAILED(m_dataSourceCredential->get_SmallUserTileImage(&imageField));
+		//	}
+		//	if (imageField.Get() == nullptr)
+		//	{
+		//		RETURN_IF_FAILED(m_dataSourceCredential->get_ExtraSmallUserTileImage(&imageField));
+		//	}
+		//}
+		return _CreateTileImageField(L"",imageField,nullptr);
+	}
 
 	return S_OK;
 }

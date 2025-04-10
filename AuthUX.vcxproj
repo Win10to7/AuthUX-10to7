@@ -133,7 +133,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>shell\auth\authux\consolelogon\dll\ConsoleLogon.def</ModuleDefinitionFile>
-      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -158,7 +158,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>shell\auth\authux\consolelogon\dll\ConsoleLogon.def</ModuleDefinitionFile>
-      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -178,7 +178,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>shell\auth\authux\consolelogon\dll\ConsoleLogon.def</ModuleDefinitionFile>
-      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
@@ -198,7 +198,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>shell\auth\authux\consolelogon\dll\ConsoleLogon.def</ModuleDefinitionFile>
-      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -223,7 +223,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>shell\auth\authux\consolelogon\dll\ConsoleLogon.def</ModuleDefinitionFile>
-      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
@@ -248,15 +248,18 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>shell\auth\authux\consolelogon\dll\ConsoleLogon.def</ModuleDefinitionFile>
-      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="sdk\inc\logonguids.cpp" />
     <ClCompile Include="sdk\inc\NotificationDispatcher.cpp" />
+    <ClCompile Include="sdk\inc\wicutil.cpp" />
     <ClCompile Include="shell\auth\authux\consolelogon\dll\dllmain.cpp" />
     <ClCompile Include="shell\auth\authux\consolelogon\dll\pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="shell\auth\authux\consolelogon\lib\advisablebutton.cpp" />
     <ClCompile Include="shell\auth\authux\consolelogon\lib\animationstrip.cpp" />
     <ClCompile Include="shell\auth\authux\consolelogon\lib\backgroundfetcher.cpp" />
     <ClCompile Include="shell\auth\authux\consolelogon\lib\basictextcontrol.cpp" />
@@ -308,6 +311,7 @@
     <ClInclude Include="sdk\inc\ContainerPolicies.h" />
     <ClInclude Include="sdk\inc\GitPtr.h" />
     <ClInclude Include="sdk\inc\InternalAsync.h" />
+    <ClInclude Include="sdk\inc\logonguids.h" />
     <ClInclude Include="sdk\inc\logoninterfaces.h" />
     <ClInclude Include="sdk\inc\MarshaledInterface.h" />
     <ClInclude Include="sdk\inc\memsafe.h" />
@@ -317,9 +321,11 @@
     <ClInclude Include="sdk\inc\ResultUtils.h" />
     <ClInclude Include="sdk\inc\SimpleArray.h" />
     <ClInclude Include="sdk\inc\version.h" />
+    <ClInclude Include="sdk\inc\wicutil.h" />
     <ClInclude Include="sdk\inc\windowscollections.h" />
     <ClInclude Include="sdk\inc\xhashmap.h" />
     <ClInclude Include="shell\auth\authux\consolelogon\dll\pch.h" />
+    <ClInclude Include="shell\auth\authux\consolelogon\lib\advisablebutton.h" />
     <ClInclude Include="shell\auth\authux\consolelogon\lib\animationstrip.h" />
     <ClInclude Include="shell\auth\authux\consolelogon\lib\backgroundfetcher.h" />
     <ClInclude Include="shell\auth\authux\consolelogon\lib\basictextcontrol.h" />

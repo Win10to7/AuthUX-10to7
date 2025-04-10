@@ -14,6 +14,8 @@ public:
 	CDUIZoomableElement(const CDUIZoomableElement& other) = delete;
 	~CDUIZoomableElement() override;
 
+	CDUIZoomableElement& operator=(const CDUIZoomableElement&) = delete;
+
 	static DirectUI::IClassInfo* Class;
 	DirectUI::IClassInfo* GetClassInfoW() override;
 	static DirectUI::IClassInfo* GetClassInfoPtr();

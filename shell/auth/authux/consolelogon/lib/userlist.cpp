@@ -3,6 +3,7 @@
 
 #include "duiutil.h"
 #include "logonframe.h"
+#include "restrictededit.h"
 #include "zoomableelement.h"
 
 DirectUI::IClassInfo* UserList::Class = nullptr;
@@ -68,19 +69,47 @@ HRESULT UserList::AddTileFromData(const Microsoft::WRL::ComPtr<LCPD::ICredential
 
 		CFieldWrapper* fieldWrapper = DirectUI::HNewAndZero<CFieldWrapper>();
 		fieldWrapper->m_dataSourceCredentialField = dataSource;
-		fieldWrapper->m_isSelectorField = false;
+
+		bool isVisibleInSelectedTile;
+		RETURN_IF_FAILED(dataSource->get_IsVisibleInSelectedTile(&isVisibleInSelectedTile));
+
+		fieldWrapper->m_isSelectorField = !isVisibleInSelectedTile;
 
 		RETURN_IF_FAILED(userTile->fieldsArray.Add(fieldWrapper));
 	}
 
 	if (CLogonFrame::GetSingleton()->m_currentReason != LC::LogonUIRequestReason_LogonUIChange)
 	{
+		Microsoft::WRL::Wrappers::HString status;
+		if (user.Get())
+			RETURN_IF_FAILED(user->get_LogonStatus(status.ReleaseAndGetAddressOf()));
+
+		if (user.Get())
+		{
+			CFieldWrapper* statusField = DirectUI::HNewAndZero<CFieldWrapper>();
+			statusField->m_isSelectorField = true;
+			statusField->m_label.Initialize(status.GetRawBuffer(nullptr));
+			statusField->m_size = LCPD::CredentialTextSize_Small;
+
+			RETURN_IF_FAILED(userTile->fieldsArray.Add(statusField));
+		}
+
 		CFieldWrapper* usernameField = DirectUI::HNewAndZero<CFieldWrapper>();
 		usernameField->m_isSelectorField = true;
 		usernameField->m_label.Initialize(WindowsGetStringRawBuffer(userName, nullptr));
 		usernameField->m_size = LCPD::CredentialTextSize_Small;
 
 		RETURN_IF_FAILED(userTile->fieldsArray.Add(usernameField));
+
+		if (user.Get())
+		{
+			CFieldWrapper* zoomedStatusField = DirectUI::HNewAndZero<CFieldWrapper>();
+			zoomedStatusField->m_isSelectorField = false;
+			zoomedStatusField->m_label.Initialize(status.GetRawBuffer(nullptr));
+			zoomedStatusField->m_size = LCPD::CredentialTextSize_Small;
+
+			RETURN_IF_FAILED(userTile->fieldsArray.Add(zoomedStatusField));
+		}
 
 		CFieldWrapper* zoomedUsernameField = DirectUI::HNewAndZero<CFieldWrapper>();
 		zoomedUsernameField->m_isSelectorField = false;
@@ -93,6 +122,7 @@ HRESULT UserList::AddTileFromData(const Microsoft::WRL::ComPtr<LCPD::ICredential
 	int width = 180;
 	userTile->SetWidth(MulDiv(width, GetScreenDPI(), 96));
 	userTile->m_xmlParser = m_xmlParser;
+	userTile->m_capsLockWarning = userTile->FindDescendent(DirectUI::StrToID(L"CapsLockWarning"));
 
 	RETURN_IF_FAILED(userTile->_CreateFieldsForDeselected());
 	RETURN_IF_FAILED(userTile->SetVisible(true));
@@ -245,6 +275,8 @@ HRESULT UserList::ZoomTile(CDUIUserTileElement* userTile)
 
     RETURN_IF_FAILED(userTile->_CreateFieldsForSelected());
 
+	CDUIRestrictedEdit* EditFieldToFocus = nullptr;
+
     for (int i = 0; i < userTile->fieldsArray.GetSize(); ++i)
     {
     	CFieldWrapper* fieldData;
@@ -260,7 +292,8 @@ HRESULT UserList::ZoomTile(CDUIUserTileElement* userTile)
     		RETURN_IF_FAILED(fieldData->m_dataSourceCredentialField->get_IsVisibleInSelectedTile(&isVisibleInSelectedTile));
     	}
 
-        bool bShouldHide = fieldData->m_isSelectorField && kind != LCPD::CredentialFieldKind_TileImage || !(!bHidden && isVisibleInSelectedTile != 0);
+        //bool bShouldHide = fieldData->m_isSelectorField && kind != LCPD::CredentialFieldKind_TileImage || (!(!bHidden && isVisibleInSelectedTile != 0) && kind != LCPD::CredentialFieldKind_TileImage);
+        bool bShouldHide = kind != LCPD::CredentialFieldKind_TileImage && (fieldData->m_isSelectorField || (!(!bHidden && isVisibleInSelectedTile != 0)));
 
         DirectUI::Element* element = userTile->m_elementsArray[i];
         if (userTile->m_containersArray[i])
@@ -272,17 +305,23 @@ HRESULT UserList::ZoomTile(CDUIUserTileElement* userTile)
         else if (element)
         {
             element->SetLayoutPos(!bShouldHide ? -1 : -3);
-            element->SetVisible(!bShouldHide ? -1 : -3);
-            element->SetEnabled(!bShouldHide ? -1 : -3);
+            element->SetVisible(!bShouldHide);
+            element->SetEnabled(!bShouldHide);
             //todo: high contrast stuff
         }
+
+    	if (element && !bHidden && kind == LCPD::CredentialFieldKind_EditText)
+    	{
+    		EditFieldToFocus = (CDUIRestrictedEdit*)element;
+    	}
     }
 
     userTile->SetTileZoomed(true);
     userTile->m_bTileZoomed = true;
 
     userTile->SetWidth(GetSystemMetrics(SM_CXSCREEN));
-    m_UserListSelector->SetWidth(GetSystemMetrics(SM_CXSCREEN));
+	userTile->m_capsLockWarning->SetLayoutPos(-3);
+	m_UserListSelector->SetWidth(GetSystemMetrics(SM_CXSCREEN));
 
     DWORD cookie2;
     userTile->StartDefer(&cookie2);
@@ -298,6 +337,14 @@ HRESULT UserList::ZoomTile(CDUIUserTileElement* userTile)
     SetEnabledDownTree(true,userTile,userTile->FindDescendent(DirectUI::StrToID(L"NonSelectorFieldsFrame")));
 
     //todo: password field text setkeyfocus
+
+	if (EditFieldToFocus)
+	{
+		//userTile->SetKeyFocus();
+		EditFieldToFocus->SetKeyFocus();
+		//EditFieldToFocus->SetActive(7);
+		//SendMessageW(EditFieldToFocus->GetHWND(), 0xB1u, 0, -1);
+	}
 
     //CLogonFrame::GetSingleton()->SetOptions(257 & ~0x20u);
 	if (CLogonFrame::GetSingleton()->m_currentReason == LC::LogonUIRequestReason_LogonUIChange)
@@ -342,7 +389,8 @@ HRESULT UserList::UnzoomList(CDUIUserTileElement* userTile)
 			RETURN_IF_FAILED(fieldData->m_dataSourceCredentialField->get_IsVisibleInDeselectedTile(&isVisibleInDeselectedTile));
 		}
 
-		bool bShouldHide = !fieldData->m_isSelectorField && kind != LCPD::CredentialFieldKind_TileImage || !(!bHidden && isVisibleInDeselectedTile != 0);
+		//bool bShouldHide = !fieldData->m_isSelectorField && kind != LCPD::CredentialFieldKind_TileImage || (!(!bHidden && isVisibleInDeselectedTile != 0) && kind != LCPD::CredentialFieldKind_TileImage);
+		bool bShouldHide = kind != LCPD::CredentialFieldKind_TileImage && (!fieldData->m_isSelectorField || (!(!bHidden && isVisibleInDeselectedTile != 0)));
 
 		DirectUI::Element* element = userTile->m_elementsArray[i];
 		if (userTile->m_containersArray[i])

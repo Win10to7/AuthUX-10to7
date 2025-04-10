@@ -36,6 +36,8 @@ public:
 
 	bool GetTileZoomed();
 	HRESULT SetTileZoomed(bool v);
+	HRESULT SetFieldInitialVisibility(DirectUI::Element* field, CFieldWrapper* fieldData);
+	HRESULT SetFieldVisibility(DirectUI::Element* field, CFieldWrapper* fieldData);
 
 
 	void OnEvent(DirectUI::Event* pEvent) override;
@@ -57,21 +59,21 @@ public:
 	DirectUI::DUIXmlParser* m_xmlParser;
 
 	DirectUI::Button* m_submitButton;
+	DirectUI::Element* m_capsLockWarning;
 
 private:
-	HRESULT _SetFieldInitialVisibility(DirectUI::Element* field, CFieldWrapper* fieldData);
 
 	HRESULT _CreateElementArrays();
 	UINT _FindFieldInsertionIndex(int fieldIndex);
 	HRESULT _AddFieldContainer(int index, DirectUI::Element* Parent, CDUIFieldContainer** a5);
 	HRESULT _AddField(DirectUI::Element* a2, int index, DirectUI::Element* Parent, CDUIFieldContainer** OutContainer);
 
-	HRESULT _CreateStringField(int index, DirectUI::Element* Parent, DirectUI::Element** outElement, CDUIFieldContainer** OutContainer);
-	HRESULT _CreateEditField(int index, DirectUI::Element* Parent, DirectUI::Element** outElement, CDUIFieldContainer** OutContainer);
-	HRESULT _CreateCommandLinkField(int index, DirectUI::Element* Parent, DirectUI::Element** outElement, CDUIFieldContainer** OutContainer);
-	HRESULT _CreateTileImageField(const wchar_t* pszLabel, HBITMAP bitmap, DirectUI::Element** OutContainer);
+	HRESULT _CreateStringField(int index, DirectUI::Element* Parent, DirectUI::Element** outElement, CDUIFieldContainer** OutContainer); //
+	HRESULT _CreateEditField(int index, DirectUI::Element* Parent, DirectUI::Element** outElement, CDUIFieldContainer** OutContainer); //
+	HRESULT _CreateCommandLinkField(int index, DirectUI::Element* Parent, DirectUI::Element** outElement, CDUIFieldContainer** OutContainer); //
+	HRESULT _CreateTileImageField(const wchar_t* pszLabel, Microsoft::WRL::ComPtr<LCPD::ICredentialImageField>& tileImageDataSource, DirectUI::Element** OutContainer);
 	HRESULT _CreateSubmitButton(int index, DirectUI::Button** outButton, DirectUI::Element** outElement);
-	HRESULT _CreateCheckboxField(int index, DirectUI::Element* Parent, DirectUI::Element** outElement, CDUIFieldContainer** OutContainer);
+	HRESULT _CreateCheckboxField(int index, DirectUI::Element* Parent, DirectUI::Element** outElement, CDUIFieldContainer** OutContainer); //
 	HRESULT _CreateComboBoxField(int index, DirectUI::Element* Parent, DirectUI::Element** outElement, CDUIFieldContainer** OutContainer);
 
 	HRESULT _CreateFieldByIndex(int index);
@@ -81,4 +83,5 @@ private:
 
 	friend class UserList;
 	friend class CDUIZoomableElement;
+	friend class CAdvisableButton;
 };

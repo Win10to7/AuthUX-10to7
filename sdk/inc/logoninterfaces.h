@@ -173,12 +173,27 @@ namespace Windows::Internal::UI::Logon
 			UserTileImageSize_ExtraSmall = 2
 		};
 
-		struct IUserTileImage : IInspectable
+		//TODO: add support for older versions of this iid
+		MIDL_INTERFACE("33034271-7459-4b69-a4e7-e3112ad88933")
+		IUserTileImage : IInspectable
 		{
 			virtual HRESULT STDMETHODCALLTYPE get_TileStream(ABI::Windows::Storage::Streams::IRandomAccessStream**) PURE;
+
+			virtual HRESULT STDMETHODCALLTYPE put_TileStream(ABI::Windows::Storage::Streams::IRandomAccessStream*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE add_TileStreamInitialized(WF::ITypedEventHandler<IUserTileImage*, ABI::Windows::Storage::Streams::IRandomAccessStream*>*, EventRegistrationToken*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE remove_TileStreamInitialized(EventRegistrationToken) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_TileStreamState(/*Windows::Internal::UI::Logon::CredProvData::TileStreamInitializationState*/ int*) PURE;
+
 			virtual HRESULT STDMETHODCALLTYPE get_TileStreamType(TileStreamType*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_Size(UserTileImageSize*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_TilePath(HSTRING*) PURE;
+		};
+
+		MIDL_INTERFACE("8ef3b825-a92c-416e-820d-ed0fcf8d2296")
+		ICredentialImageField : IInspectable
+		{
+			virtual HRESULT STDMETHODCALLTYPE get_BitmapStream(ABI::Windows::Storage::Streams::IRandomAccessStream** ) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_IsLogoImageHidden(BOOL* ) PURE;
 		};
 
 		class User;
@@ -970,6 +985,32 @@ namespace Windows::Internal::UI::Logon
 		};
 	}
 }
+
+MIDL_INTERFACE("fb69bc98-66a0-47ba-8b1d-f79b9e842bbc")
+IUserTileStore : IUnknown
+{
+	virtual HRESULT STDMETHODCALLTYPE SaveUserTileToStream(IStream*, int) = 0;
+	virtual HRESULT STDMETHODCALLTYPE SetUserTileFromStream(int, IStream*) = 0;
+	virtual HRESULT STDMETHODCALLTYPE GetLargePath(const WCHAR*, WCHAR**) = 0;
+	virtual HRESULT STDMETHODCALLTYPE GetSmallPath(const WCHAR*, WCHAR**) = 0;
+	virtual HRESULT STDMETHODCALLTYPE GetExtraSmallPath(const WCHAR*, WCHAR**) = 0;
+	virtual HRESULT STDMETHODCALLTYPE GetDynamicPath(const WCHAR*, WCHAR**) = 0;
+	virtual HRESULT STDMETHODCALLTYPE GetSmallPicture(const WCHAR*, HBITMAP*) = 0;
+	virtual HRESULT STDMETHODCALLTYPE GetLargePicture(const WCHAR*, HBITMAP*) = 0;
+	virtual HRESULT STDMETHODCALLTYPE GetUserTilePathBySize(const WCHAR*, UINT, WCHAR**) = 0;
+	virtual HRESULT STDMETHODCALLTYPE GetUserTilePathBySizeNoDefault(const WCHAR*, UINT, WCHAR**) = 0;
+	virtual HRESULT STDMETHODCALLTYPE GetDynamicPathBySize(const WCHAR*, UINT, WCHAR**) = 0;
+	virtual HRESULT STDMETHODCALLTYPE ResetUserTile() = 0;
+	virtual HRESULT STDMETHODCALLTYPE ClearHistory() = 0;
+	virtual HRESULT STDMETHODCALLTYPE ShowErrorDialog(HRESULT, const WCHAR*) = 0;
+	virtual HRESULT STDMETHODCALLTYPE GetUserNames(WCHAR**, WCHAR**) = 0;
+	virtual HRESULT STDMETHODCALLTYPE GetUserNameW(UINT, WCHAR**) = 0;
+	virtual void STDMETHODCALLTYPE SQMUserTileIsDefault() = 0;
+	virtual HRESULT STDMETHODCALLTYPE SetImages(IStream*, IStream*, IStream*, const WCHAR*) = 0;
+	virtual HRESULT STDMETHODCALLTYPE SetImageForUser(const WCHAR*, IStream*) = 0;
+	virtual HRESULT STDMETHODCALLTYPE GetExtendedErrorInfo(WCHAR**, BYTE*) = 0;
+	virtual HRESULT STDMETHODCALLTYPE FixCorruptedStoreIfNeeded() = 0;
+};
 
 extern const __declspec(selectany) _Null_terminated_ WCHAR RuntimeClass_Windows_Internal_UI_Logon_CredProvData_CredProvDataModel[] = L"Windows.Internal.UI.Logon.CredProvData.CredProvDataModel";
 

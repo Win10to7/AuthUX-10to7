@@ -17,6 +17,7 @@
 #include "statusview.h"
 #include "userselectionview.h"
 #include "logonframe.h"
+#include "logonguids.h"
 
 using namespace Microsoft::WRL;
 
@@ -890,8 +891,6 @@ HRESULT LogonViewManager::CleanupUIThread(WI::AsyncDeferral<WI::CNoResult> compl
 	completion.Complete(S_OK);
 	return S_OK;
 }
-
-DEFINE_GUID(CLSID_PasswordCredentialProvider,        0x60B78E88, 0xEAD8, 0x445C, 0x9C, 0xFD, 0x0B, 0x87, 0xF7, 0x4E, 0xA6, 0xCD);
 
 HRESULT LogonViewManager::ShowCredentialView()
 {
