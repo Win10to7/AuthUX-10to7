@@ -13,7 +13,6 @@ class DECLSPEC_UUID("0bd5f9b3-c467-4545-a2c7-354647461905") LogonViewManager fin
 		, WFC::VectorChangedEventHandler<IInspectable*>
 		, WFC::VectorChangedEventHandler<LCPD::Credential*>
 		, WF::ITypedEventHandler<LCPD::Credential*, IInspectable*>
-		, INavigationCallback
 		, Microsoft::WRL::FtmBase
 	>
 {
@@ -46,11 +45,6 @@ public:
 	//~ Begin WF::ITypedEventHandler<LCPD::CredProvDataModel*, LCPD::CredentialSerialization*> Interface
 	STDMETHODIMP Invoke(LCPD::ICredProvDataModel* sender, LCPD::ICredentialSerialization* args) override;
 	//~ End WF::ITypedEventHandler<LCPD::CredProvDataModel*, LCPD::CredentialSerialization*> Interface
-
-	//~ Begin INavigationCallback Interface
-	STDMETHODIMP OnNavigation() override;
-	STDMETHODIMP ShowComboBox(LCPD::IComboBoxField* dataSource) override;
-	//~ End INavigationCallback Interface
 
 	HRESULT SetContext(
 		IInspectable* autoLogonManager, LC::IUserSettingManager* userSettingManager,
@@ -131,7 +125,7 @@ private:
 	};
 
 	LogonView m_currentViewType;
-	Microsoft::WRL::ComPtr<IConsoleUIView> m_currentView;
+
 	Microsoft::WRL::ComPtr<IInspectable> m_autoLogonManager;
 	Microsoft::WRL::ComPtr<LC::IUserSettingManager> m_userSettingManager;
 	Microsoft::WRL::ComPtr<LC::IRedirectionManager> m_redirectionManager;

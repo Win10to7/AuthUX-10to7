@@ -14,8 +14,7 @@
 using namespace Microsoft::WRL;
 
 ConsoleUIManager::ConsoleUIManager()
-	: m_continueProcessingInput(true)
-	, m_UIThreadInitResult(E_FAIL)
+	: m_UIThreadInitResult(E_FAIL)
 {
 }
 
@@ -69,45 +68,9 @@ HRESULT ConsoleUIManager::StopUI()
 	return S_OK;
 }
 
-HRESULT ConsoleUIManager::SetActiveView(IConsoleUIView* view)
-{
-	ComPtr<IConsoleUIViewInternal> newView;
-	RETURN_IF_FAILED(view->QueryInterface(IID_PPV_ARGS(&newView))); // 105
-
-	HANDLE screenBuffer;
-	RETURN_IF_FAILED(newView->GetScreenBuffer(&screenBuffer)); // 108
-
-	RETURN_IF_WIN32_BOOL_FALSE(SetConsoleActiveScreenBuffer(screenBuffer)); // 110
-	RETURN_IF_FAILED(newView->InitializeFocus()); // 111
-
-	m_activeView = newView;
-
-	return S_OK;
-}
-
 HRESULT ConsoleUIManager::EnsureUIStarted()
 {
 	RETURN_HR_IF(E_ABORT, !m_Dispatcher.Get());
-	return S_OK;
-}
-
-HRESULT ConsoleUIManager::HandleIncomingInput(INPUT_RECORD input)
-{
-	if (input.EventType == KEY_EVENT)
-	{
-		RETURN_IF_FAILED(HandleKeyboardInput(input.Event.KeyEvent)); // 129
-	}
-
-	return S_OK;
-}
-
-HRESULT ConsoleUIManager::HandleKeyboardInput(KEY_EVENT_RECORD keyRecord)
-{
-	if (keyRecord.bKeyDown && m_activeView.Get())
-	{
-		RETURN_IF_FAILED(m_activeView->HandleKeyInput(&keyRecord)); // 147
-	}
-
 	return S_OK;
 }
 

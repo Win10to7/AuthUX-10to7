@@ -129,9 +129,9 @@ void CLogonFrame::OnEvent(DirectUI::Event* pEvent)
 			}
 			else
 			{
-				m_consoleUIManager->OnNavigation();
+				m_consoleUIManager->ShowCredentialView();
 				//ComPtr<LogonViewManager> thisRef = m_consoleUIManager;
-//
+				//
 				//HRESULT hr = BeginInvoke(m_consoleUIManager->m_Dispatcher.Get(), [=]() -> void
 				//{
 				//	thisRef->ShowCredentialView();
