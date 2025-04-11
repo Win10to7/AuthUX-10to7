@@ -11,6 +11,7 @@ using namespace Windows::Internal::UI::Logon::Controller;
 using namespace Windows::Internal::UI::Logon::CredProvData;
 
 extern const __declspec(selectany) _Null_terminated_ WCHAR RuntimeClass_Windows_Internal_UI_Logon_Controller_ConsoleLockScreen[] = L"Windows.Internal.UI.Logon.Controller.ConsoleLockScreen";
+//extern const __declspec(selectany) _Null_terminated_ WCHAR RuntimeClass_Windows_Internal_UI_Logon_Controller_ConsoleLockScreen[] = L"Windows.Internal.UI.Logon.Controller.LockScreenHost";
 
 class ConsoleLock final
 	: public RuntimeClass<RuntimeClassFlags<WinRtClassicComMix>

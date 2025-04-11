@@ -6,7 +6,8 @@ using namespace ABI::Windows::Foundation;
 using namespace Windows::Internal::UI::Logon::Controller;
 using namespace Windows::Internal::UI::Logon::CredProvData;
 
-extern const __declspec(selectany) _Null_terminated_ WCHAR RuntimeClass_Windows_Internal_UI_Logon_Controller_ConsoleBlockedShutdownResolver[] = L"Windows.Internal.UI.Logon.Controller.ConsoleBlockedShutdownResolver";
+//extern const __declspec(selectany) _Null_terminated_ WCHAR RuntimeClass_Windows_Internal_UI_Logon_Controller_ConsoleBlockedShutdownResolver[] = L"Windows.Internal.UI.Logon.Controller.ConsoleBlockedShutdownResolver";
+extern const __declspec(selectany) _Null_terminated_ WCHAR RuntimeClass_Windows_Internal_UI_Logon_Controller_ConsoleBlockedShutdownResolver[] = L"Windows.Internal.UI.Logon.Controller.BlockedShutdownResolverUX";
 
 class ConsoleBSDRStub
 	: public RuntimeClass<RuntimeClassFlags<WinRtClassicComMix>
@@ -61,12 +62,12 @@ HRESULT ConsoleBSDRStub::get_WasClicked(bool* value)
 
 HRESULT ConsoleBSDRStub::AddApplication(IShutdownBlockingApp* blockingApp)
 {
-	return _Resolved.InvokeAll(this, BlockedShutdownResolution_None);
+	return _Resolved.InvokeAll(this, BlockedShutdownResolution_Force);
 }
 
 HRESULT ConsoleBSDRStub::RemoveApplication(UINT appid)
 {
-	return _Resolved.InvokeAll(this, BlockedShutdownResolution_None);
+	return _Resolved.InvokeAll(this, BlockedShutdownResolution_Force);
 }
 
 HRESULT ConsoleBSDRStub::add_Resolved(

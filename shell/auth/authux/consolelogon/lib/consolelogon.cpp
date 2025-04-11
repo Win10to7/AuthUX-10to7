@@ -9,6 +9,7 @@ using namespace Windows::Internal::UI::Logon::Controller;
 using namespace Windows::Internal::UI::Logon::CredProvData;
 
 extern const __declspec(selectany) _Null_terminated_ WCHAR RuntimeClass_Windows_Internal_UI_Logon_Controller_ConsoleLogonUX[] = L"Windows.Internal.UI.Logon.Controller.ConsoleLogonUX";
+//extern const __declspec(selectany) _Null_terminated_ WCHAR RuntimeClass_Windows_Internal_UI_Logon_Controller_ConsoleLogonUX[] = L"Windows.Internal.UI.Logon.Controller.LogonUX";
 
 class ConsoleLogon final
 	: public RuntimeClass<RuntimeClassFlags<WinRtClassicComMix>
@@ -182,7 +183,7 @@ HRESULT ConsoleLogon::DelayLock(BOOLEAN allowDirectUserSwitching, UCHAR unk1, UC
 	Wrappers::SRWLock::SyncLockShared lock = m_Lock.LockShared();
 	RETURN_IF_FAILED(CheckUIStarted()); // 118
 
-	LOG_HR_MSG(E_FAIL,"unk3 %s",WindowsGetStringRawBuffer(unk3,nullptr));
+	//LOG_HR_MSG(E_FAIL,"unk3 %s",WindowsGetStringRawBuffer(unk3,nullptr));
 
 	RETURN_IF_FAILED(Lock(LogonUIRequestReason_LogonUIUnlock, allowDirectUserSwitching, unlockTrigger)); // 120
 	return S_OK;
@@ -196,7 +197,7 @@ HRESULT ConsoleLogon::HardLock(LogonUIRequestReason reason, BOOLEAN allowDirectU
 	Wrappers::SRWLock::SyncLockShared lock = m_Lock.LockShared();
 	RETURN_IF_FAILED(CheckUIStarted()); // 131
 
-	LOG_HR_MSG(E_FAIL,"unk3 %s",WindowsGetStringRawBuffer(unk3,nullptr));
+	//LOG_HR_MSG(E_FAIL,"unk3 %s",WindowsGetStringRawBuffer(unk3,nullptr));
 
 	RETURN_IF_FAILED(Lock(reason, allowDirectUserSwitching, unlockTrigger)); // 133
 	return S_OK;

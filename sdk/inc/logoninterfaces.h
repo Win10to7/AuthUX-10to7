@@ -124,7 +124,9 @@ namespace Windows::Internal::UI::Logon
 		ICommandLinkField : IInspectable
 		{
 			virtual HRESULT STDMETHODCALLTYPE get_Content(HSTRING* outContent) PURE;
+#if CONSOLELOGON_FOR >= CONSOLELOGON_FOR_19h1
 			virtual HRESULT STDMETHODCALLTYPE get_IsStyledAsButton(bool*) PURE;
+#endif
 			virtual HRESULT STDMETHODCALLTYPE Invoke() PURE;
 		};
 
@@ -497,7 +499,11 @@ namespace Windows::Internal::UI::Logon
 #endif
 			virtual HRESULT STDMETHODCALLTYPE ClearState() PURE;
 			//virtual HRESULT STDMETHODCALLTYPE ResetAsync(CredProvScenario, WF::IAsyncAction**) PURE;
+#if CONSOLELOGON_FOR >= CONSOLELOGON_FOR_19h1
 			virtual HRESULT STDMETHODCALLTYPE ResetAsync(CredProvScenario, int supportedFeatureFlags, HSTRING, WF::IAsyncAction**) PURE;
+#else
+			virtual HRESULT STDMETHODCALLTYPE ResetAsync(CredProvScenario, int supportedFeatureFlags, WF::IAsyncAction**) PURE;
+#endif
 			virtual HRESULT STDMETHODCALLTYPE ResetSelection() PURE;
 			virtual HRESULT STDMETHODCALLTYPE Shutdown() PURE;
 			virtual HRESULT STDMETHODCALLTYPE DisconnectCredentials() PURE;

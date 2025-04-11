@@ -173,9 +173,7 @@ HRESULT CDUIUserTileElement::SetFieldInitialVisibility(DirectUI::Element* field,
 	}*/
 	isVisible = !isHidden && ((GetTileZoomed() ? bIsVisibleInSelectedTile : bIsVisibleInDeselectedTile) != 0);
 
-	field->SetVisible(isVisible);
-	//RETURN_IF_FAILED(field->SetLayoutPos(isVisible ? -1 : -3));
-	RETURN_IF_FAILED(field->SetLayoutPos(-1));
+	RETURN_IF_FAILED(field->SetLayoutPos(isVisible ? -1 : -3));
 
 	return field->SetVisible(isVisible);
 }
@@ -229,26 +227,12 @@ HRESULT CDUIUserTileElement::SetFieldVisibility(int index, Microsoft::WRL::ComPt
 	bool containerPrevVisibility = m_containersArray[index]->GetVisible();
 	bool elementPrevVisibility = m_elementsArray[index]->GetVisible();
 
-	//if (containerPrevVisibility != isVisible)
+	if (containerPrevVisibility != isVisible || elementPrevVisibility != isVisible)
 	{
-		//RETURN_IF_FAILED(m_containersArray[index]->SetVisible(isVisible));
-		//RETURN_IF_FAILED(m_containersArray[index]->SetLayoutPos(isVisible ? -1 : 3));
-		//RETURN_IF_FAILED(m_containersArray[index]->SetActive(7));
-
 		SetLayoutPosDownTree(isVisible ? -1 : -3, m_containersArray[index], m_elementsArray[index]);
 		SetVisibleDownTree(isVisible, m_containersArray[index], m_elementsArray[index]);
 		SetEnabledDownTree(isVisible, m_containersArray[index], m_elementsArray[index]);
-
-		//SetVisibleDownTree(true,this,this->FindDescendent(DirectUI::StrToID(L"NonSelectorFieldsFrame")));
-		//SetEnabledDownTree(true,this,this->FindDescendent(DirectUI::StrToID(L"NonSelectorFieldsFrame")));
 	}
-
-	//if (elementPrevVisibility != isVisible)
-	//{
-	//	RETURN_IF_FAILED(m_elementsArray[index]->SetVisible(isVisible));
-	//	RETURN_IF_FAILED(m_elementsArray[index]->SetLayoutPos(isVisible ? -1 : 3));
-	//	RETURN_IF_FAILED(m_elementsArray[index]->SetActive(7));
-	//}
 
 	return S_OK;
 }
@@ -543,8 +527,9 @@ HRESULT CDUIUserTileElement::_CreateCommandLinkField(int index, DirectUI::Elemen
 	if (SUCCEEDED(fieldData->m_dataSourceCredentialField->QueryInterface(IID_PPV_ARGS(&commandLinkField))))
 	{
 		RETURN_IF_FAILED(commandLinkField->get_Content(label.ReleaseAndGetAddressOf()));
+#if CONSOLELOGON_FOR >= CONSOLELOGON_FOR_19h1
 		RETURN_IF_FAILED(commandLinkField->get_IsStyledAsButton(&bStyledAsButton));
-
+#endif
 		LOG_HR_MSG(E_FAIL,"bStyledAsButton %i", bStyledAsButton ? 1 : 0);
 	}
 	else
