@@ -110,13 +110,13 @@ HRESULT CDUIZoomableElement::Invoke(LCPD::ICredentialField* sender, LCPD::Creden
 		if (args == LCPD::CredentialFieldChangeKind_State)
 		{
 			bool bOldVisibility = GetVisible();
-			m_owningElement->SetFieldVisibility(m_owningElement->m_containersArray[m_index],fieldData);
+			m_owningElement->SetFieldVisibility(m_index,m_FieldInfo);
 			if (bOldVisibility != GetVisible())
 				bShouldUpdateString = true;
 		}
 		else if (args == LCPD::CredentialFieldChangeKind_SetString)
 		{
-			m_owningElement->SetFieldVisibility(m_owningElement->m_containersArray[m_index],fieldData);
+			//m_owningElement->SetFieldVisibility(m_owningElement->m_containersArray[m_index],fieldData);
 			bShouldUpdateString = true;
 		}
 		if (bShouldUpdateString)

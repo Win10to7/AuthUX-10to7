@@ -37,7 +37,7 @@ public:
 	bool GetTileZoomed();
 	HRESULT SetTileZoomed(bool v);
 	HRESULT SetFieldInitialVisibility(DirectUI::Element* field, CFieldWrapper* fieldData);
-	HRESULT SetFieldVisibility(DirectUI::Element* field, CFieldWrapper* fieldData);
+	HRESULT SetFieldVisibility(int index, Microsoft::WRL::ComPtr<LCPD::ICredentialField> fieldData);
 
 
 	void OnEvent(DirectUI::Event* pEvent) override;

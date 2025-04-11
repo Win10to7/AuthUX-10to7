@@ -73,7 +73,7 @@ HRESULT UserList::AddTileFromData(const Microsoft::WRL::ComPtr<LCPD::ICredential
 		bool isVisibleInSelectedTile;
 		RETURN_IF_FAILED(dataSource->get_IsVisibleInSelectedTile(&isVisibleInSelectedTile));
 
-		fieldWrapper->m_isSelectorField = !isVisibleInSelectedTile;
+		fieldWrapper->m_isSelectorField = false;
 
 		RETURN_IF_FAILED(userTile->fieldsArray.Add(fieldWrapper));
 	}

@@ -303,7 +303,7 @@ HRESULT CDUIRestrictedEdit::Invoke(LCPD::ICredentialField* sender, LCPD::Credent
 	{
 		CFieldWrapper* fieldData;
 		m_owningElement->fieldsArray.GetAt(m_index,fieldData);
-		m_owningElement->SetFieldVisibility(m_owningElement->m_containersArray[m_index],fieldData);
+		m_owningElement->SetFieldVisibility(m_index,m_fieldData);
 		//m_owningElement->SetFieldInitialVisibility(m_owningElement->m_containersArray[m_index],fieldData);
 		LOG_HR_MSG(E_FAIL,"CDUIRestrictedEdit::Invoke SetFieldVisibility\n");
 	}

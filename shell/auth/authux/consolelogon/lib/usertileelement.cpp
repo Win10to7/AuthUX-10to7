@@ -9,6 +9,7 @@
 
 
 #include "advisablebutton.h"
+#include "logonframe.h"
 #include "logonguids.h"
 #include "wicutil.h"
 
@@ -172,33 +173,84 @@ HRESULT CDUIUserTileElement::SetFieldInitialVisibility(DirectUI::Element* field,
 	}*/
 	isVisible = !isHidden && ((GetTileZoomed() ? bIsVisibleInSelectedTile : bIsVisibleInDeselectedTile) != 0);
 
-	RETURN_IF_FAILED(field->SetLayoutPos(isVisible ? -1 : -3));
+	field->SetVisible(isVisible);
+	//RETURN_IF_FAILED(field->SetLayoutPos(isVisible ? -1 : -3));
+	RETURN_IF_FAILED(field->SetLayoutPos(-1));
 
 	return field->SetVisible(isVisible);
 }
 
-HRESULT CDUIUserTileElement::SetFieldVisibility(DirectUI::Element* field, CFieldWrapper* fieldData)
+HRESULT CDUIUserTileElement::SetFieldVisibility(int index, Microsoft::WRL::ComPtr<LCPD::ICredentialField> fieldData)
 {
+	DWORD cookie;
+	StartDefer(&cookie);
+
+	auto scopeExit = wil::scope_exit([&]() {EndDefer(cookie);});
+
 	bool isVisible = false;
 
 	LCPD::CredentialFieldKind kind = LCPD::CredentialFieldKind_StaticText;
-	if (fieldData->m_dataSourceCredentialField.Get() != nullptr)
-		RETURN_IF_FAILED(fieldData->m_dataSourceCredentialField->get_Kind(&kind));
+	if (fieldData.Get() != nullptr)
+		RETURN_IF_FAILED(fieldData->get_Kind(&kind));
 
 	bool bIsVisibleInDeselectedTile = true;
 	bool bIsVisibleInSelectedTile = true;
 	bool isHidden = false;
 
-	if (fieldData->m_dataSourceCredentialField.Get() != nullptr)
+	if (fieldData.Get() != nullptr)
 	{
-		RETURN_IF_FAILED(fieldData->m_dataSourceCredentialField->get_IsVisibleInDeselectedTile(&bIsVisibleInDeselectedTile));
-		RETURN_IF_FAILED(fieldData->m_dataSourceCredentialField->get_IsVisibleInSelectedTile(&bIsVisibleInSelectedTile));
-		RETURN_IF_FAILED(fieldData->m_dataSourceCredentialField->get_IsHidden(&isHidden));
+		RETURN_IF_FAILED(fieldData->get_IsVisibleInDeselectedTile(&bIsVisibleInDeselectedTile));
+		RETURN_IF_FAILED(fieldData->get_IsVisibleInSelectedTile(&bIsVisibleInSelectedTile));
+		RETURN_IF_FAILED(fieldData->get_IsHidden(&isHidden));
 	}
 
-	isVisible = !isHidden;
+	if (fieldData.Get() != nullptr)
+	{
+		LOG_HR_MSG(E_FAIL, "CDUIUserTileElement::SetFieldVisibility isHidden %i",isHidden ? 1 : 0);
+		LOG_HR_MSG(E_FAIL, "CDUIUserTileElement::SetFieldVisibility bIsVisibleInSelectedTile %i",bIsVisibleInSelectedTile ? 1 : 0);
+	}
 
-	return field->SetVisible(isVisible);
+	//isVisible = true;
+	isVisible = !isHidden && bIsVisibleInSelectedTile != 0;
+
+	if (fieldData.Get() != nullptr)
+	{
+		Microsoft::WRL::Wrappers::HString label;
+
+		fieldData->get_Label(label.ReleaseAndGetAddressOf());
+
+		CFieldWrapper* fieldData;
+		fieldsArray.GetAt(index,fieldData);
+
+		LOG_HR_MSG(E_FAIL, "CDUIUserTileElement::SetFieldVisibility isVisible %i for %s",isVisible ? 1 : 0, label.GetRawBuffer(0));
+		LOG_HR_MSG(E_FAIL, "CDUIUserTileElement::SetFieldVisibility isselectorfield %i",fieldData->m_isSelectorField ? 1 : 0);
+	}
+
+	bool containerPrevVisibility = m_containersArray[index]->GetVisible();
+	bool elementPrevVisibility = m_elementsArray[index]->GetVisible();
+
+	//if (containerPrevVisibility != isVisible)
+	{
+		//RETURN_IF_FAILED(m_containersArray[index]->SetVisible(isVisible));
+		//RETURN_IF_FAILED(m_containersArray[index]->SetLayoutPos(isVisible ? -1 : 3));
+		//RETURN_IF_FAILED(m_containersArray[index]->SetActive(7));
+
+		SetLayoutPosDownTree(isVisible ? -1 : -3, m_containersArray[index], m_elementsArray[index]);
+		SetVisibleDownTree(isVisible, m_containersArray[index], m_elementsArray[index]);
+		SetEnabledDownTree(isVisible, m_containersArray[index], m_elementsArray[index]);
+
+		//SetVisibleDownTree(true,this,this->FindDescendent(DirectUI::StrToID(L"NonSelectorFieldsFrame")));
+		//SetEnabledDownTree(true,this,this->FindDescendent(DirectUI::StrToID(L"NonSelectorFieldsFrame")));
+	}
+
+	//if (elementPrevVisibility != isVisible)
+	//{
+	//	RETURN_IF_FAILED(m_elementsArray[index]->SetVisible(isVisible));
+	//	RETURN_IF_FAILED(m_elementsArray[index]->SetLayoutPos(isVisible ? -1 : 3));
+	//	RETURN_IF_FAILED(m_elementsArray[index]->SetActive(7));
+	//}
+
+	return S_OK;
 }
 
 HRESULT CDUIUserTileElement::_CreateElementArrays()
@@ -484,11 +536,16 @@ HRESULT CDUIUserTileElement::_CreateCommandLinkField(int index, DirectUI::Elemen
 	CFieldWrapper* fieldData;
 	RETURN_IF_FAILED(fieldsArray.GetAt(index,fieldData));
 
+	bool bStyledAsButton = false;
+
 	Microsoft::WRL::Wrappers::HString label;
 	Microsoft::WRL::ComPtr<LCPD::ICommandLinkField> commandLinkField;
 	if (SUCCEEDED(fieldData->m_dataSourceCredentialField->QueryInterface(IID_PPV_ARGS(&commandLinkField))))
 	{
 		RETURN_IF_FAILED(commandLinkField->get_Content(label.ReleaseAndGetAddressOf()));
+		RETURN_IF_FAILED(commandLinkField->get_IsStyledAsButton(&bStyledAsButton));
+
+		LOG_HR_MSG(E_FAIL,"bStyledAsButton %i", bStyledAsButton ? 1 : 0);
 	}
 	else
 		RETURN_IF_FAILED(fieldData->m_dataSourceCredentialField->get_Label(label.ReleaseAndGetAddressOf()));
@@ -525,6 +582,16 @@ HRESULT CDUIUserTileElement::_CreateCommandLinkField(int index, DirectUI::Elemen
 
 	*outElement = element;
 	SetFieldInitialVisibility(*OutContainer, fieldData);
+
+	//not implemented for now
+	/*if (bStyledAsButton)
+	{
+		element->SetClass(L"GenericButton");
+
+		element->GetParent()->Remove(element);
+
+		CLogonFrame::GetSingleton()->m_Window->FindDescendent(DirectUI::StrToID(L"DialogButtonFrame"))->Add(element);
+	}*/
 
 	scopeExit.release();
 

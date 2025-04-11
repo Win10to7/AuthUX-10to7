@@ -79,13 +79,13 @@ HRESULT CAdvisableButton::Invoke(LCPD::ICredentialField* sender, LCPD::Credentia
 		if (args == LCPD::CredentialFieldChangeKind_State)
 		{
 			bool bOldVisibility = GetVisible();
-			m_owningElement->SetFieldVisibility(m_owningElement->m_containersArray[m_index],fieldData);
+			m_owningElement->SetFieldVisibility(m_index,m_FieldInfo);
 			if (bOldVisibility != GetVisible())
 				bShouldUpdateString = true;
 		}
 		else if (args == LCPD::CredentialFieldChangeKind_SetString)
 		{
-			m_owningElement->SetFieldVisibility(m_owningElement->m_containersArray[m_index],fieldData);
+			//m_owningElement->SetFieldVisibility(m_owningElement->m_containersArray[m_index],fieldData);
 			bShouldUpdateString = true;
 		}
 		if (bShouldUpdateString)
@@ -95,6 +95,10 @@ HRESULT CAdvisableButton::Invoke(LCPD::ICredentialField* sender, LCPD::Credentia
 			if (SUCCEEDED(m_FieldInfo->QueryInterface(IID_PPV_ARGS(&commandLinkField))))
 			{
 				RETURN_IF_FAILED(commandLinkField->get_Content(label.ReleaseAndGetAddressOf()));
+				bool bStyledAsButton = false;
+				RETURN_IF_FAILED(commandLinkField->get_IsStyledAsButton(&bStyledAsButton));
+
+				LOG_HR_MSG(E_FAIL,"bStyledAsButton %i", bStyledAsButton ? 1 : 0);
 			}
 			else
 				RETURN_IF_FAILED(m_FieldInfo->get_Label(label.ReleaseAndGetAddressOf()));
