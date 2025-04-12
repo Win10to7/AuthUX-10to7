@@ -4,7 +4,7 @@
 
 extern const __declspec(selectany) _Null_terminated_ WCHAR ConsoleLockAsyncAction[];
 
-class ConsoleLockAction
+class AuthUXLockAction
 	: public Microsoft::WRL::RuntimeClass<Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::WinRtClassicComMix>
 		,LC::IUnlockTrigger
 		,LC::ILockInfo
@@ -15,8 +15,8 @@ class ConsoleLockAction
 		>
 {
 public:
-	ConsoleLockAction();
-	~ConsoleLockAction() override;
+	AuthUXLockAction();
+	~AuthUXLockAction() override;
 	
 	HRESULT STDMETHODCALLTYPE RuntimeClassInitialize(HSTRING domainName, HSTRING userName, HSTRING friendlyName);
     HRESULT STDMETHODCALLTYPE TriggerUnlock() override;

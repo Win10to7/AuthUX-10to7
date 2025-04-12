@@ -1,17 +1,17 @@
 ﻿#include "pch.h"
-#include "consolelockaction.h"
+#include "authuxlockaction.h"
 
 const __declspec(selectany) _Null_terminated_ WCHAR ConsoleLockAsyncAction[] = L"Windows.Foundation.IAsyncAction Windows.Internal.UI.Logon.Controller.ConsoleLockAction";
 
-ConsoleLockAction::ConsoleLockAction()
+AuthUXLockAction::AuthUXLockAction()
 {
 }
 
-ConsoleLockAction::~ConsoleLockAction()
+AuthUXLockAction::~AuthUXLockAction()
 {
 }
 
-HRESULT ConsoleLockAction::RuntimeClassInitialize(HSTRING domainName, HSTRING userName, HSTRING friendlyName)
+HRESULT AuthUXLockAction::RuntimeClassInitialize(HSTRING domainName, HSTRING userName, HSTRING friendlyName)
 {
 	RETURN_IF_FAILED(m_domainName.Set(domainName)); // 16
 	RETURN_IF_FAILED(m_userName.Set(userName)); // 17
@@ -22,30 +22,30 @@ HRESULT ConsoleLockAction::RuntimeClassInitialize(HSTRING domainName, HSTRING us
 	return S_OK;
 }
 
-HRESULT ConsoleLockAction::TriggerUnlock()
+HRESULT AuthUXLockAction::TriggerUnlock()
 {
 	RETURN_IF_FAILED(FireCompletion()); //26
 
 	return S_OK;
 }
 
-HRESULT ConsoleLockAction::SyncBackstop()
+HRESULT AuthUXLockAction::SyncBackstop()
 {
 	return S_OK;
 }
 
-HRESULT ConsoleLockAction::CheckCompletion()
+HRESULT AuthUXLockAction::CheckCompletion()
 {
 	return S_OK;
 }
 
-HRESULT ConsoleLockAction::get_VisualOwner(LC::LockDisplayOwner* value)
+HRESULT AuthUXLockAction::get_VisualOwner(LC::LockDisplayOwner* value)
 {
 	*value = LC::LockDisplayOwner_LogonUX;
 	return S_OK;
 }
 
-HRESULT ConsoleLockAction::get_DomainName(HSTRING* value)
+HRESULT AuthUXLockAction::get_DomainName(HSTRING* value)
 {
 	*value = nullptr;
 	if (m_domainName.IsEmpty())
@@ -56,7 +56,7 @@ HRESULT ConsoleLockAction::get_DomainName(HSTRING* value)
 	return S_OK;
 }
 
-HRESULT ConsoleLockAction::get_UserName(HSTRING* value)
+HRESULT AuthUXLockAction::get_UserName(HSTRING* value)
 {
 	*value = nullptr;
 	if (m_userName.IsEmpty())
@@ -67,7 +67,7 @@ HRESULT ConsoleLockAction::get_UserName(HSTRING* value)
 	return S_OK;
 }
 
-HRESULT ConsoleLockAction::get_FriendlyName(HSTRING* value)
+HRESULT AuthUXLockAction::get_FriendlyName(HSTRING* value)
 {
 	*value = nullptr;
 	if (m_friendlyName.IsEmpty())
@@ -78,43 +78,43 @@ HRESULT ConsoleLockAction::get_FriendlyName(HSTRING* value)
 	return S_OK;
 }
 
-HRESULT ConsoleLockAction::get_RequireSecureGesture(bool* value)
+HRESULT AuthUXLockAction::get_RequireSecureGesture(bool* value)
 {
 	*value = true;
 	return S_OK;
 }
 
-HRESULT ConsoleLockAction::get_ShowSpeedBump(bool* value)
+HRESULT AuthUXLockAction::get_ShowSpeedBump(bool* value)
 {
 	*value = false;
 	return S_OK;
 }
 
-HRESULT ConsoleLockAction::get_RequireSecureGestureString(HSTRING* value)
+HRESULT AuthUXLockAction::get_RequireSecureGestureString(HSTRING* value)
 {
 	*value = nullptr;
 	return S_OK;
 }
 
-HRESULT ConsoleLockAction::get_SpeedBumpString(HSTRING* value)
+HRESULT AuthUXLockAction::get_SpeedBumpString(HSTRING* value)
 {
 	*value = nullptr;
 	return S_OK;
 }
 
-HRESULT ConsoleLockAction::get_IsLostMode(bool* value)
+HRESULT AuthUXLockAction::get_IsLostMode(bool* value)
 {
 	*value = false;
 	return S_OK;
 }
 
-HRESULT ConsoleLockAction::get_LostModeMessage(HSTRING* value)
+HRESULT AuthUXLockAction::get_LostModeMessage(HSTRING* value)
 {
 	*value = nullptr;
 	return S_OK;
 }
 
-HRESULT ConsoleLockAction::add_UserActivity(WF::ITypedEventHandler<LC::ILockInfo*, LC::LockActivity>* handler,
+HRESULT AuthUXLockAction::add_UserActivity(WF::ITypedEventHandler<LC::ILockInfo*, LC::LockActivity>* handler,
                                             EventRegistrationToken* token)
 {
 	token->value = 0;
@@ -123,19 +123,19 @@ HRESULT ConsoleLockAction::add_UserActivity(WF::ITypedEventHandler<LC::ILockInfo
 	return S_OK;
 }
 
-HRESULT ConsoleLockAction::remove_UserActivity(EventRegistrationToken token)
+HRESULT AuthUXLockAction::remove_UserActivity(EventRegistrationToken token)
 {
 	RETURN_IF_FAILED(m_userActivityEvent.Remove(token)); // 105
 	return S_OK;
 }
 
-HRESULT ConsoleLockAction::put_Completed(WF::IAsyncOperationCompletedHandler<HSTRING>* pRequestHandler)
+HRESULT AuthUXLockAction::put_Completed(WF::IAsyncOperationCompletedHandler<HSTRING>* pRequestHandler)
 {
 	RETURN_IF_FAILED(PutOnComplete(pRequestHandler)); // 112
 	return S_OK;
 }
 
-HRESULT ConsoleLockAction::get_Completed(WF::IAsyncOperationCompletedHandler<HSTRING>** ppRequestHandler)
+HRESULT AuthUXLockAction::get_Completed(WF::IAsyncOperationCompletedHandler<HSTRING>** ppRequestHandler)
 {
 	*ppRequestHandler = nullptr;
 	RETURN_IF_FAILED(GetOnComplete(ppRequestHandler)); // 119
@@ -143,21 +143,21 @@ HRESULT ConsoleLockAction::get_Completed(WF::IAsyncOperationCompletedHandler<HST
 	return S_OK;
 }
 
-HRESULT ConsoleLockAction::GetResults(HSTRING* results)
+HRESULT AuthUXLockAction::GetResults(HSTRING* results)
 {
 	return S_OK;
 }
 
-HRESULT ConsoleLockAction::OnStart()
+HRESULT AuthUXLockAction::OnStart()
 {
 	return S_OK;
 }
 
-void ConsoleLockAction::OnClose()
+void AuthUXLockAction::OnClose()
 {
 }
 
-void ConsoleLockAction::OnCancel()
+void AuthUXLockAction::OnCancel()
 {
 	FireCompletion();
 }

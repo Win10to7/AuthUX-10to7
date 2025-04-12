@@ -328,7 +328,7 @@ HRESULT UserList::ZoomTile(CDUIUserTileElement* userTile)
 
     unsigned long long val = 1;
 
-    _TraverseTree(userTile, DirectUI::Element::GetClassInfoPtr(), SetOneElementZoomed, (LPVOID)val);
+    TraverseTree(userTile, DirectUI::Element::GetClassInfoPtr(), SetOneElementZoomed, (LPVOID)val);
 
     if (cookie2)
         userTile->EndDefer(cookie2);
@@ -410,7 +410,7 @@ HRESULT UserList::UnzoomList(CDUIUserTileElement* userTile)
 
 	unsigned long long val = 0;
 
-	_TraverseTree(userTile, DirectUI::Element::GetClassInfoPtr(), SetOneElementZoomed, (LPVOID)val);
+	TraverseTree(userTile, DirectUI::Element::GetClassInfoPtr(), SetOneElementZoomed, (LPVOID)val);
 
 	SetVisibleDownTree(false, userTile, userTile->FindDescendent(DirectUI::StrToID(L"NonSelectorFieldsFrame")));
 	SetEnabledDownTree(false, userTile, userTile->FindDescendent(DirectUI::StrToID(L"NonSelectorFieldsFrame")));

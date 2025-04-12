@@ -1,6 +1,6 @@
 ﻿#include "pch.h"
 
-#include "consolelockaction.h"
+#include "authuxlockaction.h"
 #include "duiutil.h"
 #include "logonframe.h"
 
@@ -10,10 +10,10 @@ using namespace ABI::Windows::Foundation;
 using namespace Windows::Internal::UI::Logon::Controller;
 using namespace Windows::Internal::UI::Logon::CredProvData;
 
-extern const __declspec(selectany) _Null_terminated_ WCHAR RuntimeClass_Windows_Internal_UI_Logon_Controller_ConsoleLockScreen[] = L"Windows.Internal.UI.Logon.Controller.ConsoleLockScreen";
-//extern const __declspec(selectany) _Null_terminated_ WCHAR RuntimeClass_Windows_Internal_UI_Logon_Controller_ConsoleLockScreen[] = L"Windows.Internal.UI.Logon.Controller.LockScreenHost";
+//extern const __declspec(selectany) _Null_terminated_ WCHAR RuntimeClass_Windows_Internal_UI_Logon_Controller_ConsoleLockScreen[] = L"Windows.Internal.UI.Logon.Controller.ConsoleLockScreen";
+extern const __declspec(selectany) _Null_terminated_ WCHAR RuntimeClass_Windows_Internal_UI_Logon_Controller_ConsoleLockScreen[] = L"Windows.Internal.UI.Logon.Controller.LockScreenHost";
 
-class ConsoleLock final
+class AuthUXLock final
 	: public RuntimeClass<RuntimeClassFlags<WinRtClassicComMix>
 		, ILockScreenHost
 		, FtmBase
@@ -22,8 +22,8 @@ class ConsoleLock final
 	InspectableClass(RuntimeClass_Windows_Internal_UI_Logon_Controller_ConsoleLockScreen, FullTrust);
 
 public:
-	ConsoleLock();
-	~ConsoleLock() override;
+	AuthUXLock();
+	~AuthUXLock() override;
 
 	STDMETHODIMP ShowWebDialogAsync(HSTRING a1, void** a2) override;
 	STDMETHODIMP LockAsync(LockOptions options, HSTRING domainName, HSTRING userName, HSTRING friendlyName, HSTRING unk, bool* setWin32kForegroundHardening, IUnlockTrigger** ppAction) override;
@@ -31,20 +31,20 @@ public:
 	STDMETHODIMP PreShutdown() override;
 };
 
-ConsoleLock::ConsoleLock()
+AuthUXLock::AuthUXLock()
 {
 }
 
-ConsoleLock::~ConsoleLock()
+AuthUXLock::~AuthUXLock()
 {
 }
 
-HRESULT ConsoleLock::ShowWebDialogAsync(HSTRING a1, void** a2)
+HRESULT AuthUXLock::ShowWebDialogAsync(HSTRING a1, void** a2)
 {
 	return S_OK;
 }
 
-HRESULT ConsoleLock::LockAsync(LockOptions options, HSTRING domainName, HSTRING userName, HSTRING friendlyName, HSTRING unk,
+HRESULT AuthUXLock::LockAsync(LockOptions options, HSTRING domainName, HSTRING userName, HSTRING friendlyName, HSTRING unk,
                                bool* setWin32kForegroundHardening, IUnlockTrigger** ppAction)
 {
 	*ppAction = nullptr;
@@ -56,20 +56,20 @@ HRESULT ConsoleLock::LockAsync(LockOptions options, HSTRING domainName, HSTRING 
 
 	RETURN_HR_IF(E_NOTIMPL, (options & LockOptions_SecureDesktop) == 0);
 
-	RETURN_IF_FAILED(MakeAndInitialize<ConsoleLockAction>(ppAction,domainName,userName,friendlyName)); // 36
+	RETURN_IF_FAILED(MakeAndInitialize<AuthUXLockAction>(ppAction,domainName,userName,friendlyName)); // 36
 
 
 	return S_OK;
 }
 
-HRESULT ConsoleLock::Reset()
+HRESULT AuthUXLock::Reset()
 {
 	return S_OK;
 }
 
-HRESULT ConsoleLock::PreShutdown()
+HRESULT AuthUXLock::PreShutdown()
 {
 	return S_OK;
 }
 
-ActivatableClass(ConsoleLock);
+ActivatableClass(AuthUXLock);

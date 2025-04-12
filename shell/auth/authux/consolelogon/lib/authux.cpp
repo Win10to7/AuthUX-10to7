@@ -9,18 +9,18 @@ using namespace Windows::Internal::UI::Logon::Controller;
 using namespace Windows::Internal::UI::Logon::CredProvData;
 
 extern const __declspec(selectany) _Null_terminated_ WCHAR RuntimeClass_Windows_Internal_UI_Logon_Controller_ConsoleLogonUX[] = L"Windows.Internal.UI.Logon.Controller.ConsoleLogonUX";
-//extern const __declspec(selectany) _Null_terminated_ WCHAR RuntimeClass_Windows_Internal_UI_Logon_Controller_ConsoleLogonUX[] = L"Windows.Internal.UI.Logon.Controller.LogonUX";
+extern const __declspec(selectany) _Null_terminated_ WCHAR RuntimeClass_Windows_Internal_UI_Logon_Controller_LogonUX[] = L"Windows.Internal.UI.Logon.Controller.LogonUX";
 
-class ConsoleLogon final
+class AuthUX final
 	: public RuntimeClass<RuntimeClassFlags<WinRtClassicComMix>
 		, ILogonUX
 		, FtmBase
 	>
 {
-	InspectableClass(RuntimeClass_Windows_Internal_UI_Logon_Controller_ConsoleLogonUX, FullTrust);
+	InspectableClass(RuntimeClass_Windows_Internal_UI_Logon_Controller_LogonUX, FullTrust);
 
 public:
-	ConsoleLogon();
+	AuthUX();
 
 	// ReSharper disable once CppHidingFunction
 	HRESULT RuntimeClassInitialize();
@@ -65,7 +65,7 @@ public:
 	//~ End Windows::Internal::UI::Logon::Controller::ILogonUX Interface
 
 private:
-	~ConsoleLogon() override;
+	~AuthUX() override;
 
 	HRESULT CheckUIStarted();
 	HRESULT Lock(LogonUIRequestReason reason, bool allowDirectUserSwitching, IUnlockTrigger* unlockTrigger);
@@ -94,7 +94,7 @@ private:
 	HRESULT MakeCancellableAsyncOperation(THandler&& handler, IAsyncOperation<TResultRaw>** ppOperation, const TLambda& lambda)
 	{
 		*ppOperation = nullptr;
-		ComPtr<ConsoleLogon> thisRef = this;
+		ComPtr<AuthUX> thisRef = this;
 		HRESULT hr = WI::MakeAsyncHelper<
 			IAsyncOperation<TResultRaw>,
 			IAsyncOperationCompletedHandler<TResultRaw>,
@@ -125,7 +125,7 @@ private:
 	HRESULT MakeCancellableAsyncAction(THandler&& handler, IAsyncAction** ppAction, const TLambda& lambda)
 	{
 		*ppAction = nullptr;
-		ComPtr<ConsoleLogon> thisRef = this;
+		ComPtr<AuthUX> thisRef = this;
 		HRESULT hr = WI::MakeAsyncHelper<
 			IAsyncAction,
 			IAsyncActionCompletedHandler,
@@ -152,16 +152,16 @@ private:
 	ComPtr<LogonViewManager> m_consoleUIManager;
 };
 
-ConsoleLogon::ConsoleLogon()
+AuthUX::AuthUX()
 {
 }
 
-HRESULT ConsoleLogon::RuntimeClassInitialize()
+HRESULT AuthUX::RuntimeClassInitialize()
 {
 	return S_OK;
 }
 
-HRESULT ConsoleLogon::Start(
+HRESULT AuthUX::Start(
 	IInspectable* autoLogonManager, IRedirectionManager* redirectionManager,
 	IUserSettingManager* userSettingManager, IDisplayStateProvider* displayStateProvider,
 	IBioFeedbackListener* bioFeedbackListener)
@@ -175,9 +175,9 @@ HRESULT ConsoleLogon::Start(
 	return S_OK;
 }
 #if CONSOLELOGON_FOR >= CONSOLELOGON_FOR_19h1
-HRESULT ConsoleLogon::DelayLock(BOOLEAN allowDirectUserSwitching, UCHAR unk1, UCHAR unk2, HSTRING unk3, IUnlockTrigger* unlockTrigger)
+HRESULT AuthUX::DelayLock(BOOLEAN allowDirectUserSwitching, UCHAR unk1, UCHAR unk2, HSTRING unk3, IUnlockTrigger* unlockTrigger)
 #else
-HRESULT ConsoleLogon::DelayLock(BOOLEAN allowDirectUserSwitching, UCHAR unk1, UCHAR unk2, IUnlockTrigger* unlockTrigger)
+HRESULT AuthUX::DelayLock(BOOLEAN allowDirectUserSwitching, UCHAR unk1, UCHAR unk2, IUnlockTrigger* unlockTrigger)
 #endif
 {
 	Wrappers::SRWLock::SyncLockShared lock = m_Lock.LockShared();
@@ -189,9 +189,9 @@ HRESULT ConsoleLogon::DelayLock(BOOLEAN allowDirectUserSwitching, UCHAR unk1, UC
 	return S_OK;
 }
 #if CONSOLELOGON_FOR >= CONSOLELOGON_FOR_19h1
-HRESULT ConsoleLogon::HardLock(LogonUIRequestReason reason, BOOLEAN allowDirectUserSwitching, UCHAR unk1, UCHAR unk2, HSTRING unk3, IUnlockTrigger* unlockTrigger)
+HRESULT AuthUX::HardLock(LogonUIRequestReason reason, BOOLEAN allowDirectUserSwitching, UCHAR unk1, UCHAR unk2, HSTRING unk3, IUnlockTrigger* unlockTrigger)
 #else
-HRESULT ConsoleLogon::HardLock(LogonUIRequestReason reason, BOOLEAN allowDirectUserSwitching, UCHAR unk1, UCHAR unk2, IUnlockTrigger* unlockTrigger)
+HRESULT AuthUX::HardLock(LogonUIRequestReason reason, BOOLEAN allowDirectUserSwitching, UCHAR unk1, UCHAR unk2, IUnlockTrigger* unlockTrigger)
 #endif
 {
 	Wrappers::SRWLock::SyncLockShared lock = m_Lock.LockShared();
@@ -203,10 +203,10 @@ HRESULT ConsoleLogon::HardLock(LogonUIRequestReason reason, BOOLEAN allowDirectU
 	return S_OK;
 }
 #if CONSOLELOGON_FOR >= CONSOLELOGON_FOR_19h1
-HRESULT ConsoleLogon::RequestCredentialsAsync(
+HRESULT AuthUX::RequestCredentialsAsync(
 	LogonUIRequestReason reason, LogonUIFlags flags, HSTRING unk, IAsyncOperation<RequestCredentialsData*>** ppOperation)
 #else
-HRESULT ConsoleLogon::RequestCredentialsAsync(
+HRESULT AuthUX::RequestCredentialsAsync(
 	LogonUIRequestReason reason, LogonUIFlags flags, IAsyncOperation<RequestCredentialsData*>** ppOperation)
 #endif
 {
@@ -217,7 +217,7 @@ HRESULT ConsoleLogon::RequestCredentialsAsync(
 
 	//MessageBox(0,WindowsGetStringRawBuffer(unk,0),WindowsGetStringRawBuffer(unk,0),0);
 
-	ComPtr<ConsoleLogon> asyncReference = this;
+	ComPtr<AuthUX> asyncReference = this;
 	ComPtr<LogonViewManager> viewManager = m_consoleUIManager;
 	HRESULT hr = MakeCancellableAsyncOperation<WI::CMarshaledInterfaceResult<IRequestCredentialsData>, RequestCredentialsData*>(
 		WI::ComTaskPoolHandler(WI::TaskApartment::Any, WI::TaskOptions::SyncNesting),
@@ -234,7 +234,7 @@ HRESULT ConsoleLogon::RequestCredentialsAsync(
 	return S_OK;
 }
 
-HRESULT ConsoleLogon::ReportCredentialsAsync(
+HRESULT AuthUX::ReportCredentialsAsync(
 	LogonUIRequestReason reason, NTSTATUS ntsStatus, NTSTATUS ntsSubStatus, HSTRING samCompatibleUserName,
 	HSTRING displayName, HSTRING userSid, IAsyncOperation<ReportCredentialsData*>** ppOperation)
 {
@@ -270,7 +270,7 @@ HRESULT ConsoleLogon::ReportCredentialsAsync(
 	return S_OK;
 }
 
-HRESULT ConsoleLogon::DisplayMessageAsync(
+HRESULT AuthUX::DisplayMessageAsync(
 	LogonMessageMode messageMode, UINT messageBoxFlags, HSTRING caption, HSTRING message,
 	IAsyncOperation<MessageDisplayResult*>** ppOperation)
 {
@@ -307,7 +307,7 @@ HRESULT ConsoleLogon::DisplayMessageAsync(
 	return S_OK;
 }
 
-HRESULT ConsoleLogon::DisplayCredentialErrorAsync(
+HRESULT AuthUX::DisplayCredentialErrorAsync(
 	NTSTATUS ntsStatus, NTSTATUS ntsSubstatus, UINT messageBoxFlags, HSTRING caption, HSTRING message,
 	IAsyncOperation<MessageDisplayResult*>** ppOperation)
 {
@@ -346,7 +346,7 @@ HRESULT ConsoleLogon::DisplayCredentialErrorAsync(
 
 static const WCHAR DisplayStatusAction[] = L"Windows.Foundation.IAsyncAction ConsoleLogon.DisplayStatus";
 
-HRESULT ConsoleLogon::DisplayStatusAsync(LogonUIState state, HSTRING status, IAsyncAction** ppAction)
+HRESULT AuthUX::DisplayStatusAsync(LogonUIState state, HSTRING status, IAsyncAction** ppAction)
 {
 	*ppAction = nullptr;
 
@@ -374,15 +374,15 @@ HRESULT ConsoleLogon::DisplayStatusAsync(LogonUIState state, HSTRING status, IAs
 	return S_OK;
 }
 
-HRESULT ConsoleLogon::DisplayStatusAndForceCredentialPageAsync(LogonUIRequestReason reason, LogonUIFlags flags,
+HRESULT AuthUX::DisplayStatusAndForceCredentialPageAsync(LogonUIRequestReason reason, LogonUIFlags flags,
 	HSTRING unk1, LogonUIState state, HSTRING status, WF::IAsyncAction** asyncAction)
 {
-	return ConsoleLogon::DisplayStatusAsync(state,status,asyncAction);
+	return AuthUX::DisplayStatusAsync(state,status,asyncAction);
 }
 
 static const WCHAR LogonAnimationAction[] = L"Windows.Foundation.IAsyncAction ConsoleLogon.LogonAnimation";
 
-HRESULT ConsoleLogon::TriggerLogonAnimationAsync(IAsyncAction** ppAction)
+HRESULT AuthUX::TriggerLogonAnimationAsync(IAsyncAction** ppAction)
 {
 	*ppAction = nullptr;
 
@@ -397,7 +397,7 @@ HRESULT ConsoleLogon::TriggerLogonAnimationAsync(IAsyncAction** ppAction)
 	return S_OK;
 }
 
-HRESULT ConsoleLogon::ResetCredentials()
+HRESULT AuthUX::ResetCredentials()
 {
 	Wrappers::SRWLock::SyncLockShared lock = m_Lock.LockShared();
 	RETURN_IF_FAILED(CheckUIStarted()); // 311
@@ -406,7 +406,7 @@ HRESULT ConsoleLogon::ResetCredentials()
 	return S_OK;
 }
 
-HRESULT ConsoleLogon::RestoreFromFirstSignInAnimation()
+HRESULT AuthUX::RestoreFromFirstSignInAnimation()
 {
 	return S_OK;
 }
@@ -421,12 +421,12 @@ HRESULT WaitForCompletion(TOperation* pOperation, COWAIT_FLAGS flags = (COWAIT_F
 
 static const WCHAR StopAction[] = L"Windows.Foundation.IAsyncAction ConsoleLogon.Stop";
 
-HRESULT ConsoleLogon::ClearUIState(HSTRING statusMessage)
+HRESULT AuthUX::ClearUIState(HSTRING statusMessage)
 {
 	Wrappers::SRWLock::SyncLockExclusive lock = m_Lock.LockExclusive();
 	if (SUCCEEDED(CheckUIStarted()))
 	{
-		ComPtr<ConsoleLogon> asyncReference = this;
+		ComPtr<AuthUX> asyncReference = this;
 		ComPtr<LogonViewManager> viewManager = m_consoleUIManager;
 		ComPtr<IAsyncAction> cleanupAction;
 		HRESULT hr = WI::MakeAsyncHelper<
@@ -478,7 +478,7 @@ HRESULT ConsoleLogon::ClearUIState(HSTRING statusMessage)
 	return S_OK;
 }
 
-HRESULT ConsoleLogon::ShowSecurityOptionsAsync(LogonUISecurityOptions options, IAsyncOperation<LogonUISecurityOptionsResult*>** ppOperation)
+HRESULT AuthUX::ShowSecurityOptionsAsync(LogonUISecurityOptions options, IAsyncOperation<LogonUISecurityOptionsResult*>** ppOperation)
 {
 	*ppOperation = nullptr;
 
@@ -500,30 +500,30 @@ HRESULT ConsoleLogon::ShowSecurityOptionsAsync(LogonUISecurityOptions options, I
 	return S_OK;
 }
 
-HRESULT ConsoleLogon::WebDialogDisplayed(void*)
+HRESULT AuthUX::WebDialogDisplayed(void*)
 {
 	MessageBoxW(nullptr,L"WebDialogDisplayed not Implemented",L"WebDialogDisplayed not Implemented",0);
 	return S_OK;
 }
 
-HRESULT ConsoleLogon::get_WindowContainer(IInspectable** value)
+HRESULT AuthUX::get_WindowContainer(IInspectable** value)
 {
 	*value = nullptr;
 	return S_OK;
 }
 
-HRESULT ConsoleLogon::Hide()
+HRESULT AuthUX::Hide()
 {
 	return S_OK;
 }
 
-HRESULT ConsoleLogon::Stop()
+HRESULT AuthUX::Stop()
 {
 	Wrappers::SRWLock::SyncLockExclusive lock = m_Lock.LockExclusive();
 	if (SUCCEEDED(CheckUIStarted()))
 	{
 		auto scopeExit = wil::scope_exit([this]() -> void { m_consoleUIManager->StopUI(); });
-		ComPtr<ConsoleLogon> asyncReference = this;
+		ComPtr<AuthUX> asyncReference = this;
 		ComPtr<LogonViewManager> viewManager = m_consoleUIManager;
 		ComPtr<IAsyncAction> cleanupAction;
 		HRESULT hr = WI::MakeAsyncHelper<
@@ -554,16 +554,16 @@ HRESULT ConsoleLogon::Stop()
 	return S_OK;
 }
 
-ConsoleLogon::~ConsoleLogon()
+AuthUX::~AuthUX()
 {
 }
 
-HRESULT ConsoleLogon::CheckUIStarted()
+HRESULT AuthUX::CheckUIStarted()
 {
 	return m_consoleUIManager.Get() ? S_OK : E_APPLICATION_EXITING;
 }
 
-HRESULT ConsoleLogon::Lock(LogonUIRequestReason reason, bool allowDirectUserSwitching, IUnlockTrigger* unlockTrigger)
+HRESULT AuthUX::Lock(LogonUIRequestReason reason, bool allowDirectUserSwitching, IUnlockTrigger* unlockTrigger)
 {
 	RETURN_IF_FAILED(CheckUIStarted()); // 486
 
@@ -571,4 +571,4 @@ HRESULT ConsoleLogon::Lock(LogonUIRequestReason reason, bool allowDirectUserSwit
 	return S_OK;
 }
 
-ActivatableClass(ConsoleLogon);
+ActivatableClass(AuthUX);

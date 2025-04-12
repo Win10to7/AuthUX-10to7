@@ -193,7 +193,7 @@ static int SetEnabledDownTree(bool val, DirectUI::Element* element1, DirectUI::E
 	return result;
 }
 
-static HRESULT _TraverseTree(DirectUI::Element* elm, DirectUI::IClassInfo* classInfo, HRESULT(STDMETHODCALLTYPE* callbackFunc)(DirectUI::Element*, LPVOID param), LPVOID param)
+static HRESULT TraverseTree(DirectUI::Element* elm, DirectUI::IClassInfo* classInfo, HRESULT(STDMETHODCALLTYPE* callbackFunc)(DirectUI::Element*, LPVOID param), LPVOID param)
 {
 	if (elm->GetClassInfoW()->IsSubclassOf(classInfo))
 		RETURN_IF_FAILED(callbackFunc(elm,param));
@@ -205,7 +205,7 @@ static HRESULT _TraverseTree(DirectUI::Element* elm, DirectUI::IClassInfo* class
 		for (UINT i = 0; i < Children->GetSize(); ++i)
 		{
 			auto Child = Children->GetItem(i);
-			RETURN_IF_FAILED(_TraverseTree(Child,classInfo,callbackFunc,param));
+			RETURN_IF_FAILED(TraverseTree(Child,classInfo,callbackFunc,param));
 		}
 	}
 
@@ -218,7 +218,6 @@ static bool IsElementOfClass(DirectUI::Element* element, const wchar_t* classNam
 {
 	return _wcsicmp(element->GetClassInfoW()->GetName(), className) == 0;
 }
-
 
 static HRESULT SHRegGetBOOLWithREGSAM(HKEY key, LPCWSTR subKey, LPCWSTR value, REGSAM regSam, BOOL* data)
 {
