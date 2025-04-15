@@ -129,14 +129,22 @@ void CLogonFrame::OnEvent(DirectUI::Event* pEvent)
 			}
 			else
 			{
-				m_consoleUIManager->ShowCredentialView();
-				//ComPtr<LogonViewManager> thisRef = m_consoleUIManager;
-				//
-				//HRESULT hr = BeginInvoke(m_consoleUIManager->m_Dispatcher.Get(), [=]() -> void
-				//{
-				//	thisRef->ShowCredentialView();
-				//});
-				//LOG_IF_FAILED(hr);
+				if (!m_bIsInEmergencyRestartDialog)
+					m_consoleUIManager->ShowCredentialView();
+				else
+				{
+					if (flag == MessageOptionFlag::Yes || flag == MessageOptionFlag::Ok)
+					{
+						ConfirmEmergencyShutdown();
+					}
+					else if (flag == MessageOptionFlag::No || flag == MessageOptionFlag::Cancel)
+					{
+						OnSecurityOptionSelected(LC::LogonUISecurityOptions_Cancel);
+						m_bIsInEmergencyRestartDialog = false;
+					}
+
+					DirectUI::HWNDElement::OnEvent(pEvent);
+				}
 			}
 		}
 	}
@@ -220,13 +228,20 @@ void CLogonFrame::OnEvent(DirectUI::Event* pEvent)
 			options = LC::LogonUISecurityOptions_TaskManager;
 		else if (pEvent->peTarget->GetID() == DirectUI::StrToID(L"Cancel"))
 			options = LC::LogonUISecurityOptions_Cancel;
+		else if (pEvent->peTarget->GetID() == DirectUI::StrToID(L"ShutDown") && (GetKeyState(VK_CONTROL) & 0x8000) != 0)
+		{
+			m_bIsInEmergencyRestartDialog = true;
+			_OnEmergencyRestart();
 
-		OnSecurityOptionSelected(options);
-	}
+			return DirectUI::HWNDElement::OnEvent(pEvent);
+		}
+		else
+		{
+			return DirectUI::HWNDElement::OnEvent(pEvent);
+		}
 
-	if (pEvent->uidType == DirectUI::Button::Click() && m_CurrentWindow == m_LogonUserList)
-	{
-
+		if (m_bIsInEmergencyRestartDialog == false)
+			OnSecurityOptionSelected(options);
 	}
 
 	return DirectUI::HWNDElement::OnEvent(pEvent);
@@ -349,6 +364,23 @@ HRESULT CLogonFrame::OnSecurityOptionSelected(LC::LogonUISecurityOptions Securit
 
 	ComPtr<LC::ILogonUISecurityOptionsResult> optionResult;
 	RETURN_IF_FAILED(factory->CreateSecurityOptionsResult(SecurityOpt, LC::LogonUIShutdownChoice_None, &optionResult)); // 104
+
+	RETURN_IF_FAILED(m_SecurityOptionsCompletion->GetResult().Set(optionResult.Get())); // 106
+
+	m_SecurityOptionsCompletion->Complete(S_OK);
+	m_SecurityOptionsCompletion.reset();
+
+	return S_OK;
+}
+
+HRESULT CLogonFrame::ConfirmEmergencyShutdown()
+{
+	ComPtr<LC::ILogonUISecurityOptionsResultFactory> factory;
+	RETURN_IF_FAILED(WF::GetActivationFactory(
+		Wrappers::HStringReference(RuntimeClass_Windows_Internal_UI_Logon_Controller_LogonUISecurityOptionsResult).Get(), &factory)); // 101
+
+	ComPtr<LC::ILogonUISecurityOptionsResult> optionResult;
+	RETURN_IF_FAILED(factory->CreateSecurityOptionsResult(LC::LogonUISecurityOptions_Cancel, LC::LogonUIShutdownChoice_EmergencyRestart, &optionResult)); // 104
 
 	RETURN_IF_FAILED(m_SecurityOptionsCompletion->GetResult().Set(optionResult.Get())); // 106
 
@@ -906,4 +938,19 @@ void CLogonFrame::_DisplayLogonDialog(const wchar_t* messageCaptionContent, cons
     ButtonToFocus->SetKeyFocus();
 	if (cookie)
 		EndDefer(cookie);
+}
+
+void CLogonFrame::_OnEmergencyRestart()
+{
+	WCHAR caption[64] = {};
+	WCHAR content[256] = {};
+
+	if ( LoadStringW(HINST_THISCOMPONENT, 12010, caption, 64) )// Emergency restart
+	{
+		if ( LoadStringW(HINST_THISCOMPONENT, 12011, content, 256) )// Click OK to immediately restart your computer.  Any un-saved data will be lost.  Use this only as a last resort.
+		{
+			m_bIsInEmergencyRestartDialog = true;
+			_DisplayLogonDialog(caption, content, 257);
+		}
+	}
 }

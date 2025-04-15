@@ -33,6 +33,7 @@ public:
 	void SetBackgroundGraphics();
 	void ShowSecurityOptions(LC::LogonUISecurityOptions SecurityOptsFlag, WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::ILogonUISecurityOptionsResult>> completion);
 	HRESULT OnSecurityOptionSelected(LC::LogonUISecurityOptions SecurityOpt);
+	HRESULT ConfirmEmergencyShutdown();
 
 	void ShowStatusMessage(const wchar_t* message);
 
@@ -90,9 +91,11 @@ private:
 	void _ShowCursor(bool bShow);
 	void _DisplayStatusMessage(const wchar_t* message, bool showSpinner);
 	void _DisplayLogonDialog(const wchar_t* messageCaptionContent, const wchar_t* messageContent, WORD flags);
+	void _OnEmergencyRestart();
 
 	static CLogonFrame* _pSingleton;
 
 	wistd::unique_ptr<WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::ILogonUISecurityOptionsResult>>> m_SecurityOptionsCompletion;
 	wistd::unique_ptr<WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IMessageDisplayResult>>> m_MessageDisplayResultCompletion;
+	bool m_bIsInEmergencyRestartDialog = false;
 };
