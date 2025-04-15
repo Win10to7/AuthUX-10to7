@@ -1,6 +1,6 @@
 # AuthUX
 
-**AuthUX** is a project based on [the ConsoleLogon decompilation](//github.com/aubymori/ConsoleLogon) which aims to replicate the Windows 7 logon screen.
+**AuthUX** is a project based on [the ConsoleLogon decompilation](//github.com/explorer7-team/ConsoleLogon) which aims to replicate the Windows 7 logon screen.
 
 > [!WARNING]
 > **THIS PROJECT IS IN EARLY DEVELOPMENT AND MIGHT BE UNSTABLE. Use at your own risk.**
