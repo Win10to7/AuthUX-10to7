@@ -10,6 +10,7 @@
 #include "duiutil.h"
 #include "logonguids.h"
 #include "slpublic.h"
+#include "powrprof.h"
 
 using namespace Microsoft::WRL;
 
@@ -100,12 +101,34 @@ HRESULT CLogonFrame::CreateStyleParser(DirectUI::DUIXmlParser** outParser)
 
 void CLogonFrame::OnEvent(DirectUI::Event* pEvent)
 {
-	//if (pEvent->peTarget == m_SwitchUser && pEvent->uidType == DirectUI::Button::Click())
-	//{
-	//	//m_activeUserList->UnzoomList(m_activeUserList->GetZoomedTile());
-	//	//m_consoleUIManager->m_credProvDataModel->put_SelectedUserOrV1Credential(nullptr);
-	//	return DirectUI::HWNDElement::OnEvent(pEvent);
-	//}
+	if (pEvent->uidType == DirectUI::Button::Click() && pEvent->nStage == DirectUI::GMF_BUBBLED) //non window specific buttons
+	{
+		if (pEvent->peTarget->GetID() == DirectUI::StrToID(L"ShutDownOptions"))
+		{
+			_HandleShutdownChoices();
+			return DirectUI::HWNDElement::OnEvent(pEvent);
+		}
+		else if (pEvent->peTarget->GetID() == DirectUI::StrToID(L"ShutDown"))
+		{
+			if (m_CurrentWindow == m_SecurityOptions && (GetKeyState(VK_CONTROL) & 0x8000) != 0)
+			{
+				m_bIsInEmergencyRestartDialog = true;
+				_OnEmergencyRestart();
+			}
+			else
+			{
+				_ShutdownCommon(_IsInstallUpdatesAndShutdownAllowed() ? 0x20002 : SHUTDOWN_FORCE_SELF);
+			}
+
+			return DirectUI::HWNDElement::OnEvent(pEvent);
+		}
+		else if (pEvent->peTarget->GetID() == DirectUI::StrToID(L"Accessibility"))
+		{
+			//there is a proper way to this, but this works just as well, so IDGAF!!
+			ShellExecuteW(0, L"open", L"utilman.exe", L"-debug", 0, SW_SHOWNORMAL);
+			return DirectUI::HWNDElement::OnEvent(pEvent);
+		}
+	}
 
 	if (pEvent->uidType == DirectUI::Button::Click() && m_CurrentWindow == m_MessageFrame && pEvent->nStage == DirectUI::GMF_BUBBLED)
 	{
@@ -228,13 +251,6 @@ void CLogonFrame::OnEvent(DirectUI::Event* pEvent)
 			options = LC::LogonUISecurityOptions_TaskManager;
 		else if (pEvent->peTarget->GetID() == DirectUI::StrToID(L"Cancel"))
 			options = LC::LogonUISecurityOptions_Cancel;
-		else if (pEvent->peTarget->GetID() == DirectUI::StrToID(L"ShutDown") && (GetKeyState(VK_CONTROL) & 0x8000) != 0)
-		{
-			m_bIsInEmergencyRestartDialog = true;
-			_OnEmergencyRestart();
-
-			return DirectUI::HWNDElement::OnEvent(pEvent);
-		}
 		else
 		{
 			return DirectUI::HWNDElement::OnEvent(pEvent);
@@ -397,8 +413,14 @@ void CLogonFrame::ShowStatusMessage(const wchar_t* message)
 
 HRESULT CLogonFrame::_Initialize(CLogonNativeHWNDHost* Host, DirectUI::Element* pParent, DWORD* DeferCookie)
 {
-    m_nativeHost = Host;
+	RETURN_IF_FAILED(CoCreateInstance(CLSID_AuthUIShutdownChoices, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&m_shutdownChoices)));
 
+	DWORD dwChoiceMask = 0x400781 | 0x20006 | 0x200050;
+	//dwChoiceMask &= ~0x200000;
+	m_shutdownChoices->SetChoiceMask(dwChoiceMask);
+	m_shutdownChoices->SetShowBadChoices(TRUE);
+
+    m_nativeHost = Host;
     RETURN_IF_FAILED(DirectUI::HWNDElement::Initialize(m_nativeHost->GetHWND(),1,4,nullptr, DeferCookie));
 
     RETURN_IF_FAILED(CreateStyleParser(&m_xmlParser));
@@ -474,10 +496,28 @@ HRESULT CLogonFrame::_InitializeUserLists()
 	return S_OK;
 }
 
-//TODO:
 bool CLogonFrame::_IsInstallUpdatesAndShutdownAllowed()
 {
-	return true;
+	static bool isInstallUpdatesAndShutdownAllowed = false;
+
+	if (!isInstallUpdatesAndShutdownAllowed)
+	{
+		ComPtr<IEnumShutdownChoices> iterator;
+		if (FAILED(m_shutdownChoices->GetChoiceEnumerator(&iterator)))
+			return false;
+
+		DWORD sc;
+		while (iterator->Next(1, &sc, nullptr) == S_OK)
+		{
+			if ( (WORD)sc == 2 && (sc & 0x20000) != 0 )
+			{
+				isInstallUpdatesAndShutdownAllowed = true;
+				break;
+			}
+		}
+	}
+
+	return isInstallUpdatesAndShutdownAllowed;
 }
 
 //TODO:
@@ -952,5 +992,169 @@ void CLogonFrame::_OnEmergencyRestart()
 			m_bIsInEmergencyRestartDialog = true;
 			_DisplayLogonDialog(caption, content, 257);
 		}
+	}
+}
+
+__int64 __fastcall SHOpenEffectiveToken(DWORD DesiredAccess, int a2, void **a3)
+{
+	HANDLE CurrentThread; // rax
+	__int64 result; // rax
+	HANDLE v8; // rax
+	HANDLE CurrentProcess; // rax
+
+	*a3 = 0;
+	CurrentThread = GetCurrentThread();
+	if ( OpenThreadToken(CurrentThread, DesiredAccess, 0, a3) )
+		return 0;
+	result = ResultFromKnownLastError();
+	if ( (int)result >= 0 )
+		return result;
+	if ( a2 && (DWORD)result == -2147024891 )
+	{
+		v8 = GetCurrentThread();
+		if ( !OpenThreadToken(v8, DesiredAccess, 1, a3) )
+		{
+			result = ResultFromKnownLastError();
+			goto LABEL_7;
+		}
+		return 0;
+	}
+	LABEL_7:
+	  if ( (DWORD)result != -2147023888 )
+	  	return result;
+	CurrentProcess = GetCurrentProcess();
+	if ( OpenProcessToken(CurrentProcess, DesiredAccess, a3) )
+		return 0;
+	return ResultFromKnownLastError();
+}
+
+DWORD __fastcall SetPrivilegeAttribute(const unsigned __int16 *a1, DWORD a2, _TOKEN_ELEVATION_TYPE*a3)
+{
+	DWORD LastError; // ebx
+	DWORD ReturnLength; // [rsp+30h] [rbp-40h] BYREF
+	HANDLE TokenHandle; // [rsp+38h] [rbp-38h] BYREF
+	_LUID Luid; // [rsp+40h] [rbp-30h] BYREF
+	struct _TOKEN_PRIVILEGES NewState; // [rsp+48h] [rbp-28h] BYREF
+	struct _TOKEN_PRIVILEGES PreviousState; // [rsp+58h] [rbp-18h] BYREF
+
+	if ( LookupPrivilegeValueW(0, L"SeShutdownPrivilege", &Luid) && (int)SHOpenEffectiveToken(0x28u, 1, &TokenHandle) >= 0 )
+	{
+		NewState.Privileges[0].Luid = Luid;
+		NewState.PrivilegeCount = 1;
+		NewState.Privileges[0].Attributes = a2;
+		ReturnLength = 16;
+		if ( AdjustTokenPrivileges(TokenHandle, 0, &NewState, 0x10u, &PreviousState, &ReturnLength) && a3 )
+			*a3 = (_TOKEN_ELEVATION_TYPE)PreviousState.Privileges[0].Attributes;
+		LastError = GetLastError();
+		CloseHandle(TokenHandle);
+	}
+	else
+	{
+		return GetLastError();
+	}
+	return LastError;
+}
+
+void CLogonFrame::_HandleShutdownChoices()
+{
+	HMENU popupMenu = CreatePopupMenu();
+	if (!popupMenu) return; //gg
+
+	auto ShutdownOptionsElement = FindDescendent(DirectUI::StrToID(L"ShutDownOptions"));
+	if (!ShutdownOptionsElement) return;
+
+
+
+	ComPtr<IEnumShutdownChoices> iterator;
+	if (FAILED(m_shutdownChoices->GetChoiceEnumerator(&iterator)))
+		return;
+
+	CCoSimpleArray<DWORD> choices;
+
+	DWORD sc;
+	while (iterator->Next(1, &sc, nullptr) == S_OK)
+	{
+		choices.InsertAt((DWORD)sc,(size_t)0);
+	}
+
+	int offset = 0;
+	for (int i = 0; i < choices.GetSize(); ++i)
+	{
+		DWORD choice = choices[i];
+
+		MENUITEMINFOW mi = { sizeof(mi) };
+		{
+			WCHAR szChoiceName[200];
+			if (SUCCEEDED(m_shutdownChoices->GetChoiceName(choice, TRUE, szChoiceName, ARRAYSIZE(szChoiceName))))
+			{
+				mi.fMask = MIIM_STATE | MIIM_ID | MIIM_TYPE;
+				mi.fType = MFT_STRING;
+				mi.fState = MFS_ENABLED;
+				mi.wID = choice + 1;
+				mi.dwTypeData = szChoiceName;
+				mi.cch = wcslen(szChoiceName);
+				InsertMenuItemW(popupMenu, i+offset, TRUE, &mi);
+
+				if (i == 0)
+				{
+					MENUITEMINFOW mi = { sizeof(mi) };
+					mi.fMask = 0x103;
+					mi.fType = MFT_SEPARATOR;
+					InsertMenuItemW(popupMenu, i+1, TRUE, &mi);
+					offset++;
+				}
+			}
+		}
+
+	}
+
+	int x = 0;
+	int y = 0;
+
+	DirectUI::Value* val;
+	for (auto elm = ShutdownOptionsElement; elm; elm = elm->GetParent())
+	{
+		const POINT* location = elm->GetLocation(&val);
+		if (location)
+		{
+			x += location->x;
+			y += location->y;
+		}
+		val->Release();
+	}
+
+	HWND hwnd = m_nativeHost->GetHWND();
+
+	if ( (GetWindowLongW(hwnd, -20) & 0x400000) == 0 )
+		x += ShutdownOptionsElement->GetWidth();
+
+	BOOL returnVal = TrackPopupMenuEx(popupMenu, 394, x, y, hwnd, nullptr);
+	DWORD choice = -1;
+	if (returnVal)
+		choice = returnVal - 1;
+
+	DestroyMenu(popupMenu);
+
+	_ShutdownCommon(choice);
+}
+
+void CLogonFrame::_ShutdownCommon(DWORD choice)
+{
+	if ((choice & 6) != 0)
+	{
+		_TOKEN_ELEVATION_TYPE v12;
+		if (!SetPrivilegeAttribute(0,2,&v12))
+		{
+			InitiateShutdownW(0,0,0,choice,0);
+		}
+	}
+	else if ((choice & 0x50) != 0)
+	{
+		SetSuspendState((choice & 0x40) != 0, 0, 0);
+	}
+	else
+	{
+		MessageBoxW(0,L"I did not implement this edge case because i did not think its needed! MAKE AN ISSUE",L"Oops!",0);
+		//WinStationDisconnect();
 	}
 }

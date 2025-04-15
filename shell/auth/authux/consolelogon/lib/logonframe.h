@@ -75,6 +75,7 @@ public:
 	UserList* m_PLAPUserList;
 
 	Microsoft::WRL::ComPtr<LogonViewManager> m_consoleUIManager;
+	Microsoft::WRL::ComPtr<IShutdownChoices> m_shutdownChoices;
 	LC::LogonUIRequestReason m_currentReason;
 
 	bool isHighContrast = false;
@@ -92,6 +93,8 @@ private:
 	void _DisplayStatusMessage(const wchar_t* message, bool showSpinner);
 	void _DisplayLogonDialog(const wchar_t* messageCaptionContent, const wchar_t* messageContent, WORD flags);
 	void _OnEmergencyRestart();
+	void _HandleShutdownChoices();
+	void _ShutdownCommon(DWORD choice);
 
 	static CLogonFrame* _pSingleton;
 

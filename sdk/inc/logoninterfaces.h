@@ -1039,6 +1039,31 @@ enum class MessageOptionFlag
 
 DEFINE_ENUM_FLAG_OPERATORS(MessageOptionFlag);
 
+MIDL_INTERFACE("a0b16477-52f1-4cfe-b1cc-388cd0e3e23a")
+IEnumShutdownChoices : IUnknown
+{
+	virtual HRESULT STDMETHODCALLTYPE Next(DWORD, DWORD*, DWORD*) = 0;
+	virtual HRESULT STDMETHODCALLTYPE Skip(DWORD) = 0;
+	virtual HRESULT STDMETHODCALLTYPE Reset() = 0;
+	virtual HRESULT STDMETHODCALLTYPE Clone(IEnumShutdownChoices**) = 0;
+};
+
+// We only implement the Windows 10 version of this one
+MIDL_INTERFACE("bfdc5e2f-3402-49b3-8740-91d6dc5dbb15")
+IShutdownChoices : IUnknown
+{
+	virtual HRESULT STDMETHODCALLTYPE Refresh() = 0;
+	virtual HRESULT STDMETHODCALLTYPE SetChoiceMask(DWORD) = 0;
+	virtual void STDMETHODCALLTYPE GetChoiceMask(DWORD*) = 0;
+	virtual void STDMETHODCALLTYPE GetDefaultUIChoiceMask(DWORD*) = 0;
+	virtual HRESULT STDMETHODCALLTYPE SetShowBadChoices(int) = 0;
+	virtual HRESULT STDMETHODCALLTYPE GetChoiceEnumerator(IEnumShutdownChoices**) = 0;
+	virtual HRESULT STDMETHODCALLTYPE GetDefaultChoice(DWORD*) = 0;
+	virtual int STDMETHODCALLTYPE UserHasShutdownRights() = 0;
+	virtual HRESULT STDMETHODCALLTYPE GetChoiceName(DWORD, int, WCHAR*, UINT) = 0;
+	virtual HRESULT STDMETHODCALLTYPE GetChoiceDesc(DWORD, WCHAR*, UINT) = 0;
+};
+
 // Belongs to internal inputswitchserver.h
 inline const GUID DECLSPEC_SELECTANY CLSID_InputSwitchControl = { 0xb9bc2a50, 0x43c3, 0x41aa, { 0xa0, 0x86, 0x5d, 0xb1, 0x4e, 0x18, 0x4b, 0xae } };
 
