@@ -65,16 +65,16 @@ Function .onInit
         Quit
     ${EndIf}
 	
-	StrCpy $INSTDIR $PROGRAMFILES64
+	StrCpy $INSTDIR "$PROGRAMFILES64\AuthUX"
 FunctionEnd
 
 Section "AuthUX" AuthUX
     # Make sure install directories are clean
-    RMDir /r "$INSTDIR\AuthUX"
+    RMDir /r "$INSTDIR\"
 
     # Install x86-64 files
-    SetOutPath "$INSTDIR\AuthUX"
-    WriteUninstaller "$INSTDIR\AuthUX\uninstall.exe"
+    SetOutPath "$INSTDIR\"
+    WriteUninstaller "$INSTDIR\uninstall.exe"
     File "..\x64\Release\AuthUX.dll"
 	File "..\x64\Release\AuthUX.pdb"
 
@@ -83,7 +83,7 @@ Section "AuthUX" AuthUX
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\AuthUX" \
                  "DisplayName" "AuthUX"
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\AuthUX" \
-                 "UninstallString" "$\"$INSTDIR\AuthUX\uninstall.exe$\""
+                 "UninstallString" "$\"$INSTDIR\uninstall.exe$\""
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\AuthUX" \
                  "Publisher" "explorer7-team"
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\AuthUX" \
@@ -98,12 +98,12 @@ Section "AuthUX" AuthUX
     AccessControl::SetRegKeyOwner HKLM "SOFTWARE\Microsoft\WindowsRuntime\ActivatableClassId\Windows.Internal.UI.Logon.Controller.LogonUX" $0
     AccessControl::GrantOnRegKey HKLM "SOFTWARE\Microsoft\WindowsRuntime\ActivatableClassId\Windows.Internal.UI.Logon.Controller.LogonUX" $0 FullAccess
     WriteRegExpandStr HKLM "SOFTWARE\Microsoft\WindowsRuntime\ActivatableClassId\Windows.Internal.UI.Logon.Controller.LogonUX" \
-        "DllPath" "$INSTDIR\AuthUX\AuthUX.dll"
+        "DllPath" "$INSTDIR\AuthUX.dll"
 	
 	AccessControl::SetRegKeyOwner HKLM "SOFTWARE\Microsoft\WindowsRuntime\ActivatableClassId\Windows.Internal.UI.Logon.Controller.LockScreenHost" $0
     AccessControl::GrantOnRegKey HKLM "SOFTWARE\Microsoft\WindowsRuntime\ActivatableClassId\Windows.Internal.UI.Logon.Controller.LockScreenHost" $0 FullAccess
     WriteRegExpandStr HKLM "SOFTWARE\Microsoft\WindowsRuntime\ActivatableClassId\Windows.Internal.UI.Logon.Controller.LockScreenHost" \
-        "DllPath" "$INSTDIR\AuthUX\AuthUX.dll" 
+        "DllPath" "$INSTDIR\AuthUX.dll" 
 SectionEnd
 
 Section "Uninstall"
