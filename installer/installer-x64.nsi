@@ -29,6 +29,7 @@ ManifestSupportedOS all
 !insertmacro MUI_PAGE_WELCOME
 !insertmacro MUI_PAGE_LICENSE "..\LICENSE"
 !insertmacro MUI_PAGE_COMPONENTS
+!insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_INSTFILES
 !insertmacro MUI_PAGE_FINISH
 
@@ -63,15 +64,17 @@ Function .onInit
         MessageBox MB_OK|MB_ICONSTOP "$(STRING_NOT_WIN8)"
         Quit
     ${EndIf}
+	
+	StrCpy $INSTDIR $PROGRAMFILES64
 FunctionEnd
 
 Section "AuthUX" AuthUX
     # Make sure install directories are clean
-    RMDir /r "$PROGRAMFILES64\AuthUX"
+    RMDir /r "$INSTDIR\AuthUX"
 
     # Install x86-64 files
-    SetOutPath "$PROGRAMFILES64\AuthUX"
-    WriteUninstaller "$PROGRAMFILES64\AuthUX\uninstall.exe"
+    SetOutPath "$INSTDIR\AuthUX"
+    WriteUninstaller "$INSTDIR\AuthUX\uninstall.exe"
     File "..\x64\Release\AuthUX.dll"
 	File "..\x64\Release\AuthUX.pdb"
 
@@ -80,7 +83,7 @@ Section "AuthUX" AuthUX
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\AuthUX" \
                  "DisplayName" "AuthUX"
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\AuthUX" \
-                 "UninstallString" "$\"$PROGRAMFILES64\AuthUX\uninstall.exe$\""
+                 "UninstallString" "$\"$INSTDIR\AuthUX\uninstall.exe$\""
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\AuthUX" \
                  "Publisher" "explorer7-team"
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\AuthUX" \
@@ -95,19 +98,19 @@ Section "AuthUX" AuthUX
     AccessControl::SetRegKeyOwner HKLM "SOFTWARE\Microsoft\WindowsRuntime\ActivatableClassId\Windows.Internal.UI.Logon.Controller.LogonUX" $0
     AccessControl::GrantOnRegKey HKLM "SOFTWARE\Microsoft\WindowsRuntime\ActivatableClassId\Windows.Internal.UI.Logon.Controller.LogonUX" $0 FullAccess
     WriteRegExpandStr HKLM "SOFTWARE\Microsoft\WindowsRuntime\ActivatableClassId\Windows.Internal.UI.Logon.Controller.LogonUX" \
-        "DllPath" "$PROGRAMFILES64\AuthUX\AuthUX.dll"
+        "DllPath" "$INSTDIR\AuthUX\AuthUX.dll"
 	
 	AccessControl::SetRegKeyOwner HKLM "SOFTWARE\Microsoft\WindowsRuntime\ActivatableClassId\Windows.Internal.UI.Logon.Controller.LockScreenHost" $0
     AccessControl::GrantOnRegKey HKLM "SOFTWARE\Microsoft\WindowsRuntime\ActivatableClassId\Windows.Internal.UI.Logon.Controller.LockScreenHost" $0 FullAccess
     WriteRegExpandStr HKLM "SOFTWARE\Microsoft\WindowsRuntime\ActivatableClassId\Windows.Internal.UI.Logon.Controller.LockScreenHost" \
-        "DllPath" "$PROGRAMFILES64\AuthUX\AuthUX.dll"
+        "DllPath" "$INSTDIR\AuthUX\AuthUX.dll" 
 SectionEnd
 
 Section "Uninstall"
     # Delete files
-    RMDir /r "$PROGRAMFILES64\AuthUX"
+    RMDir /r "$INSTDIR"
 
-    # Revert to default OpenWith server.
+    # Revert to default LogonController server.
     SetRegView 64
     ReadEnvStr $0 "USERNAME"
     AccessControl::SetRegKeyOwner HKLM "SOFTWARE\Microsoft\WindowsRuntime\ActivatableClassId\Windows.Internal.UI.Logon.Controller.LogonUX" $0
