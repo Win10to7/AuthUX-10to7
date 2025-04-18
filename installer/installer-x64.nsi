@@ -58,10 +58,10 @@ Function .onInit
         Quit
     ${EndIf}
     
-    # Need at least Windows 10 2004-22H2.
-    ${IfNot} ${AtLeastBuild} 19044
-	${OrIfNot} ${AtMostBuild} 19045
-        MessageBox MB_OK|MB_ICONSTOP "$(STRING_NOT_WIN8)"
+    # Need at least Windows 10 1809 and anything below Germanium (build 26100).
+    ${IfNot} ${AtLeastBuild} 17763
+	${OrIfNot} ${AtMostBuild} 26101
+        MessageBox MB_OK|MB_ICONSTOP "$(STRING_NOT_SUP)"
         Quit
     ${EndIf}
 	
@@ -75,8 +75,40 @@ Section "AuthUX" AuthUX
     # Install x86-64 files
     SetOutPath "$INSTDIR\"
     WriteUninstaller "$INSTDIR\uninstall.exe"
-    File "..\x64\Release\AuthUX.dll"
-	File "..\x64\Release\AuthUX.pdb"
+	
+	${If} ${AtLeastBuild} 17763
+	${AndIf} ${AtMostBuild} 18361
+		File "..\x64\Release.RS5\AuthUX.dll"
+		File "..\x64\Release.RS5\AuthUX.pdb"
+	${ElseIf} ${AtLeastBuild} 18362
+	${AndIf} ${AtMostBuild} 19040
+		File "..\x64\Release.19H1\AuthUX.dll"
+		File "..\x64\Release.19H1\AuthUX.pdb"
+	${ElseIf} ${AtLeastBuild} 19041
+	${AndIf} ${AtMostBuild} 19045
+		File "..\x64\Release.VB\AuthUX.dll"
+		File "..\x64\Release.VB\AuthUX.pdb"
+	${ElseIf} ${AtLeastBuild} 20348
+	${AndIf} ${AtMostBuild} 21999
+		File "..\x64\Release.FE\AuthUX.dll"
+		File "..\x64\Release.FE\AuthUX.pdb"
+	${ElseIf} ${AtLeastBuild} 22000
+	${AndIf} ${AtMostBuild} 22620
+		File "..\x64\Release.CO\AuthUX.dll"
+		File "..\x64\Release.CO\AuthUX.pdb"
+	${ElseIf} ${AtLeastBuild} 22621
+	${AndIf} ${AtMostBuild} 22630
+		File "..\x64\Release.NI\AuthUX.dll"
+		File "..\x64\Release.NI\AuthUX.pdb"
+	${ElseIf} ${AtLeastBuild} 22631
+	${AndIf} ${AtMostBuild} 26099
+		File "..\x64\Release.ZN\AuthUX.dll"
+		File "..\x64\Release.ZN\AuthUX.pdb"
+	${ElseIf} ${AtLeastBuild} 26100
+	${AndIf} ${AtMostBuild} 26101
+		File "..\x64\Release.GE\AuthUX.dll"
+		File "..\x64\Release.GE\AuthUX.pdb"
+	${EndIf}
 
     # Create Uninstall entry
     SetRegView 64
