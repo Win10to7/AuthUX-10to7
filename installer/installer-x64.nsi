@@ -50,24 +50,6 @@ ManifestSupportedOS all
 
 !insertmacro LANG_LOAD "English"
 
-Function .onInit
-    # NSIS produces an x86-32 installer. Deny installation if
-    # we're not on a x86-64 system running WOW64.
-    ${IfNot} ${RunningX64}
-        MessageBox MB_OK|MB_ICONSTOP "$(STRING_NOT_X64)"
-        Quit
-    ${EndIf}
-    
-    # Need at least Windows 10 1809 and anything below Germanium (build 26100).
-    ${IfNot} ${AtLeastBuild} 17763
-	${OrIfNot} ${AtMostBuild} 26101
-        MessageBox MB_OK|MB_ICONSTOP "$(STRING_NOT_SUP)"
-        Quit
-    ${EndIf}
-	
-	StrCpy $INSTDIR "$PROGRAMFILES64\AuthUX"
-FunctionEnd
-
 Section "AuthUX" AuthUX
     # Make sure install directories are clean
     RMDir /r "$INSTDIR\"
@@ -158,3 +140,23 @@ Section "Uninstall"
     # Delete uninstall entry
     DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\AuthUX"
 SectionEnd
+
+Function .onInit
+    # NSIS produces an x86-32 installer. Deny installation if
+    # we're not on a x86-64 system running WOW64.
+    ${IfNot} ${RunningX64}
+        MessageBox MB_OK|MB_ICONSTOP "$(STRING_NOT_X64)"
+        Quit
+    ${EndIf}
+    
+    # Need at least Windows 10 1809 and anything below Germanium (build 26100).
+    ${IfNot} ${AtLeastBuild} 17763
+	${OrIfNot} ${AtMostBuild} 26101
+        MessageBox MB_OK|MB_ICONSTOP "$(STRING_NOT_SUP)"
+        Quit
+    ${EndIf}
+	
+	SectionSetSize ${AuthUX} 24800
+	
+	StrCpy $INSTDIR "$PROGRAMFILES64\AuthUX"
+FunctionEnd
