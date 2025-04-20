@@ -35,7 +35,7 @@ HRESULT CLogonNativeHWNDHost::Create(int dx, int dy, int dwidth, int dheight, CL
 		}
 	}
 
-	er = host->Initialize(L"AUTHUI.DLL: LogonUI Logon Window", L"Windows Logon",nullptr,nullptr,dx,dy,dwidth,dheight, 0, 0x80000000 | WS_VISIBLE,nullptr,0);
+	er = host->Initialize(L"AUTHUI.DLL: LogonUI Logon Window", L"Windows Logon",nullptr,nullptr,dx,dy,dwidth,dheight, 0, 0x80000000 | WS_VISIBLE,nullptr,3);
 	if (SUCCEEDED(er))
 	{
 		*out = host;
@@ -46,4 +46,16 @@ HRESULT CLogonNativeHWNDHost::Create(int dx, int dy, int dwidth, int dheight, CL
 		host->Destroy();
 	}
 	return er;
+}
+
+HRESULT CLogonNativeHWNDHost::OnMessage(UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT* plRet)
+{
+	switch (uMsg)
+	{
+	case WM_CLOSE:
+		return FALSE;
+	default:
+		break;
+	}
+	return TRUE;
 }

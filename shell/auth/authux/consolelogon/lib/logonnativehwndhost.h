@@ -17,5 +17,7 @@ public:
 
 	static HRESULT Create(int dx, int dy, int dwidth, int dheight, CLogonNativeHWNDHost** out);
 
+	HRESULT OnMessage(UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT* plRet) override;
+
 	LCPD::CredProvScenario m_scenario;
 };
