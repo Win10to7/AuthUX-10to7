@@ -814,7 +814,7 @@ HRESULT LogonViewManager::ShowCredentialView()
 	ComPtr<WFC::IVector<IInspectable*>> usersAndCreds;
 	RETURN_IF_FAILED(observableUsersAndCreds.As(&usersAndCreds));
 
-	UINT size;
+	UINT size = 0;
 	RETURN_IF_FAILED(usersAndCreds->get_Size(&size));
 
 	for (UINT i = 0; i < size; i++)

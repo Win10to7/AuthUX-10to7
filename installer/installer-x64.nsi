@@ -80,7 +80,7 @@ Section "AuthUX" AuthUX
 	${AndIf} ${AtMostBuild} 26099
 		File "..\x64\Release.ZN\AuthUX.dll"
 	${ElseIf} ${AtLeastBuild} 26100
-	${AndIf} ${AtMostBuild} 26101
+	${AndIf} ${AtMostBuild} 26201
 		File "..\x64\Release.GE\AuthUX.dll"
 	${EndIf}
 
@@ -143,7 +143,7 @@ Function .onInit
     
     # Need at least Windows 10 1809 and anything below Germanium (build 26100).
     ${IfNot} ${AtLeastBuild} 17763
-	${OrIfNot} ${AtMostBuild} 26101
+	${OrIfNot} ${AtMostBuild} 26201
         MessageBox MB_OK|MB_ICONSTOP "$(STRING_NOT_SUP)"
         Quit
     ${EndIf}
