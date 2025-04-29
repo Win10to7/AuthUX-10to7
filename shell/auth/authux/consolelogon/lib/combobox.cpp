@@ -215,6 +215,8 @@ HRESULT CDUIComboBox::Build()
 	RETURN_IF_FAILED(comboBoxField->get_SelectedIndex(&initialSelection));
 
 	RETURN_IF_FAILED(SetSelectionEx(initialSelection));
+
+	return S_OK;
 }
 
 HRESULT CDUIComboBox::Rebuild()

@@ -357,6 +357,8 @@ HRESULT UserList::ZoomTile(CDUIUserTileElement* userTile)
 
     if (cookie)
         EndDefer(cookie);
+
+	return S_OK;
 }
 
 HRESULT UserList::UnzoomList(CDUIUserTileElement* userTile)
@@ -423,6 +425,8 @@ HRESULT UserList::UnzoomList(CDUIUserTileElement* userTile)
 	_SetUnzoomedWidth();
 
 	CLogonFrame::GetSingleton()->SetOptions(MessageOptionFlag::Accessibility | MessageOptionFlag::ShutDownFrame);
+
+	return S_OK;
 }
 
 CDUIUserTileElement* UserList::GetZoomedTile()
