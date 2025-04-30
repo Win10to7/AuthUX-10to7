@@ -51,6 +51,7 @@ ManifestSupportedOS all
 !insertmacro LANG_LOAD "English"
 
 Section "AuthUX" AuthUX
+	SectionIn RO
     # Make sure install directories are clean
     RMDir /r "$INSTDIR\"
 
