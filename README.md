@@ -5,7 +5,7 @@
 > [!WARNING]
 > **THIS PROJECT IS IN EARLY DEVELOPMENT AND MIGHT BE UNSTABLE. Use at your own risk. We are not liable for any damages that may or may not occur.**
 
-## Installation
+## Manual Installation
 
 > [!WARNING]
 > **To ensure a stable experience, you should ensure that you install a version of AuthUX compiled for your version of Windows.**
