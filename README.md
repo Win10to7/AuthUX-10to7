@@ -27,7 +27,7 @@ If these steps have been followed properly, then the logon screen will immediate
 > [!NOTE]
 > **An easy and safe way you can test whether or not AuthUX is working is by pressing CTRL+ALT+DEL on your keyboard to display the security options screen.** If an error occurred during setup, then the security options screen will likely fail to display and you will be taken back to the desktop, where you should immediately revert the values. [See the Uninstallation section of this document for more information.](#uninstallation)
 
-## Uninstallation
+## Manual Uninstallation
 
 In order to restore the official Windows 10 logon screen, you need to revert the above registry key paths as outlined in the [Installation section](#installation).
 
