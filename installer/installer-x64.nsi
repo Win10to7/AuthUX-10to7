@@ -49,6 +49,7 @@ ManifestSupportedOS all
 !macroend
 
 !insertmacro LANG_LOAD "English"
+!insertmacro LANG_LOAD "Japanese"
 
 Section "AuthUX" AuthUX
 	SectionIn RO
