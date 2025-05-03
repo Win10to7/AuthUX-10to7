@@ -183,7 +183,9 @@ void CDUIRestrictedEdit::OnInput(DirectUI::InputEvent* inputEvent)
 			{
 				DirectUI::Value* contVal;
 				auto ContentString = GetContentString(&contVal);
-				wcscpy_s(inputText,ContentString);
+
+				if (ContentString && *ContentString)
+					wcscpy_s(inputText,ContentString);
 
 				contVal->Release();
 			}
