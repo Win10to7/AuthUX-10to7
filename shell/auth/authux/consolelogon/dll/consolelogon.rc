@@ -330,19 +330,6 @@ IDB_BG10 IMAGE "resources/5040.jpg"
 IDB_BG11 IMAGE "resources/5041.jpg"
 IDB_BG12 IMAGE "resources/5042.jpg"
 IDB_BG13 IMAGE "resources/5043.jpg"
-IDB_BG14 IMAGE "resources/5044.jpg"
-IDB_BG15 IMAGE "resources/5045.jpg"
-IDB_BG16 IMAGE "resources/5046.jpg"
-IDB_BG17 IMAGE "resources/5047.jpg"
-IDB_BG18 IMAGE "resources/5048.jpg"
-IDB_BG19 IMAGE "resources/5049.jpg"
-IDB_BG20 IMAGE "resources/5050.jpg"
-IDB_BG21 IMAGE "resources/5051.jpg"
-IDB_BG22 IMAGE "resources/5052.jpg"
-IDB_BG23 IMAGE "resources/5053.jpg"
-IDB_BG24 IMAGE "resources/5054.jpg"
-IDB_BG25 IMAGE "resources/5055.jpg"
-IDB_BG26 IMAGE "resources/5056.jpg"
 
 
 IDB_EDITDISABLED						BITMAP                "resources/11000.bmp"
@@ -466,7 +453,6 @@ IDB_SHTUDOWNDROPDOWNBUTTONHOVER		    BITMAP				  "resources/12300.bmp"
 IDB_SHUTDOWNDROPDOWNBUTTONFOCUSHOVER    BITMAP				  "resources/12298.bmp"
 IDB_SHUTDOWNDROPDOWNBUTTONACTIVE	    BITMAP				  "resources/12301.bmp"
 IDB_PLAPICON 							BITMAP 				  "resources/12232.bmp"
-IDB_DEFAULTPFP							BITMAP				  "resources/usertile1.bmp"
 
 #include <ntverp.h>
 #undef VER_COMPANYNAME_STR

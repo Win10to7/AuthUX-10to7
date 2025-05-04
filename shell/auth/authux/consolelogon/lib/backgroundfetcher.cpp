@@ -414,7 +414,7 @@ HRESULT CBackground::GetBackground(HBITMAP* OutBitmap)
     }
     else
     {
-        unsigned long long resIdToUse = IsOS(OS_ANYSERVER) ? dataToUse->resIdServer : dataToUse->resIdConsumer;
+        unsigned long long resIdToUse = IsOS(OS_ANYSERVER) ? dataToUse->resIdConsumer : dataToUse->resIdConsumer;
         *OutBitmap = GetHBITMAPFromImageResource(resIdToUse);
     }
 
