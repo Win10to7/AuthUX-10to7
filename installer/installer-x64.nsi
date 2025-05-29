@@ -50,6 +50,7 @@ ManifestSupportedOS all
 
 !insertmacro LANG_LOAD "English"
 !insertmacro LANG_LOAD "French"
+!insertmacro LANG_LOAD "Italian"
 !insertmacro LANG_LOAD "Korean"
 !insertmacro LANG_LOAD "Japanese"
 
