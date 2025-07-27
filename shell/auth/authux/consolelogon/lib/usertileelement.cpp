@@ -645,7 +645,7 @@ HRESULT CDUIUserTileElement::_CreateTileImageField(const wchar_t* pszLabel, Micr
 
 	HRESULT hr = S_OK;
 	if (bitmap)
-		hr = SetBackgroundFromHBITMAP(Picture, bitmap, 126, 126);
+		hr = SetBackgroundFromHBITMAP(Picture, bitmap, DirectUI::RelPixToPixel(126), DirectUI::RelPixToPixel(126));
 	else
 		hr = Picture->SetBackgroundColor(0);
 
