@@ -170,8 +170,6 @@ template <
 class CTSimpleArray : public CTSimpleFixedArray<T, CompareHelper>
 {
 public:
-    using CTSimpleFixedArray<T, CompareHelper>::_celem;
-
     T* _parrayT;
     size_t _celemCapacity;
 
@@ -187,11 +185,6 @@ public:
         RemoveAll();
     }
 
-    HRESULT Add(const T* t, size_t* piElemInsertedAt = nullptr)
-    {
-        return _Add(t, piElemInsertedAt);
-    }
-
     HRESULT Add(const T& t, size_t* piElemInsertedAt = nullptr)
     {
         return _Add(t, piElemInsertedAt);
@@ -202,11 +195,6 @@ public:
         return _Add(std::move(t), piElemInsertedAt);
     }
 
-    HRESULT InsertAt(const T* t, size_t iElem)
-    {
-        return _InsertAt(t, iElem);
-    }
-
     HRESULT InsertAt(const T& t, size_t iElem)
     {
         return _InsertAt(t, iElem);
@@ -215,6 +203,16 @@ public:
     HRESULT InsertAt(T&& t, size_t iElem)
     {
         return _InsertAt(std::move(t), iElem);
+    }
+
+    HRESULT SetAtIndex(size_t iElem, const T& t)
+    {
+        return _SetAtIndex(iElem, t);
+    }
+
+    HRESULT SetAtIndex(size_t iElem, T&& t)
+    {
+        return _SetAtIndex(iElem, std::move(t));
     }
 
     HRESULT Remove(const T& t, size_t* piElemRemovedAt = nullptr)
@@ -262,6 +260,19 @@ public:
         }
         this->_celem = 0;
         _celemCapacity = 0;
+    }
+
+    void TransferData(CTSimpleArray* other)
+    {
+        RemoveAll();
+        this->_parray = other->_parray;
+        this->_celem = other->_celem;
+        this->_parrayT = other->_parrayT;
+        this->_celemCapacity = other->_celemCapacity;
+        other->_parray = nullptr;
+        other->_celem = 0;
+        other->_parrayT = nullptr;
+        other->_celemCapacity = 0;
     }
 
     size_t GetCapacity() const
@@ -394,6 +405,20 @@ public:
         return hr;
     }
 
+    template <typename ArgType>
+    HRESULT _SetAtIndex(size_t iElem, ArgType&& t)
+    {
+        HRESULT hr = TYPE_E_OUTOFBOUNDS;
+
+        if (iElem < this->_celem)
+        {
+            _InternalSetAtIndex(iElem, std::forward<ArgType>(t));
+            hr = S_OK;
+        }
+
+        return hr;
+    }
+
     template <typename Comparer>
     void _MergeThem(const Comparer& tcompare, size_t iFirst, size_t cElems)
     {
@@ -468,30 +493,14 @@ public:
 
     CCoSimpleArray(CCoSimpleArray&& other) noexcept
     {
-        this->RemoveAll();
-        this->_parray = other._parray;
-        this->_celem = other._celem;
-        this->_parrayT = other._parrayT;
-        this->_celemCapacity = other._celemCapacity;
-        other._parray = nullptr;
-        other._celem = 0;
-        other._parrayT = nullptr;
-        other._celemCapacity = 0;
+        this->TransferData(&other);
     }
 
     CCoSimpleArray& operator=(CCoSimpleArray&& other) noexcept
     {
         if (this != &other)
         {
-            this->RemoveAll();
-            this->_parray = other._parray;
-            this->_celem = other._celem;
-            this->_parrayT = other._parrayT;
-            this->_celemCapacity = other._celemCapacity;
-            other._parray = nullptr;
-            other._celem = 0;
-            other._parrayT = nullptr;
-            other._celemCapacity = 0;
+            this->TransferData(&other);
         }
         return *this;
     }
@@ -517,6 +526,21 @@ public:
     ~CSimplePointerArray()
     {
         RemoveAndReleaseAll();
+    }
+
+    HRESULT RemoveAndReleaseAt(size_t iElem)
+    {
+        T* pT;
+        HRESULT hr = this->GetAt(iElem, pT);
+        if (SUCCEEDED(hr))
+        {
+            hr = this->RemoveAt(iElem);
+            if (SUCCEEDED(hr))
+            {
+                ElementAllocator::Destroy(pT);
+            }
+        }
+        return hr;
     }
 
     void RemoveAndReleaseAll()

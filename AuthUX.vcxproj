@@ -912,13 +912,14 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;__WRL_CONFIGURATION_LEGACY__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\dui70;shell\auth\authux\consolelogon\lib;shell\auth\authux\consolelogon\dll;sdk\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <UseFullPaths>false</UseFullPaths>
+	  <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -927,20 +928,21 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>shell\auth\authux\consolelogon\dll\ConsoleLogon.def</ModuleDefinitionFile>
-      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug.MN|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;__WRL_CONFIGURATION_LEGACY__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\dui70;shell\auth\authux\consolelogon\lib;shell\auth\authux\consolelogon\dll;sdk\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <UseFullPaths>false</UseFullPaths>
+	  <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -949,20 +951,21 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>shell\auth\authux\consolelogon\dll\ConsoleLogon.def</ModuleDefinitionFile>
-      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug.FE|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;__WRL_CONFIGURATION_LEGACY__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\dui70;shell\auth\authux\consolelogon\lib;shell\auth\authux\consolelogon\dll;sdk\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <UseFullPaths>false</UseFullPaths>
+	  <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -971,20 +974,21 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>shell\auth\authux\consolelogon\dll\ConsoleLogon.def</ModuleDefinitionFile>
-      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug.CO|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;__WRL_CONFIGURATION_LEGACY__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\dui70;shell\auth\authux\consolelogon\lib;shell\auth\authux\consolelogon\dll;sdk\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <UseFullPaths>false</UseFullPaths>
+	  <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -993,20 +997,21 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>shell\auth\authux\consolelogon\dll\ConsoleLogon.def</ModuleDefinitionFile>
-      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug.NI|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;__WRL_CONFIGURATION_LEGACY__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\dui70;shell\auth\authux\consolelogon\lib;shell\auth\authux\consolelogon\dll;sdk\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <UseFullPaths>false</UseFullPaths>
+	  <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -1015,20 +1020,21 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>shell\auth\authux\consolelogon\dll\ConsoleLogon.def</ModuleDefinitionFile>
-      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug.ZN|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;__WRL_CONFIGURATION_LEGACY__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\dui70;shell\auth\authux\consolelogon\lib;shell\auth\authux\consolelogon\dll;sdk\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <UseFullPaths>false</UseFullPaths>
+	  <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -1037,20 +1043,21 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>shell\auth\authux\consolelogon\dll\ConsoleLogon.def</ModuleDefinitionFile>
-      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug.GE|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;__WRL_CONFIGURATION_LEGACY__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\dui70;shell\auth\authux\consolelogon\lib;shell\auth\authux\consolelogon\dll;sdk\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <UseFullPaths>false</UseFullPaths>
+	  <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -1059,20 +1066,21 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>shell\auth\authux\consolelogon\dll\ConsoleLogon.def</ModuleDefinitionFile>
-      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug.RS5|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;__WRL_CONFIGURATION_LEGACY__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\dui70;shell\auth\authux\consolelogon\lib;shell\auth\authux\consolelogon\dll;sdk\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <UseFullPaths>false</UseFullPaths>
+	  <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -1081,20 +1089,21 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>shell\auth\authux\consolelogon\dll\ConsoleLogon.def</ModuleDefinitionFile>
-      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug.19H1|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;__WRL_CONFIGURATION_LEGACY__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\dui70;shell\auth\authux\consolelogon\lib;shell\auth\authux\consolelogon\dll;sdk\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <UseFullPaths>false</UseFullPaths>
+	  <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -1103,7 +1112,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>shell\auth\authux\consolelogon\dll\ConsoleLogon.def</ModuleDefinitionFile>
-      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release.VB|Win32'">
@@ -1112,7 +1121,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;__WRL_CONFIGURATION_LEGACY__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\dui70;shell\auth\authux\consolelogon\lib;shell\auth\authux\consolelogon\dll;sdk\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -1120,6 +1129,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <Optimization>MinSpace</Optimization>
       <UseFullPaths>false</UseFullPaths>
+	  <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -1130,7 +1140,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>shell\auth\authux\consolelogon\dll\ConsoleLogon.def</ModuleDefinitionFile>
-      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release.FE|Win32'">
@@ -1139,7 +1149,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;__WRL_CONFIGURATION_LEGACY__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\dui70;shell\auth\authux\consolelogon\lib;shell\auth\authux\consolelogon\dll;sdk\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -1147,6 +1157,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <Optimization>MinSpace</Optimization>
       <UseFullPaths>false</UseFullPaths>
+	  <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -1157,7 +1168,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>shell\auth\authux\consolelogon\dll\ConsoleLogon.def</ModuleDefinitionFile>
-      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release.CO|Win32'">
@@ -1166,7 +1177,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;__WRL_CONFIGURATION_LEGACY__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\dui70;shell\auth\authux\consolelogon\lib;shell\auth\authux\consolelogon\dll;sdk\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -1174,6 +1185,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <Optimization>MinSpace</Optimization>
       <UseFullPaths>false</UseFullPaths>
+	  <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -1184,7 +1196,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>shell\auth\authux\consolelogon\dll\ConsoleLogon.def</ModuleDefinitionFile>
-      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release.NI|Win32'">
@@ -1193,7 +1205,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;__WRL_CONFIGURATION_LEGACY__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\dui70;shell\auth\authux\consolelogon\lib;shell\auth\authux\consolelogon\dll;sdk\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -1201,6 +1213,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <Optimization>MinSpace</Optimization>
       <UseFullPaths>false</UseFullPaths>
+	  <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -1211,7 +1224,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>shell\auth\authux\consolelogon\dll\ConsoleLogon.def</ModuleDefinitionFile>
-      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release.ZN|Win32'">
@@ -1220,7 +1233,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;__WRL_CONFIGURATION_LEGACY__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\dui70;shell\auth\authux\consolelogon\lib;shell\auth\authux\consolelogon\dll;sdk\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -1228,6 +1241,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <Optimization>MinSpace</Optimization>
       <UseFullPaths>false</UseFullPaths>
+	  <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -1238,7 +1252,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>shell\auth\authux\consolelogon\dll\ConsoleLogon.def</ModuleDefinitionFile>
-      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release.GE|Win32'">
@@ -1247,7 +1261,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;__WRL_CONFIGURATION_LEGACY__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\dui70;shell\auth\authux\consolelogon\lib;shell\auth\authux\consolelogon\dll;sdk\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -1255,6 +1269,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <Optimization>MinSpace</Optimization>
       <UseFullPaths>false</UseFullPaths>
+	  <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -1265,7 +1280,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>shell\auth\authux\consolelogon\dll\ConsoleLogon.def</ModuleDefinitionFile>
-      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release.MN|Win32'">
@@ -1274,7 +1289,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;__WRL_CONFIGURATION_LEGACY__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\dui70;shell\auth\authux\consolelogon\lib;shell\auth\authux\consolelogon\dll;sdk\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -1282,6 +1297,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <Optimization>MinSpace</Optimization>
       <UseFullPaths>false</UseFullPaths>
+	  <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -1292,7 +1308,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>shell\auth\authux\consolelogon\dll\ConsoleLogon.def</ModuleDefinitionFile>
-      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release.19H1|Win32'">
@@ -1301,7 +1317,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;__WRL_CONFIGURATION_LEGACY__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\dui70;shell\auth\authux\consolelogon\lib;shell\auth\authux\consolelogon\dll;sdk\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -1309,6 +1325,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <Optimization>MinSpace</Optimization>
       <UseFullPaths>false</UseFullPaths>
+	  <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -1319,7 +1336,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>shell\auth\authux\consolelogon\dll\ConsoleLogon.def</ModuleDefinitionFile>
-      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release.RS5|Win32'">
@@ -1328,7 +1345,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;__WRL_CONFIGURATION_LEGACY__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\dui70;shell\auth\authux\consolelogon\lib;shell\auth\authux\consolelogon\dll;sdk\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -1336,6 +1353,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <Optimization>MinSpace</Optimization>
       <UseFullPaths>false</UseFullPaths>
+	  <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -1346,20 +1364,21 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>shell\auth\authux\consolelogon\dll\ConsoleLogon.def</ModuleDefinitionFile>
-      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug.VB|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>CONSOLELOGON_FOR=5;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CONSOLELOGON_FOR=5;_DEBUG;_CONSOLE;__WRL_CONFIGURATION_LEGACY__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\dui70;shell\auth\authux\consolelogon\lib;shell\auth\authux\consolelogon\dll;sdk\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <UseFullPaths>false</UseFullPaths>
+	  <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -1368,20 +1387,21 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>shell\auth\authux\consolelogon\dll\ConsoleLogon.def</ModuleDefinitionFile>
-      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug.MN|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>CONSOLELOGON_FOR=6;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CONSOLELOGON_FOR=6;_DEBUG;_CONSOLE;__WRL_CONFIGURATION_LEGACY__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\dui70;shell\auth\authux\consolelogon\lib;shell\auth\authux\consolelogon\dll;sdk\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <UseFullPaths>false</UseFullPaths>
+	  <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -1390,20 +1410,21 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>shell\auth\authux\consolelogon\dll\ConsoleLogon.def</ModuleDefinitionFile>
-      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug.FE|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>CONSOLELOGON_FOR=7;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CONSOLELOGON_FOR=7;_DEBUG;_CONSOLE;__WRL_CONFIGURATION_LEGACY__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\dui70;shell\auth\authux\consolelogon\lib;shell\auth\authux\consolelogon\dll;sdk\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <UseFullPaths>false</UseFullPaths>
+	  <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -1412,20 +1433,21 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>shell\auth\authux\consolelogon\dll\ConsoleLogon.def</ModuleDefinitionFile>
-      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug.CO|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>CONSOLELOGON_FOR=8;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CONSOLELOGON_FOR=8;_DEBUG;_CONSOLE;__WRL_CONFIGURATION_LEGACY__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\dui70;shell\auth\authux\consolelogon\lib;shell\auth\authux\consolelogon\dll;sdk\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <UseFullPaths>false</UseFullPaths>
+	  <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -1434,20 +1456,21 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>shell\auth\authux\consolelogon\dll\ConsoleLogon.def</ModuleDefinitionFile>
-      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug.NI|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>CONSOLELOGON_FOR=9;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CONSOLELOGON_FOR=9;_DEBUG;_CONSOLE;__WRL_CONFIGURATION_LEGACY__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\dui70;shell\auth\authux\consolelogon\lib;shell\auth\authux\consolelogon\dll;sdk\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <UseFullPaths>false</UseFullPaths>
+	  <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -1456,20 +1479,21 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>shell\auth\authux\consolelogon\dll\ConsoleLogon.def</ModuleDefinitionFile>
-      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug.ZN|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>CONSOLELOGON_FOR=10;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CONSOLELOGON_FOR=10;_DEBUG;_CONSOLE;__WRL_CONFIGURATION_LEGACY__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\dui70;shell\auth\authux\consolelogon\lib;shell\auth\authux\consolelogon\dll;sdk\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <UseFullPaths>false</UseFullPaths>
+	  <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -1478,20 +1502,21 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>shell\auth\authux\consolelogon\dll\ConsoleLogon.def</ModuleDefinitionFile>
-      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug.GE|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>CONSOLELOGON_FOR=11;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CONSOLELOGON_FOR=11;_DEBUG;_CONSOLE;__WRL_CONFIGURATION_LEGACY__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\dui70;shell\auth\authux\consolelogon\lib;shell\auth\authux\consolelogon\dll;sdk\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <UseFullPaths>false</UseFullPaths>
+	  <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -1500,20 +1525,21 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>shell\auth\authux\consolelogon\dll\ConsoleLogon.def</ModuleDefinitionFile>
-      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug.RS5|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>CONSOLELOGON_FOR=3;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CONSOLELOGON_FOR=3;_DEBUG;_CONSOLE;__WRL_CONFIGURATION_LEGACY__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\dui70;shell\auth\authux\consolelogon\lib;shell\auth\authux\consolelogon\dll;sdk\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <UseFullPaths>false</UseFullPaths>
+	  <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -1522,20 +1548,21 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>shell\auth\authux\consolelogon\dll\ConsoleLogon.def</ModuleDefinitionFile>
-      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug.19H1|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>CONSOLELOGON_FOR=4;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CONSOLELOGON_FOR=4;_DEBUG;_CONSOLE;__WRL_CONFIGURATION_LEGACY__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\dui70;shell\auth\authux\consolelogon\lib;shell\auth\authux\consolelogon\dll;sdk\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <UseFullPaths>false</UseFullPaths>
+	  <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -1544,20 +1571,21 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>shell\auth\authux\consolelogon\dll\ConsoleLogon.def</ModuleDefinitionFile>
-      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug.VB|ARM64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;__WRL_CONFIGURATION_LEGACY__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\dui70;shell\auth\authux\consolelogon\lib;shell\auth\authux\consolelogon\dll;sdk\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <UseFullPaths>false</UseFullPaths>
+	  <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -1566,20 +1594,21 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>shell\auth\authux\consolelogon\dll\ConsoleLogon.def</ModuleDefinitionFile>
-      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug.MN|ARM64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;__WRL_CONFIGURATION_LEGACY__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\dui70;shell\auth\authux\consolelogon\lib;shell\auth\authux\consolelogon\dll;sdk\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <UseFullPaths>false</UseFullPaths>
+	  <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -1588,20 +1617,21 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>shell\auth\authux\consolelogon\dll\ConsoleLogon.def</ModuleDefinitionFile>
-      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug.FE|ARM64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;__WRL_CONFIGURATION_LEGACY__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\dui70;shell\auth\authux\consolelogon\lib;shell\auth\authux\consolelogon\dll;sdk\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <UseFullPaths>false</UseFullPaths>
+	  <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -1610,20 +1640,21 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>shell\auth\authux\consolelogon\dll\ConsoleLogon.def</ModuleDefinitionFile>
-      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug.CO|ARM64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;__WRL_CONFIGURATION_LEGACY__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\dui70;shell\auth\authux\consolelogon\lib;shell\auth\authux\consolelogon\dll;sdk\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <UseFullPaths>false</UseFullPaths>
+	  <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -1632,20 +1663,21 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>shell\auth\authux\consolelogon\dll\ConsoleLogon.def</ModuleDefinitionFile>
-      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug.NI|ARM64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;__WRL_CONFIGURATION_LEGACY__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\dui70;shell\auth\authux\consolelogon\lib;shell\auth\authux\consolelogon\dll;sdk\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <UseFullPaths>false</UseFullPaths>
+	  <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -1654,20 +1686,21 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>shell\auth\authux\consolelogon\dll\ConsoleLogon.def</ModuleDefinitionFile>
-      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug.ZN|ARM64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;__WRL_CONFIGURATION_LEGACY__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\dui70;shell\auth\authux\consolelogon\lib;shell\auth\authux\consolelogon\dll;sdk\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <UseFullPaths>false</UseFullPaths>
+	  <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -1676,20 +1709,21 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>shell\auth\authux\consolelogon\dll\ConsoleLogon.def</ModuleDefinitionFile>
-      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug.GE|ARM64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;__WRL_CONFIGURATION_LEGACY__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\dui70;shell\auth\authux\consolelogon\lib;shell\auth\authux\consolelogon\dll;sdk\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <UseFullPaths>false</UseFullPaths>
+	  <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -1698,20 +1732,21 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>shell\auth\authux\consolelogon\dll\ConsoleLogon.def</ModuleDefinitionFile>
-      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug.RS5|ARM64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;__WRL_CONFIGURATION_LEGACY__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\dui70;shell\auth\authux\consolelogon\lib;shell\auth\authux\consolelogon\dll;sdk\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <UseFullPaths>false</UseFullPaths>
+	  <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -1720,20 +1755,21 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>shell\auth\authux\consolelogon\dll\ConsoleLogon.def</ModuleDefinitionFile>
-      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug.19H1|ARM64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;__WRL_CONFIGURATION_LEGACY__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\dui70;shell\auth\authux\consolelogon\lib;shell\auth\authux\consolelogon\dll;sdk\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <UseFullPaths>false</UseFullPaths>
+	  <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -1742,7 +1778,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>shell\auth\authux\consolelogon\dll\ConsoleLogon.def</ModuleDefinitionFile>
-      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release.VB|x64'">
@@ -1751,7 +1787,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>CONSOLELOGON_FOR=5;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CONSOLELOGON_FOR=5;NDEBUG;_CONSOLE;__WRL_CONFIGURATION_LEGACY__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\dui70;shell\auth\authux\consolelogon\lib;shell\auth\authux\consolelogon\dll;sdk\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -1759,6 +1795,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <Optimization>MinSpace</Optimization>
       <UseFullPaths>false</UseFullPaths>
+	  <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -1769,7 +1806,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>shell\auth\authux\consolelogon\dll\ConsoleLogon.def</ModuleDefinitionFile>
-      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release.FE|x64'">
@@ -1778,7 +1815,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>CONSOLELOGON_FOR=7;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CONSOLELOGON_FOR=7;NDEBUG;_CONSOLE;__WRL_CONFIGURATION_LEGACY__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\dui70;shell\auth\authux\consolelogon\lib;shell\auth\authux\consolelogon\dll;sdk\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -1786,6 +1823,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <Optimization>MinSpace</Optimization>
       <UseFullPaths>false</UseFullPaths>
+	  <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -1796,7 +1834,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>shell\auth\authux\consolelogon\dll\ConsoleLogon.def</ModuleDefinitionFile>
-      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release.CO|x64'">
@@ -1805,7 +1843,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>CONSOLELOGON_FOR=8;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CONSOLELOGON_FOR=8;NDEBUG;_CONSOLE;__WRL_CONFIGURATION_LEGACY__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\dui70;shell\auth\authux\consolelogon\lib;shell\auth\authux\consolelogon\dll;sdk\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -1813,6 +1851,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <Optimization>MinSpace</Optimization>
       <UseFullPaths>false</UseFullPaths>
+	  <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -1823,7 +1862,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>shell\auth\authux\consolelogon\dll\ConsoleLogon.def</ModuleDefinitionFile>
-      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release.NI|x64'">
@@ -1832,7 +1871,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>CONSOLELOGON_FOR=9;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CONSOLELOGON_FOR=9;NDEBUG;_CONSOLE;__WRL_CONFIGURATION_LEGACY__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\dui70;shell\auth\authux\consolelogon\lib;shell\auth\authux\consolelogon\dll;sdk\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -1840,6 +1879,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <Optimization>MinSpace</Optimization>
       <UseFullPaths>false</UseFullPaths>
+	  <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -1850,7 +1890,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>shell\auth\authux\consolelogon\dll\ConsoleLogon.def</ModuleDefinitionFile>
-      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release.ZN|x64'">
@@ -1859,7 +1899,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>CONSOLELOGON_FOR=10;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CONSOLELOGON_FOR=10;NDEBUG;_CONSOLE;__WRL_CONFIGURATION_LEGACY__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\dui70;shell\auth\authux\consolelogon\lib;shell\auth\authux\consolelogon\dll;sdk\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -1867,6 +1907,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <Optimization>MinSpace</Optimization>
       <UseFullPaths>false</UseFullPaths>
+	  <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -1877,7 +1918,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>shell\auth\authux\consolelogon\dll\ConsoleLogon.def</ModuleDefinitionFile>
-      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release.GE|x64'">
@@ -1886,7 +1927,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>CONSOLELOGON_FOR=11;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CONSOLELOGON_FOR=11;NDEBUG;_CONSOLE;__WRL_CONFIGURATION_LEGACY__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\dui70;shell\auth\authux\consolelogon\lib;shell\auth\authux\consolelogon\dll;sdk\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -1894,6 +1935,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <Optimization>MinSpace</Optimization>
       <UseFullPaths>false</UseFullPaths>
+	  <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -1904,7 +1946,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>shell\auth\authux\consolelogon\dll\ConsoleLogon.def</ModuleDefinitionFile>
-      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release.MN|x64'">
@@ -1913,7 +1955,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>CONSOLELOGON_FOR=6;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CONSOLELOGON_FOR=6;NDEBUG;_CONSOLE;__WRL_CONFIGURATION_LEGACY__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\dui70;shell\auth\authux\consolelogon\lib;shell\auth\authux\consolelogon\dll;sdk\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -1921,6 +1963,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <Optimization>MinSpace</Optimization>
       <UseFullPaths>false</UseFullPaths>
+	  <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -1931,7 +1974,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>shell\auth\authux\consolelogon\dll\ConsoleLogon.def</ModuleDefinitionFile>
-      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release.19H1|x64'">
@@ -1940,7 +1983,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>CONSOLELOGON_FOR=4;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CONSOLELOGON_FOR=4;NDEBUG;_CONSOLE;__WRL_CONFIGURATION_LEGACY__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\dui70;shell\auth\authux\consolelogon\lib;shell\auth\authux\consolelogon\dll;sdk\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -1948,6 +1991,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <Optimization>MinSpace</Optimization>
       <UseFullPaths>false</UseFullPaths>
+	  <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -1958,7 +2002,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>shell\auth\authux\consolelogon\dll\ConsoleLogon.def</ModuleDefinitionFile>
-      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release.RS5|x64'">
@@ -1967,7 +2011,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>CONSOLELOGON_FOR=3;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CONSOLELOGON_FOR=3;NDEBUG;_CONSOLE;__WRL_CONFIGURATION_LEGACY__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\dui70;shell\auth\authux\consolelogon\lib;shell\auth\authux\consolelogon\dll;sdk\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -1975,6 +2019,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <Optimization>MinSpace</Optimization>
       <UseFullPaths>false</UseFullPaths>
+	  <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -1985,7 +2030,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>shell\auth\authux\consolelogon\dll\ConsoleLogon.def</ModuleDefinitionFile>
-      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release.VB|ARM64'">
@@ -1994,7 +2039,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;__WRL_CONFIGURATION_LEGACY__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\dui70;shell\auth\authux\consolelogon\lib;shell\auth\authux\consolelogon\dll;sdk\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -2002,6 +2047,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <Optimization>MinSpace</Optimization>
       <UseFullPaths>false</UseFullPaths>
+	  <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -2012,7 +2058,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>shell\auth\authux\consolelogon\dll\ConsoleLogon.def</ModuleDefinitionFile>
-      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release.FE|ARM64'">
@@ -2021,7 +2067,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;__WRL_CONFIGURATION_LEGACY__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\dui70;shell\auth\authux\consolelogon\lib;shell\auth\authux\consolelogon\dll;sdk\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -2029,6 +2075,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <Optimization>MinSpace</Optimization>
       <UseFullPaths>false</UseFullPaths>
+	  <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -2039,7 +2086,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>shell\auth\authux\consolelogon\dll\ConsoleLogon.def</ModuleDefinitionFile>
-      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release.CO|ARM64'">
@@ -2048,7 +2095,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;__WRL_CONFIGURATION_LEGACY__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\dui70;shell\auth\authux\consolelogon\lib;shell\auth\authux\consolelogon\dll;sdk\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -2056,6 +2103,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <Optimization>MinSpace</Optimization>
       <UseFullPaths>false</UseFullPaths>
+	  <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -2066,7 +2114,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>shell\auth\authux\consolelogon\dll\ConsoleLogon.def</ModuleDefinitionFile>
-      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release.NI|ARM64'">
@@ -2075,7 +2123,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;__WRL_CONFIGURATION_LEGACY__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\dui70;shell\auth\authux\consolelogon\lib;shell\auth\authux\consolelogon\dll;sdk\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -2083,6 +2131,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <Optimization>MinSpace</Optimization>
       <UseFullPaths>false</UseFullPaths>
+	  <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -2093,7 +2142,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>shell\auth\authux\consolelogon\dll\ConsoleLogon.def</ModuleDefinitionFile>
-      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release.ZN|ARM64'">
@@ -2102,7 +2151,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;__WRL_CONFIGURATION_LEGACY__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\dui70;shell\auth\authux\consolelogon\lib;shell\auth\authux\consolelogon\dll;sdk\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -2110,6 +2159,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <Optimization>MinSpace</Optimization>
       <UseFullPaths>false</UseFullPaths>
+	  <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -2120,7 +2170,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>shell\auth\authux\consolelogon\dll\ConsoleLogon.def</ModuleDefinitionFile>
-      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release.GE|ARM64'">
@@ -2129,7 +2179,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;__WRL_CONFIGURATION_LEGACY__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\dui70;shell\auth\authux\consolelogon\lib;shell\auth\authux\consolelogon\dll;sdk\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -2137,6 +2187,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <Optimization>MinSpace</Optimization>
       <UseFullPaths>false</UseFullPaths>
+	  <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -2147,7 +2198,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>shell\auth\authux\consolelogon\dll\ConsoleLogon.def</ModuleDefinitionFile>
-      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release.MN|ARM64'">
@@ -2156,7 +2207,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;__WRL_CONFIGURATION_LEGACY__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\dui70;shell\auth\authux\consolelogon\lib;shell\auth\authux\consolelogon\dll;sdk\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -2164,6 +2215,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <Optimization>MinSpace</Optimization>
       <UseFullPaths>false</UseFullPaths>
+	  <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -2174,7 +2226,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>shell\auth\authux\consolelogon\dll\ConsoleLogon.def</ModuleDefinitionFile>
-      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release.19H1|ARM64'">
@@ -2183,7 +2235,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;__WRL_CONFIGURATION_LEGACY__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\dui70;shell\auth\authux\consolelogon\lib;shell\auth\authux\consolelogon\dll;sdk\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -2191,6 +2243,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <Optimization>MinSpace</Optimization>
       <UseFullPaths>false</UseFullPaths>
+	  <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -2201,7 +2254,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>shell\auth\authux\consolelogon\dll\ConsoleLogon.def</ModuleDefinitionFile>
-      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release.RS5|ARM64'">
@@ -2210,7 +2263,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;__WRL_CONFIGURATION_LEGACY__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\dui70;shell\auth\authux\consolelogon\lib;shell\auth\authux\consolelogon\dll;sdk\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -2218,6 +2271,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <Optimization>MinSpace</Optimization>
       <UseFullPaths>false</UseFullPaths>
+	  <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -2228,7 +2282,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>shell\auth\authux\consolelogon\dll\ConsoleLogon.def</ModuleDefinitionFile>
-      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>runtimeobject.lib;Shlwapi.lib;PowrProf.lib;Wtsapi32.lib;gdiplus.lib;comctl32.lib;shcore.lib;slc.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -2278,6 +2332,7 @@
     <ClInclude Include="sdk\inc\ResultUtils.h" />
     <ClInclude Include="sdk\inc\SimpleArray.h" />
     <ClInclude Include="sdk\inc\version.h" />
+	<ClInclude Include="sdk\inc\WaitForCompletion.h" />
     <ClInclude Include="sdk\inc\wicutil.h" />
     <ClInclude Include="sdk\inc\windowscollections.h" />
     <ClInclude Include="sdk\inc\xhashmap.h" />

@@ -25,10 +25,14 @@ public:
 	AuthUXLock();
 	~AuthUXLock() override;
 
-	STDMETHODIMP ShowWebDialogAsync(HSTRING a1, void** a2) override;
-	STDMETHODIMP LockAsync(LockOptions options, HSTRING domainName, HSTRING userName, HSTRING friendlyName, HSTRING unk, bool* setWin32kForegroundHardening, IUnlockTrigger** ppAction) override;
+	//~ Begin ILockScreenHost Interface
+	STDMETHODIMP ShowWebDialogAsync(HSTRING unk1, IWebDialogDismissTrigger** ppDismissTrigger) override;
+	STDMETHODIMP LockAsync(
+		LockOptions options, HSTRING domainName, HSTRING userName, HSTRING friendlyName, HSTRING unk,
+		BOOLEAN* setWin32kForegroundHardening, IUnlockTrigger** ppAction) override;
 	STDMETHODIMP Reset() override;
 	STDMETHODIMP PreShutdown() override;
+	//~ End ILockScreenHost Interface
 };
 
 AuthUXLock::AuthUXLock()
@@ -39,13 +43,14 @@ AuthUXLock::~AuthUXLock()
 {
 }
 
-HRESULT AuthUXLock::ShowWebDialogAsync(HSTRING a1, void** a2)
+HRESULT AuthUXLock::ShowWebDialogAsync(HSTRING unk1, IWebDialogDismissTrigger** ppDismissTrigger)
 {
 	return S_OK;
 }
 
-HRESULT AuthUXLock::LockAsync(LockOptions options, HSTRING domainName, HSTRING userName, HSTRING friendlyName, HSTRING unk,
-                               bool* setWin32kForegroundHardening, IUnlockTrigger** ppAction)
+HRESULT AuthUXLock::LockAsync(
+	LockOptions options, HSTRING domainName, HSTRING userName, HSTRING friendlyName, HSTRING unk,
+	BOOLEAN* setWin32kForegroundHardening, IUnlockTrigger** ppAction)
 {
 	*ppAction = nullptr;
 	*setWin32kForegroundHardening = false;

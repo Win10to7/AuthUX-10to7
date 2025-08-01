@@ -240,7 +240,7 @@ HRESULT CDUILabeledCheckbox::Invoke(LCPD::ICredentialField* sender, LCPD::Creden
 			Microsoft::WRL::ComPtr<LCPD::ICheckBoxField> checkBoxField;
 			if (SUCCEEDED(m_FieldInfo->QueryInterface(IID_PPV_ARGS(&checkBoxField))))
 			{
-				bool bIsChecked = false;
+				BOOLEAN bIsChecked = FALSE;
 				RETURN_IF_FAILED(checkBoxField->get_Checked(&bIsChecked));
 				SetChecked(bIsChecked);
 			}

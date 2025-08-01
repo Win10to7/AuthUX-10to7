@@ -95,7 +95,7 @@ HRESULT CAdvisableButton::Invoke(LCPD::ICredentialField* sender, LCPD::Credentia
 			if (SUCCEEDED(m_FieldInfo->QueryInterface(IID_PPV_ARGS(&commandLinkField))))
 			{
 				RETURN_IF_FAILED(commandLinkField->get_Content(label.ReleaseAndGetAddressOf()));
-				bool bStyledAsButton = false;
+				BOOLEAN bStyledAsButton = FALSE;
 #if CONSOLELOGON_FOR >= CONSOLELOGON_FOR_19h1
 				RETURN_IF_FAILED(commandLinkField->get_IsStyledAsButton(&bStyledAsButton));
 #endif

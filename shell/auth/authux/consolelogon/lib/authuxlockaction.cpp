@@ -1,7 +1,6 @@
 ﻿#include "pch.h"
-#include "authuxlockaction.h"
 
-const __declspec(selectany) _Null_terminated_ WCHAR ConsoleLockAsyncAction[] = L"Windows.Foundation.IAsyncAction Windows.Internal.UI.Logon.Controller.ConsoleLockAction";
+#include "authuxlockaction.h"
 
 AuthUXLockAction::AuthUXLockAction()
 {
@@ -78,13 +77,13 @@ HRESULT AuthUXLockAction::get_FriendlyName(HSTRING* value)
 	return S_OK;
 }
 
-HRESULT AuthUXLockAction::get_RequireSecureGesture(bool* value)
+HRESULT AuthUXLockAction::get_RequireSecureGesture(BOOLEAN* value)
 {
 	*value = true;
 	return S_OK;
 }
 
-HRESULT AuthUXLockAction::get_ShowSpeedBump(bool* value)
+HRESULT AuthUXLockAction::get_ShowSpeedBump(BOOLEAN* value)
 {
 	*value = false;
 	return S_OK;
@@ -102,7 +101,7 @@ HRESULT AuthUXLockAction::get_SpeedBumpString(HSTRING* value)
 	return S_OK;
 }
 
-HRESULT AuthUXLockAction::get_IsLostMode(bool* value)
+HRESULT AuthUXLockAction::get_IsLostMode(BOOLEAN* value)
 {
 	*value = false;
 	return S_OK;
@@ -114,8 +113,8 @@ HRESULT AuthUXLockAction::get_LostModeMessage(HSTRING* value)
 	return S_OK;
 }
 
-HRESULT AuthUXLockAction::add_UserActivity(WF::ITypedEventHandler<LC::ILockInfo*, LC::LockActivity>* handler,
-                                            EventRegistrationToken* token)
+HRESULT AuthUXLockAction::add_UserActivity(
+	WF::ITypedEventHandler<LC::ILockInfo*, LC::LockActivity>* handler, EventRegistrationToken* token)
 {
 	token->value = 0;
 	RETURN_IF_FAILED(m_userActivityEvent.Add(handler,token)); // 99

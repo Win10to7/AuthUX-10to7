@@ -129,9 +129,9 @@ HRESULT CDUIUserTileElement::SetFieldInitialVisibility(DirectUI::Element* field,
 	if (fieldData->m_dataSourceCredentialField.Get() != nullptr)
 		RETURN_IF_FAILED(fieldData->m_dataSourceCredentialField->get_Kind(&kind));
 
-	bool bIsVisibleInDeselectedTile = true;
-	bool bIsVisibleInSelectedTile = true;
-	bool isHidden = false;
+	BOOLEAN bIsVisibleInDeselectedTile = TRUE;
+	BOOLEAN bIsVisibleInSelectedTile = TRUE;
+	BOOLEAN isHidden = FALSE;
 
 	if (fieldData->m_dataSourceCredentialField.Get() != nullptr)
 	{
@@ -191,9 +191,9 @@ HRESULT CDUIUserTileElement::SetFieldVisibility(int index, Microsoft::WRL::ComPt
 	if (fieldData.Get() != nullptr)
 		RETURN_IF_FAILED(fieldData->get_Kind(&kind));
 
-	bool bIsVisibleInDeselectedTile = true;
-	bool bIsVisibleInSelectedTile = true;
-	bool isHidden = false;
+	BOOLEAN bIsVisibleInDeselectedTile = TRUE;
+	BOOLEAN bIsVisibleInSelectedTile = TRUE;
+	BOOLEAN isHidden = FALSE;
 
 	if (fieldData.Get() != nullptr)
 	{
@@ -462,7 +462,7 @@ HRESULT CDUIUserTileElement::_CreateEditField(int index, DirectUI::Element* Pare
 	Microsoft::WRL::ComPtr<LCPD::ICredentialEditField> editFieldData;
 	RETURN_IF_FAILED(fieldData->m_dataSourceCredentialField->QueryInterface(IID_PPV_ARGS(&editFieldData)));
 
-	bool bIsPasswordField;
+	BOOLEAN bIsPasswordField;
 	RETURN_IF_FAILED(editFieldData->get_IsPasswordField(&bIsPasswordField));
 
 	Microsoft::WRL::Wrappers::HString label;
@@ -520,7 +520,7 @@ HRESULT CDUIUserTileElement::_CreateCommandLinkField(int index, DirectUI::Elemen
 	CFieldWrapper* fieldData;
 	RETURN_IF_FAILED(fieldsArray.GetAt(index,fieldData));
 
-	bool bStyledAsButton = false;
+	BOOLEAN bStyledAsButton = FALSE;
 
 	Microsoft::WRL::Wrappers::HString label;
 	Microsoft::WRL::ComPtr<LCPD::ICommandLinkField> commandLinkField;
@@ -716,7 +716,7 @@ HRESULT CDUIUserTileElement::_CreateCheckboxField(int index, DirectUI::Element* 
 	Microsoft::WRL::ComPtr<LCPD::ICheckBoxField> checkboxField;
 	RETURN_IF_FAILED(fieldData->m_dataSourceCredentialField->QueryInterface(IID_PPV_ARGS(&checkboxField))); // 23
 
-	bool isChecked = false;
+	BOOLEAN isChecked = FALSE;
 	RETURN_IF_FAILED(checkboxField->get_Checked(&isChecked));
 
 	Microsoft::WRL::Wrappers::HString label;
@@ -910,7 +910,7 @@ HRESULT CDUIUserTileElement::_CreateFieldsForSelected()
 	RETURN_IF_FAILED(m_dataSourceCredential->get_SubmitButton(&submitButtonField)); // 40
 	if (submitButtonField)
 	{
-		bool isVisibleInDeselectedTile = false;
+		BOOLEAN isVisibleInDeselectedTile = FALSE;
 		RETURN_IF_FAILED(submitButtonField->get_IsVisibleInDeselectedTile(&isVisibleInDeselectedTile));
 
 		if (!isVisibleInDeselectedTile)

@@ -179,7 +179,11 @@ void CLogonFrame::OnEvent(DirectUI::Event* pEvent)
 			CDUIUserTileElement* tile = static_cast<CDUIUserTileElement*>(pEvent->peTarget);
 			if (tile->m_dataSourceCredential.Get())
 			{
-				m_consoleUIManager->m_credProvDataModel->put_SelectedUserOrV1Credential(tile->m_dataSourceUser.Get());
+				ComPtr<IInspectable> inspectable;
+				LOG_IF_FAILED(tile->m_dataSourceCredential.As(&inspectable));
+				//m_consoleUIManager->m_credProvDataModel->put_SelectedUserOrV1Credential(tile->m_dataSourceUser.Get());
+				m_consoleUIManager->m_credProvDataModel->put_SelectedUserOrV1Credential(tile->m_dataSourceUser.Get() ? tile->m_dataSourceUser.Get() : inspectable.Get());
+				LOG_HR_MSG(E_FAIL,"PUTTING THING");
 				//HRESULT hr = BeginInvoke(m_consoleUIManager->m_Dispatcher.Get(), [=]() -> void
 				//{
 				//	UNREFERENCED_PARAMETER(this);
