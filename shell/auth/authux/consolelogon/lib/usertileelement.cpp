@@ -217,11 +217,13 @@ HRESULT CDUIUserTileElement::SetFieldVisibility(int index, Microsoft::WRL::ComPt
 
 		fieldData->get_Label(label.ReleaseAndGetAddressOf());
 
-		CFieldWrapper* fieldData;
-		fieldsArray.GetAt(index,fieldData);
+		CFieldWrapper* fieldDataWrapper = nullptr;
+		fieldsArray.GetAt(index,fieldDataWrapper);
+
+		RETURN_HR_IF_NULL_MSG(E_FAIL,fieldDataWrapper,"FIELD DATA wrapper WAS NULL!");
 
 		LOG_HR_MSG(E_FAIL, "CDUIUserTileElement::SetFieldVisibility isVisible %i for %s",isVisible ? 1 : 0, label.GetRawBuffer(0));
-		LOG_HR_MSG(E_FAIL, "CDUIUserTileElement::SetFieldVisibility isselectorfield %i",fieldData->m_isSelectorField ? 1 : 0);
+		LOG_HR_MSG(E_FAIL, "CDUIUserTileElement::SetFieldVisibility isselectorfield %i",fieldDataWrapper->m_isSelectorField ? 1 : 0);
 	}
 
 	bool containerPrevVisibility = m_containersArray[index]->GetVisible();
@@ -422,6 +424,8 @@ HRESULT CDUIUserTileElement::_CreateStringField(int index, DirectUI::Element* Pa
 	{
 		RETURN_IF_FAILED(element->SetClass(L"SmallText"));
 	}
+
+	element->SetOverhang(false);
 
 	RETURN_IF_FAILED(element->SetAccessible(true));
 
