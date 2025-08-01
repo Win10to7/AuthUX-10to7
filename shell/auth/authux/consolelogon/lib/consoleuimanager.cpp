@@ -111,7 +111,7 @@ DWORD ConsoleUIManager::UIThreadHostThreadProc()
 
 	HANDLE waitHandles[] = { m_UIThreadQuitEvent.get() };
 
-	SetProcessDpiAwareness(PROCESS_SYSTEM_DPI_AWARE);
+	SetProcessDpiAwareness(PROCESS_PER_MONITOR_DPI_AWARE);
 	CoInitializeEx(nullptr, 0);
 	DirectUI::InitProcessPriv(14, HINST_THISCOMPONENT, false, true, true);
 
