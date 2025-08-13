@@ -636,6 +636,7 @@ namespace Windows::Internal
 						if (completeHandler)
 						{
 							this->completedDelegateBucketAssist_ = Microsoft::WRL::Details::GetDelegateBucketAssist(completeHandler);
+							InterlockedIncrement(&completedDelegateLockCount_);
 						}
 
 						MemoryBarrier();
@@ -671,7 +672,7 @@ namespace Windows::Internal
 			HRESULT hr = S_OK;
 			this->TryTransitionToCompleted();
 
-			if (completedDelegate_.IsInitialized() && InterlockedIncrement(&this->cCallbackMade_) == 1)
+			if (completedDelegateLockCount_ > 0 && InterlockedIncrement(&this->cCallbackMade_) == 1)
 			{
 				Microsoft::WRL::ComPtr<IAsyncInfo> asyncInfo = this;
 				Microsoft::WRL::ComPtr<typename Microsoft::WRL::Details::DerefHelper<typename CompleteTraits::Arg1Type>::DerefType> operationInterface;
@@ -1014,7 +1015,7 @@ namespace Windows::Internal
 			_Run(AsyncStage::Cancel, HRESULT_FROM_WIN32(ERROR_CANCELLED));
 		}
 
-			HRESULT FireCompletion() override // Microsoft::WRL::AsyncBase
+		HRESULT FireCompletion() override // Microsoft::WRL::AsyncBase
 		{
 			HRESULT hr = S_OK;
 			if (InterlockedIncrement(&m_completionsAllowed) == 2)
@@ -1324,12 +1325,12 @@ namespace Windows::Internal
 		typename TComplete, // IAsyncOperationCompletedHandler<RequestCredentialsData*>
 		typename TProgressDelegate, // INilDelegate
 		typename TResult, // CMarshaledInterfaceResult<Windows::Internal::UI::Logon::Controller::IRequestCredentialsData>
-		typename TAsyncHandler, // ComTaskPoolHandler&
+		typename TAsyncHandler, // ComTaskPoolHandler
 		typename TAsyncBaseOptions // AsyncOptions<PropagateErrorWithWin8Quirk, nullptr, GUID_CAUSALITY_WINDOWS_PLATFORM_ID, Diagnostics::CausalitySource_System>
 	>
 	HRESULT MakeAsyncHelper(
 		TOperation** ppOperation,
-		TAsyncHandler handler,
+		TAsyncHandler&& handler,
 		const WCHAR* const pszRuntimeName,
 		TrustLevel trustLevel,
 		AsyncCallbackBase<TResult>* pCallback)
@@ -1355,5 +1356,58 @@ namespace Windows::Internal
 		}
 
 		return hr;
+	}
+
+	template <
+		typename TAsyncHandler, // ComTaskPoolHandler
+		typename TAsyncBaseOptions // AsyncCausalityOptions<...>
+	>
+	HRESULT MakeAsyncActionHelper(
+		TAsyncHandler&& handler,
+		ABI::Windows::Foundation::IAsyncAction** ppAction,
+		TrustLevel trustLevel,
+		AsyncCallbackBase<CNoResult>* pCallback)
+	{
+		return MakeAsyncHelper<
+			ABI::Windows::Foundation::IAsyncAction,
+			ABI::Windows::Foundation::IAsyncActionCompletedHandler,
+			INilDelegate,
+			CNoResult,
+			TAsyncHandler,
+			TAsyncBaseOptions
+		>(
+			ppAction,
+			wistd::forward<TAsyncHandler>(handler),
+			L"Windows.Foundation.IAsyncAction",
+			trustLevel,
+			pCallback
+		);
+	}
+
+	template <
+		typename TResult, // CMarshaledInterfaceResult<Windows::Internal::UI::Logon::Controller::IMessageDisplayResult>
+		typename TResultRaw, // Windows::Internal::UI::Logon::Controller::MessageDisplayResult*
+		typename TAsyncHandler // ComTaskPoolHandler
+	>
+	HRESULT MakeAsyncOperationHelper(
+		TAsyncHandler&& handler,
+		ABI::Windows::Foundation::IAsyncOperation<TResultRaw>** ppOperation,
+		TrustLevel trustLevel,
+		AsyncCallbackBase<TResult>* pCallback)
+	{
+		return MakeAsyncHelper<
+			ABI::Windows::Foundation::IAsyncOperation<TResultRaw>,
+			ABI::Windows::Foundation::IAsyncOperationCompletedHandler<TResultRaw>,
+			INilDelegate,
+			TResult,
+			TAsyncHandler,
+			Microsoft::WRL::AsyncOptions<>
+		>(
+			ppOperation,
+			wistd::forward<TAsyncHandler>(handler),
+			ABI::Windows::Foundation::IAsyncOperation<TResultRaw>::z_get_rc_name_impl(),
+			trustLevel,
+			pCallback
+		);
 	}
 }

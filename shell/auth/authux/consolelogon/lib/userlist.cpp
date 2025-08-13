@@ -70,7 +70,7 @@ HRESULT UserList::AddTileFromData(const Microsoft::WRL::ComPtr<LCPD::ICredential
 		CFieldWrapper* fieldWrapper = DirectUI::HNewAndZero<CFieldWrapper>();
 		fieldWrapper->m_dataSourceCredentialField = dataSource;
 
-		bool isVisibleInSelectedTile;
+		BOOLEAN isVisibleInSelectedTile = FALSE;
 		RETURN_IF_FAILED(dataSource->get_IsVisibleInSelectedTile(&isVisibleInSelectedTile));
 
 		fieldWrapper->m_isSelectorField = false;
@@ -283,8 +283,8 @@ HRESULT UserList::ZoomTile(CDUIUserTileElement* userTile)
     	RETURN_IF_FAILED(userTile->fieldsArray.GetAt(i,fieldData));
 
     	LCPD::CredentialFieldKind kind = LCPD::CredentialFieldKind_StaticText;
-    	bool bHidden = false;
-    	bool isVisibleInSelectedTile = true;
+    	BOOLEAN bHidden = FALSE;
+    	BOOLEAN isVisibleInSelectedTile = TRUE;
     	if (fieldData->m_dataSourceCredentialField)
     	{
     		RETURN_IF_FAILED(fieldData->m_dataSourceCredentialField->get_Kind(&kind));
@@ -382,8 +382,8 @@ HRESULT UserList::UnzoomList(CDUIUserTileElement* userTile)
 		RETURN_IF_FAILED(userTile->fieldsArray.GetAt(i,fieldData));
 
 		LCPD::CredentialFieldKind kind = LCPD::CredentialFieldKind_StaticText;
-		bool bHidden = false;
-		bool isVisibleInDeselectedTile = true;
+		BOOLEAN bHidden = FALSE;
+		BOOLEAN isVisibleInDeselectedTile = TRUE;
 		if (fieldData->m_dataSourceCredentialField)
 		{
 			RETURN_IF_FAILED(fieldData->m_dataSourceCredentialField->get_Kind(&kind));

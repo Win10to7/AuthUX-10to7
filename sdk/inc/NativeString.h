@@ -306,7 +306,7 @@ namespace Windows::Internal
             return StringCchCopyW(pszDest, cchDest, _pszStringData);
         }
 
-        WCHAR* Get() const
+        const WCHAR* Get() const
         {
             return _Get();
         }
@@ -733,7 +733,7 @@ namespace Windows::Internal
             return _pszStringData ? wcslen(_pszStringData) : 0;
         }
 
-        WCHAR* _Get() const
+        const WCHAR* _Get() const
         {
             return _pszStringData;
         }
