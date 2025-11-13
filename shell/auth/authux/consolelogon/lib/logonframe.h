@@ -91,7 +91,7 @@ private:
 	void _SelectMode(DirectUI::Element* elementToHost, bool isVisible);
 	void _ShowCursor(bool bShow);
 	void _DisplayStatusMessage(const wchar_t* message, bool showSpinner);
-	void _DisplayLogonDialog(const wchar_t* messageCaptionContent, const wchar_t* messageContent, WORD flags);
+	void _DisplayLogonDialog(const wchar_t* messageCaptionContent, const wchar_t* messageContent, UINT flags);
 	void _OnEmergencyRestart();
 	void _HandleShutdownChoices();
 	void _ShutdownCommon(DWORD choice);

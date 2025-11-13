@@ -900,6 +900,12 @@ HRESULT LogonViewManager::ShowCredentialView()
 
 	CLogonFrame::GetSingleton()->m_LogonUserList->DestroyAllTiles();
 
+	if (!GetSystemMetrics(SM_REMOTESESSION) && m_currentReason == LC::LogonUIRequestReason_LogonUIUnlock)
+	{
+		RETURN_IF_FAILED(m_userSettingManager->put_IsLockScreenAllowed(FALSE));
+		WTSDisconnectSession(nullptr, WTS_CURRENT_SESSION, FALSE);
+	}
+
 	if (m_credentialsChangedToken.value)
 	{
 		ComPtr<WFC::IObservableVector<LCPD::Credential*>> credentials;

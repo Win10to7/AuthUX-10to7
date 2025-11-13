@@ -834,7 +834,7 @@ static bool LoadIconAsContent(DirectUI::Element* elm, const wchar_t* lpIconName)
 	return false;
 }
 
-void CLogonFrame::_DisplayLogonDialog(const wchar_t* messageCaptionContent, const wchar_t* messageContent, WORD flags)
+void CLogonFrame::_DisplayLogonDialog(const wchar_t* messageCaptionContent, const wchar_t* messageContent, UINT flags)
 {
 	LPWSTR iconId;
     int iconFlags = flags & 0xF0;
