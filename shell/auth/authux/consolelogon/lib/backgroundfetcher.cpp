@@ -42,16 +42,16 @@ ImageData imageData0564[] = { {768, 1360, 5043, 5056, L"%windir%\\system32\\oobe
 
 ratioItem ratioItems[10] =
 	{
-	{1.25, 1, imageDatas125 },
-    {1.3333334,3,imageDatas1333333},
-    {1.6, 2, imageDatas16},
-    {1.6666666, 1,imageData166666},
-    {1.7708334, 1, imageData177},
-    {0.80000001, 1, imageData08},
-    {0.75, 1, imageData075},
-    {0.625, 1, imageData0625},
-    {0.60000002, 1, imageData06000},
-    {0.56470591, 1, imageData0564}
+	{1.25f, 1, imageDatas125 },
+    {1.3333334f,3,imageDatas1333333},
+    {1.6f, 2, imageDatas16},
+    {1.6666666f, 1,imageData166666},
+    {1.7708334f, 1, imageData177},
+    {0.80000001f, 1, imageData08},
+    {0.75f, 1, imageData075},
+    {0.625f, 1, imageData0625},
+    {0.60000002f, 1, imageData06000},
+    {0.56470591f, 1, imageData0564}
 	};
 
 static HRESULT SHRegGetDWORDW(HKEY hkey, const WCHAR* pszSubKey, const WCHAR* pszValue, void* pvData)
@@ -110,7 +110,7 @@ static HBITMAP GetHBITMAPFromImageFile(WCHAR* pFilePath)
     return result;
 }
 
-HBITMAP GetHBITMAPFromImageResource(int resourceID);
+HBITMAP GetHBITMAPFromImageResource(UINT resourceID);
 
 HBITMAP ScaleBitmapToRes(HBITMAP oldBitmap)
 {
@@ -153,7 +153,7 @@ HBITMAP ScaleBitmapToRes(HBITMAP oldBitmap)
     return hbitmap;
 }
 
-HBITMAP GetHBITMAPFromImageResource(int resourceID)
+HBITMAP GetHBITMAPFromImageResource(UINT resourceID)
 {
     static auto SHCreateStreamOnModuleResourceW = (HRESULT(WINAPI*)(HMODULE hModule, LPCWSTR pwszName, LPCWSTR pwszType, IStream * *ppStream))(GetProcAddress(LoadLibrary(L"shcore.dll"), (PCSTR)109));
 
@@ -213,7 +213,7 @@ bool BitmapAspectRatioEqualsScreen(HBITMAP h)
 	return v1;
 }
 
-bool GetBitmapResolution(HBITMAP ha, int* w, int* h)
+bool GetBitmapResolution(HBITMAP ha, DWORD* w, DWORD* h)
 {
 	bool v1 = false;
 
@@ -255,7 +255,7 @@ HRESULT CBackground::GetBackground(HBITMAP* OutBitmap)
         ratioItem item = ratioItems[i];
         float difference = ScreenRatio - item.ratio;
         if (difference < 0.0)
-            difference = difference * -1.0;
+            difference = difference * -1.0f;
         if (lastDistance <= difference)
         {
             ScreenHeight = Height;
@@ -394,10 +394,10 @@ HRESULT CBackground::GetBackground(HBITMAP* OutBitmap)
 
                 bool bDefaultBetter = false; //check if src fallback is better, just so u can have nice images if u have a src image
 
-                int dw = 0; int dh = 0;
+                DWORD dw = 0; DWORD dh = 0;
                 if (GetBitmapResolution(bitmapDefault, &dw, &dh) && BitmapAspectRatioEqualsScreen(bitmapDefault))
                 {
-                    if ((dw > dataToUse->w || dh > dataToUse->h) && dw <= GetSystemMetrics(SM_CXSCREEN) && dh <= GetSystemMetrics(SM_CYSCREEN))
+                    if ((dw > dataToUse->w || dh > dataToUse->h) && dw <= (DWORD)GetSystemMetrics(SM_CXSCREEN) && dh <= (DWORD)GetSystemMetrics(SM_CYSCREEN))
                         bDefaultBetter = true;
                 }
 

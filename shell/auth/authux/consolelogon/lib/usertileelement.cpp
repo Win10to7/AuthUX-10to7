@@ -425,8 +425,6 @@ HRESULT CDUIUserTileElement::_CreateStringField(int index, DirectUI::Element* Pa
 		RETURN_IF_FAILED(element->SetClass(L"SmallText"));
 	}
 
-	element->SetOverhang(false);
-
 	RETURN_IF_FAILED(element->SetAccessible(true));
 
 	RETURN_IF_FAILED(element->SetAccRole(41));
