@@ -936,7 +936,7 @@ namespace Windows::Internal
 			if constexpr (TResult::c_fThreadAffineGetAndClose)
 			{
 				Microsoft::WRL::ComPtr<TOperation> spOperation;
-				hr = Microsoft::WRL::MakeAndInitialize<AsyncOperationStub<TOperation, TResult>>(&spOperation, &m_resultRetriever, (IUnknown*)(IAsyncInfo*)this);
+				hr = Microsoft::WRL::MakeAndInitialize<AsyncOperationStub<TOperation, TResult>>(&spOperation, &m_resultRetriever, static_cast<IUnknown*>(static_cast<IAsyncInfo*>(this)));
 				if (SUCCEEDED(hr))
 				{
 					hr = m_marshalResultRetriever.Initialize(AGILEREFERENCE_DEFAULT, __uuidof(TOperation), spOperation.Get());

@@ -421,6 +421,7 @@ static const WCHAR LogonAnimationAction[] = L"Windows.Foundation.IAsyncAction Co
 HRESULT AuthUX::TriggerLogonAnimationAsync(IAsyncAction** ppAction)
 {
 	*ppAction = nullptr;
+	return E_NOTIMPL;
 
 	HRESULT hr = MakeCancellableAsyncAction<AsyncCausalityOptions<LogonAnimationAction>>(
 		WI::ComTaskPoolHandler(WI::TaskApartment::Any, WI::TaskOptions::SyncNesting),
@@ -615,12 +616,7 @@ HRESULT AuthUX::Stop()
 			WriteFile(logFile,log,_ARRAYSIZE(log)*sizeof(WCHAR),NULL,NULL);
 		}
 	}
-	if (logFile != INVALID_HANDLE_VALUE)
-	{
-		const WCHAR log[] = L"Calling Free Console\n";
-		WriteFile(logFile,log,_ARRAYSIZE(log)*sizeof(WCHAR),NULL,NULL);
-	}
-	RETURN_IF_WIN32_BOOL_FALSE(FreeConsole()); // 431
+	//RETURN_IF_WIN32_BOOL_FALSE(FreeConsole()); // 431
 	return S_OK;
 }
 

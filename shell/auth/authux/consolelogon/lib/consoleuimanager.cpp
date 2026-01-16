@@ -135,25 +135,21 @@ DWORD ConsoleUIManager::UIThreadHostThreadProc()
 
 	while (dwIndex == WAIT_IO_COMPLETION)
 	{
+		MSG Msg {};
+		while ( PeekMessageW(&Msg, nullptr, 0, 0, PM_REMOVE) )
+		{
+			if (Msg.message == WM_QUIT)
+			{
+				break;
+			}
+
+			TranslateMessage(&Msg);
+			DispatchMessageW(&Msg);
+		}
+
 		CoWaitForMultipleHandles(
 			COWAIT_ALERTABLE | COWAIT_INPUTAVAILABLE | COWAIT_DISPATCH_CALLS | COWAIT_DISPATCH_WINDOW_MESSAGES,
 			INFINITE, ARRAYSIZE(waitHandles), waitHandles, &dwIndex);
-		if (dwIndex == 1)
-		{
-			MSG Msg {};
-			while ( PeekMessageW(&Msg, nullptr, 0, 0, PM_REMOVE) )
-			{
-				if (Msg.message == WM_QUIT)
-				{
-					break;
-				}
-
-				TranslateMessage(&Msg);
-				DispatchMessageW(&Msg);
-			}
-
-			dwIndex = WAIT_IO_COMPLETION;
-		}
 	}
 
 	if (m_Dispatcher.Get())
