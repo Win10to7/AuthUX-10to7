@@ -212,6 +212,9 @@
     <ClInclude Include="shell\auth\authux\consolelogon\lib\authuxlockaction.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="sdk\inc\WaitForCompletion.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="shell\auth\authux\consolelogon\dll\consolelogon.rc">
