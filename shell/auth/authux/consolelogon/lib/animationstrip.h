@@ -25,7 +25,7 @@ public:
 	void OnHosted(DirectUI::Element* a2) override;
 	void OnDestroy() override;
 
-	static void RawActionProc(GMA_ACTIONINFO* a1);
+	static void CALLBACK RawActionProc(GMA_ACTIONINFO* a1);
 
 	HANDLE m_action;
 	HIMAGELIST m_imageList;

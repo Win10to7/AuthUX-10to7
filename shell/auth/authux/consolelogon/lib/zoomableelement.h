@@ -22,7 +22,7 @@ public:
 
 	static HRESULT Create(DirectUI::Element* pParent, unsigned long* pdwDeferCookie, DirectUI::Element** ppElement);
 
-	static const DirectUI::PropertyInfo* ElementZoomedProp();
+	static const DirectUI::PropertyInfo* WINAPI ElementZoomedProp();
 	bool GetElementZoomed();
 	HRESULT SetElementZoomed(bool v);
 

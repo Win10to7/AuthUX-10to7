@@ -31,7 +31,7 @@ public:
 
 	static HRESULT Create(DirectUI::Element* pParent, unsigned long* pdwDeferCookie, DirectUI::Element** ppElement);
 
-	static const DirectUI::PropertyInfo* TileZoomedProp();
+	static const DirectUI::PropertyInfo* WINAPI TileZoomedProp();
 	static HRESULT Register();
 
 	bool GetTileZoomed();
