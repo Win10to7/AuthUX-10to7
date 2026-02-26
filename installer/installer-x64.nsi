@@ -98,7 +98,7 @@ Section "AuthUX" AuthUX
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\AuthUX" \
                  "Publisher" "explorer7-team"
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\AuthUX" \
-                 "DisplayVersion" "0.0.1"
+                 "DisplayVersion" "0.0.2"
     WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\AuthUX" \
                  "NoModify" 1
     WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\AuthUX" \

@@ -1096,7 +1096,7 @@ void CLogonFrame::_HandleShutdownChoices()
 				mi.fState = MFS_ENABLED;
 				mi.wID = choice + 1;
 				mi.dwTypeData = szChoiceName;
-				mi.cch = wcslen(szChoiceName);
+				mi.cch = static_cast<UINT>(wcslen(szChoiceName));
 				InsertMenuItemW(popupMenu, i+offset, TRUE, &mi);
 
 				if (i == 0)

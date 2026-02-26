@@ -41,13 +41,13 @@ HRESULT LogonViewManager::Invoke(LCPD::ICredentialGroup* sender, LCPD::ICredenti
 		RETURN_IF_FAILED(m_webDialogDismissTrigger->DismissWebDialog());
 	}
 
-	LOG_IF_FAILED(E_FAIL,"INVOKE 1");
+	LOG_IF_FAILED_MSG(E_FAIL,"INVOKE 1");
 	if (m_currentViewType == LogonView::UserSelection
 		|| m_currentViewType == LogonView::CredProvSelection
 		|| m_currentViewType == LogonView::SelectedCredential
 		|| m_currentViewType == LogonView::ComboBox)
 	{
-		LOG_IF_FAILED(E_FAIL, "INVOKE 1A");
+		LOG_IF_FAILED_MSG(E_FAIL, "INVOKE 1A");
 		RETURN_IF_FAILED(ShowCredentialView()); // 235
 	}
 
@@ -56,10 +56,10 @@ HRESULT LogonViewManager::Invoke(LCPD::ICredentialGroup* sender, LCPD::ICredenti
 
 HRESULT LogonViewManager::Invoke(WFC::IObservableVector<LCPD::Credential*>* sender, WFC::IVectorChangedEventArgs* args)
 {
-	LOG_IF_FAILED(E_FAIL, "INVOKE 2");
+	LOG_IF_FAILED_MSG(E_FAIL, "INVOKE 2");
 	if (m_currentViewType == LogonView::CredProvSelection)
 	{
-		LOG_IF_FAILED(E_FAIL, "INVOKE 2A");
+		LOG_IF_FAILED_MSG(E_FAIL, "INVOKE 2A");
 		RETURN_IF_FAILED(ShowCredentialView()); // 222
 	}
 
@@ -68,10 +68,10 @@ HRESULT LogonViewManager::Invoke(WFC::IObservableVector<LCPD::Credential*>* send
 
 HRESULT LogonViewManager::Invoke(WFC::IObservableVector<IInspectable*>* sender, WFC::IVectorChangedEventArgs* args)
 {
-	LOG_IF_FAILED(E_FAIL, "INVOKE 3");
+	LOG_IF_FAILED_MSG(E_FAIL, "INVOKE 3");
 	if (m_currentViewType == LogonView::UserSelection)
 	{
-		LOG_IF_FAILED(E_FAIL, "INVOKE 3A");
+		LOG_IF_FAILED_MSG(E_FAIL, "INVOKE 3A");
 		RETURN_IF_FAILED(ShowCredentialView()); // 205
 	}
 
@@ -85,13 +85,13 @@ HRESULT LogonViewManager::Invoke(LCPD::ICredProvDataModel* sender, IInspectable*
 		RETURN_IF_FAILED(m_webDialogDismissTrigger->DismissWebDialog());
 	}
 
-	LOG_IF_FAILED(E_FAIL, "INVOKE 4");
+	LOG_IF_FAILED_MSG(E_FAIL, "INVOKE 4");
 	if (m_currentViewType == LogonView::UserSelection
 		|| m_currentViewType == LogonView::CredProvSelection
 		|| m_currentViewType == LogonView::SelectedCredential
 		|| m_currentViewType == LogonView::ComboBox)
 	{
-		LOG_IF_FAILED(E_FAIL, "INVOKE 4A");
+		LOG_IF_FAILED_MSG(E_FAIL, "INVOKE 4A");
 		RETURN_IF_FAILED(ShowCredentialView()); // 196
 	}
 
@@ -100,7 +100,7 @@ HRESULT LogonViewManager::Invoke(LCPD::ICredProvDataModel* sender, IInspectable*
 
 HRESULT LogonViewManager::Invoke(LCPD::ICredProvDataModel* sender, LCPD::BioFeedbackState args)
 {
-	LOG_IF_FAILED(E_FAIL, "INVOKE 5");
+	LOG_IF_FAILED_MSG(E_FAIL, "INVOKE 5");
 	if (m_bioFeedbackListener.Get())
 	{
 		LCPD::BioFeedbackState state;
@@ -117,7 +117,7 @@ HRESULT LogonViewManager::Invoke(LCPD::ICredProvDataModel* sender, LCPD::BioFeed
 
 HRESULT LogonViewManager::Invoke(LCPD::ICredProvDataModel* sender, LCPD::ICredentialSerialization* args)
 {
-	LOG_IF_FAILED(E_FAIL, "INVOKE 6");
+	LOG_IF_FAILED_MSG(E_FAIL, "INVOKE 6");
 	if (m_requestCredentialsComplete)
 	{
 		LCPD::SerializationResponse response;
@@ -900,11 +900,11 @@ HRESULT LogonViewManager::ShowCredentialView()
 
 	CLogonFrame::GetSingleton()->m_LogonUserList->DestroyAllTiles();
 
-	if (!GetSystemMetrics(SM_REMOTESESSION) && m_currentReason == LC::LogonUIRequestReason_LogonUIUnlock)
-	{
-		RETURN_IF_FAILED(m_userSettingManager->put_IsLockScreenAllowed(FALSE));
-		WTSDisconnectSession(nullptr, WTS_CURRENT_SESSION, FALSE);
-	}
+	//if (!GetSystemMetrics(SM_REMOTESESSION) && m_currentReason == LC::LogonUIRequestReason_LogonUIUnlock)
+	//{
+	//	RETURN_IF_FAILED(m_userSettingManager->put_IsLockScreenAllowed(FALSE));
+	//	WTSDisconnectSession(nullptr, WTS_CURRENT_SESSION, FALSE);
+	//}
 
 	if (m_credentialsChangedToken.value)
 	{
