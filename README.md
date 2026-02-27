@@ -18,12 +18,14 @@ In order to install AuthUX, you need to write to protected registry keys which y
 
 - `HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\WindowsRuntime\ActivatableClassId\Windows.Internal.UI.Logon.Controller.LogonUX\DllPath`
 - `HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\WindowsRuntime\ActivatableClassId\Windows.Internal.UI.Logon.Controller.LockScreenHost\DllPath`
+- `HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\WindowsRuntime\ActivatableClassId\Windows.Internal.UI.Logon.Controller.BlockedShutdownResolverUX\DllPath`
 
 If you ran a TrustedInstaller `cmd.exe` instance as per the above recommendation, then the following commands will override those keys for you. Note that these commands presume the location of your AuthUX binaries to be `%SystemRoot%\System32\AuthUX.dll` (so in other words, you should move the files to System32; they will not conflict with anything):
 
 ```cmd
 reg add HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\WindowsRuntime\ActivatableClassId\Windows.Internal.UI.Logon.Controller.LogonUX /v DllPath /t REG_SZ /d %SystemRoot%\System32\AuthUX.dll /f
 reg add HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\WindowsRuntime\ActivatableClassId\Windows.Internal.UI.Logon.Controller.LockScreenHost /v DllPath /t REG_SZ /d %SystemRoot%\System32\AuthUX.dll /f
+reg add HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\WindowsRuntime\ActivatableClassId\Windows.Internal.UI.Logon.Controller.BlockedShutdownResolverUX /v DllPath /t REG_SZ /d %SystemRoot%\System32\AuthUX.dll /f
 ```
 
 If these steps have been followed properly, then the logon screen will immediately start using AuthUX.
