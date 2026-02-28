@@ -92,6 +92,7 @@ private:
 	static int bgOffsetY;
 	static LogonUIState logonUIState;
 	static int scrollPos;
+	static BOOLEAN wasClicked;
 
 	struct AppTile
 	{
@@ -137,6 +138,7 @@ LogonUIState ConsoleBSDRStub::logonUIState = LogonUIState_ShuttingDown;
 int ConsoleBSDRStub::bgOffsetX = 0;
 int ConsoleBSDRStub::bgOffsetY = 0;
 int ConsoleBSDRStub::scrollPos = 0;
+BOOLEAN ConsoleBSDRStub::wasClicked = FALSE;
 std::vector<ConsoleBSDRStub::AppTile> ConsoleBSDRStub::appTiles;
 std::vector<ComPtr<IShutdownBlockingApp>> ConsoleBSDRStub::pendingApps;
 std::vector<ComPtr<IShutdownBlockingApp>> ConsoleBSDRStub::addQueue;
@@ -1355,6 +1357,7 @@ INT_PTR CALLBACK ConsoleBSDRStub::DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, L
 		case IDCANCEL:
 		{
 			LogToFile(L"Cancel button clicked - resolving with Cancel");
+			wasClicked = TRUE;
 			_Resolved.InvokeAll(nullptr, BlockedShutdownResolution_Cancel);
 			EndDialog(hDlg, 0);
 			DestroyWindow(hBgWnd);
@@ -1374,6 +1377,7 @@ INT_PTR CALLBACK ConsoleBSDRStub::DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, L
 		case IDYES:
 		{
 			LogToFile(L"Yes button clicked - resolving with Force");
+			wasClicked = TRUE;
 			_Resolved.InvokeAll(nullptr, BlockedShutdownResolution_Force);
 			EndDialog(hDlg, 0);
 			DestroyWindow(hBgWnd);
@@ -1664,7 +1668,8 @@ HRESULT ConsoleBSDRStub::get_ScaleFactor(UINT* value)
 
 HRESULT ConsoleBSDRStub::get_WasClicked(BOOLEAN* value)
 {
-	*value = false;
+	LogToFile(L"ConsoleBSDRStub::get_WasClicked called, returning %s", wasClicked ? L"true" : L"false");
+	*value = wasClicked;
 	return S_OK;
 }
 
