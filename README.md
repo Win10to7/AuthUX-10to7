@@ -64,7 +64,7 @@ This repository relies on Git submodules for the DirectUI library (dui70). In or
 To clone the repository with submodules, run:
 
 ```cmd
-git clone --recurse-submodules https://github.com/explorer7-team/AuthUI.git
+git clone --recurse-submodules https://github.com/explorer7-team/AuthUX.git
 ```
 
 To fetch submodules after cloning the repository, run:
