@@ -42,7 +42,6 @@ The default values are displayed in the below table:
 | **Windows.Internal.UI.Logon.Controller.LogonUX**        | `%SystemRoot%\system32\Windows.UI.Logon.dll` |
 |---------------------------------------------------------|----------------------------------------------|
 | **Windows.Internal.UI.Logon.Controller.LockScreenHost** | `%SystemRoot%\system32\logoncontroller.dll`  |
-|---------------------------------------------------------|----------------------------------------------|
 | **Windows.Internal.UI.Logon.Controller.BlockedShutdownResolverUX** | `%SystemRoot%\system32\Windows.UI.BlockedShutdown.dll` |
 
 You can use the following commands to restore these default values, once again by opening a TrustedInstaller `cmd.exe` window via [RunTI](https://github.com/aubymori/RunTI):
