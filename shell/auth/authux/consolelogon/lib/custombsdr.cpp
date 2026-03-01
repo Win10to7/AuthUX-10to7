@@ -74,6 +74,7 @@ bool CustomBSDR::IsHighContrast()
 	return false;
 }
 
+// Load winsrv alpha bitmaps properly
 HBITMAP CustomBSDR::LoadAlphaBitmap(UINT resourceId)
 {
 	HRSRC hResource = FindResourceW(HINST_THISCOMPONENT, MAKEINTRESOURCEW(resourceId), RT_BITMAP);
@@ -203,25 +204,27 @@ void CustomBSDR::DrawSeparator(HDC hdc, LPDRAWITEMSTRUCT pDIS)
 			// Skipped leftmost transparent pixels * 4 + opacity gradient pixels on left * 19 + fully opaque center pixels * 8 + opacity gradient pixels on right * 19 =
 			// 4 + 19 + 8 + 19 = 50 (total width of the source bitmap)
 			// Original Win7 shutdown resolver somehow decided to shrink the 19 pixels part to just 6 pixels
+			// Also somehow the leftmost pixel is skipped and drawing begins from the second one
 			const int srcLeftSkip = 4;
 			const int srcLeftGradient = 19;
 			const int srcCenter = 8;
 			const int srcRightGradient = 19;
 
+			const int dstLeftSkip = 1;
 			const int dstLeftGradient = 6;
 			const int dstRightGradient = 6;
-			const int dstCenter = width - dstLeftGradient - dstRightGradient;
+			const int dstCenter = width - dstLeftSkip - dstLeftGradient - dstRightGradient;
 
 			// Left gradient
-			AlphaBlend(hdcOffscreen, 0, 0, dstLeftGradient, 1,
+			AlphaBlend(hdcOffscreen, dstLeftSkip, 0, dstLeftGradient, 1,
 				hdcSep, srcLeftSkip, 1, srcLeftGradient, 1, bf);
 
 			// Center
-			AlphaBlend(hdcOffscreen, dstLeftGradient, 0, dstCenter, 1,
+			AlphaBlend(hdcOffscreen, dstLeftSkip + dstLeftGradient, 0, dstCenter, 1,
 				hdcSep, srcLeftSkip + srcLeftGradient, 1, srcCenter, 1, bf);
 
 			// Right gradient
-			AlphaBlend(hdcOffscreen, dstLeftGradient + dstCenter, 0, dstRightGradient, 1,
+			AlphaBlend(hdcOffscreen, dstLeftSkip + dstLeftGradient + dstCenter, 0, dstRightGradient, 1,
 				hdcSep, srcLeftSkip + srcLeftGradient + srcCenter, 1, srcRightGradient, 1, bf);
 
 			SelectObject(hdcSep, hOldSep);
@@ -237,7 +240,8 @@ void CustomBSDR::DrawSeparator(HDC hdc, LPDRAWITEMSTRUCT pDIS)
 	else
 	{
 		HBRUSH hBrush = CreateSolidBrush(GetSysColor(COLOR_WINDOWTEXT));
-		FillRect(pDIS->hDC, &pDIS->rcItem, hBrush);
+		RECT lineRect = { pDIS->rcItem.left, pDIS->rcItem.top, pDIS->rcItem.right, pDIS->rcItem.top + 1 };
+		FillRect(pDIS->hDC, &lineRect, hBrush);
 		DeleteObject(hBrush);
 	}
 }
@@ -302,80 +306,72 @@ void CustomBSDR::DrawButton(HDC hdc, LPDRAWITEMSTRUCT pDIS)
 			int left = rcButton.left;
 			int top = rcButton.top;
 
-			if (bm.bmBitsPixel == 32)
-			{
-				BITMAPINFO bmi = {};
-				bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-				bmi.bmiHeader.biWidth = dstW;
-				bmi.bmiHeader.biHeight = -dstH;
-				bmi.bmiHeader.biPlanes = 1;
-				bmi.bmiHeader.biBitCount = 32;
-				bmi.bmiHeader.biCompression = BI_RGB;
+			BITMAPINFO bmi = {};
+			bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+			bmi.bmiHeader.biWidth = dstW;
+			bmi.bmiHeader.biHeight = -dstH;
+			bmi.bmiHeader.biPlanes = 1;
+			bmi.bmiHeader.biBitCount = 32;
+			bmi.bmiHeader.biCompression = BI_RGB;
 
-				void* pBits = nullptr;
-				HBITMAP hOffscreenBmp = CreateDIBSection(hdc, &bmi, DIB_RGB_COLORS, &pBits, nullptr, 0);
-				if (hOffscreenBmp)
+			void* pBits = nullptr;
+			HBITMAP hOffscreenBmp = CreateDIBSection(hdc, &bmi, DIB_RGB_COLORS, &pBits, nullptr, 0);
+			if (hOffscreenBmp)
+			{
+				HDC hdcOffscreen = CreateCompatibleDC(hdc);
+				HBITMAP hOldOffscreen = (HBITMAP)SelectObject(hdcOffscreen, hOffscreenBmp);
+
+				// Proper alpha blending with the background bitmap
+				if (bgBitmap)
 				{
-					HDC hdcOffscreen = CreateCompatibleDC(hdc);
-					HBITMAP hOldOffscreen = (HBITMAP)SelectObject(hdcOffscreen, hOffscreenBmp);
+					POINT pt = { rcButton.left, rcButton.top };
+					MapWindowPoints(pDIS->hwndItem, hBgWnd, &pt, 1);
+					pt.x -= bgOffsetX;
+					pt.y -= bgOffsetY;
 
-					// Proper alpha blending with the background bitmap
-					if (bgBitmap)
-					{
-						POINT pt = { rcButton.left, rcButton.top };
-						MapWindowPoints(pDIS->hwndItem, hBgWnd, &pt, 1);
-						pt.x -= bgOffsetX;
-						pt.y -= bgOffsetY;
-
-						HDC hdcBg = CreateCompatibleDC(hdc);
-						HBITMAP hOldBg = (HBITMAP)SelectObject(hdcBg, bgBitmap);
-						BitBlt(hdcOffscreen, 0, 0, dstW, dstH, hdcBg, pt.x, pt.y, SRCCOPY);
-						SelectObject(hdcBg, hOldBg);
-						DeleteDC(hdcBg);
-					}
-
-					HDC hdcSrc = CreateCompatibleDC(hdc);
-					HBITMAP hOldSrc = (HBITMAP)SelectObject(hdcSrc, hBitmap);
-
-					BLENDFUNCTION bf = { AC_SRC_OVER, 0, 255, AC_SRC_ALPHA };
-
-					// 1 2 3
-					// 4 5 6
-					// 7 8 9
-					AlphaBlend(hdcOffscreen, 0, 0, borderSizeDraw, borderSizeDraw, hdcSrc, 0, 0, borderSize, borderSize, bf); // 1
-					AlphaBlend(hdcOffscreen, dstW - borderSizeDraw, 0, borderSizeDraw, borderSizeDraw, hdcSrc, srcW - borderSize, 0, borderSize, borderSize, bf); // 3
-					AlphaBlend(hdcOffscreen, 0, dstH - borderSizeDraw, borderSizeDraw, borderSizeDraw, hdcSrc, 0, srcH - borderSize, borderSize, borderSize, bf); // 7
-					AlphaBlend(hdcOffscreen, dstW - borderSizeDraw, dstH - borderSizeDraw, borderSizeDraw, borderSizeDraw, hdcSrc, srcW - borderSize, srcH - borderSize, borderSize, borderSize, bf); // 9
-
-					AlphaBlend(hdcOffscreen, borderSizeDraw, 0, dstW - 2 * borderSizeDraw, borderSizeDraw, hdcSrc, borderSize, 0, srcW - 2 * borderSize, borderSize, bf); // 2
-					AlphaBlend(hdcOffscreen, borderSizeDraw, dstH - borderSizeDraw, dstW - 2 * borderSizeDraw, borderSizeDraw, hdcSrc, borderSize, srcH - borderSize, srcW - 2 * borderSize, borderSize, bf); // 8
-					AlphaBlend(hdcOffscreen, 0, borderSizeDraw, borderSizeDraw, dstH - 2 * borderSizeDraw, hdcSrc, 0, borderSize, borderSize, srcH - 2 * borderSize, bf); // 4
-					AlphaBlend(hdcOffscreen, dstW - borderSizeDraw, borderSizeDraw, borderSizeDraw, dstH - 2 * borderSizeDraw, hdcSrc, srcW - borderSize, borderSize, borderSize, srcH - 2 * borderSize, bf); // 6
-
-					AlphaBlend(hdcOffscreen, borderSizeDraw, borderSizeDraw, dstW - 2 * borderSizeDraw, dstH - 2 * borderSizeDraw, hdcSrc, borderSize, borderSize, srcW - 2 * borderSize, srcH - 2 * borderSize, bf); // 5
-
-					SelectObject(hdcSrc, hOldSrc);
-					DeleteDC(hdcSrc);
-
-					BitBlt(hdc, left, top, dstW, dstH, hdcOffscreen, 0, 0, SRCCOPY);
-
-					SelectObject(hdcOffscreen, hOldOffscreen);
-					DeleteDC(hdcOffscreen);
-					DeleteObject(hOffscreenBmp);
+					HDC hdcBg = CreateCompatibleDC(hdc);
+					HBITMAP hOldBg = (HBITMAP)SelectObject(hdcBg, bgBitmap);
+					BitBlt(hdcOffscreen, 0, 0, dstW, dstH, hdcBg, pt.x, pt.y, SRCCOPY);
+					SelectObject(hdcBg, hOldBg);
+					DeleteDC(hdcBg);
 				}
-			}
-			else
-			{
-				HDC hdcMem = CreateCompatibleDC(hdc);
-				HBITMAP hOldBitmap = (HBITMAP)SelectObject(hdcMem, hBitmap);
-				StretchBlt(hdc, left, top, dstW, dstH, hdcMem, 0, 0, srcW, srcH, SRCCOPY);
-				SelectObject(hdcMem, hOldBitmap);
-				DeleteDC(hdcMem);
+
+				HDC hdcSrc = CreateCompatibleDC(hdc);
+				HBITMAP hOldSrc = (HBITMAP)SelectObject(hdcSrc, hBitmap);
+
+				BLENDFUNCTION bf = { AC_SRC_OVER, 0, 255, AC_SRC_ALPHA };
+
+				// 1 2 3
+				// 4 5 6
+				// 7 8 9
+				// Corners
+				AlphaBlend(hdcOffscreen, 0, 0, borderSizeDraw, borderSizeDraw, hdcSrc, 0, 0, borderSize, borderSize, bf); // 1
+				AlphaBlend(hdcOffscreen, dstW - borderSizeDraw, 0, borderSizeDraw, borderSizeDraw, hdcSrc, srcW - borderSize, 0, borderSize, borderSize, bf); // 3
+				AlphaBlend(hdcOffscreen, 0, dstH - borderSizeDraw, borderSizeDraw, borderSizeDraw, hdcSrc, 0, srcH - borderSize, borderSize, borderSize, bf); // 7
+				AlphaBlend(hdcOffscreen, dstW - borderSizeDraw, dstH - borderSizeDraw, borderSizeDraw, borderSizeDraw, hdcSrc, srcW - borderSize, srcH - borderSize, borderSize, borderSize, bf); // 9
+
+				// Edges
+				AlphaBlend(hdcOffscreen, borderSizeDraw, 0, dstW - 2 * borderSizeDraw, borderSizeDraw, hdcSrc, borderSize, 0, srcW - 2 * borderSize, borderSize, bf); // 2
+				AlphaBlend(hdcOffscreen, borderSizeDraw, dstH - borderSizeDraw, dstW - 2 * borderSizeDraw, borderSizeDraw, hdcSrc, borderSize, srcH - borderSize, srcW - 2 * borderSize, borderSize, bf); // 8
+				AlphaBlend(hdcOffscreen, 0, borderSizeDraw, borderSizeDraw, dstH - 2 * borderSizeDraw, hdcSrc, 0, borderSize, borderSize, srcH - 2 * borderSize, bf); // 4
+				AlphaBlend(hdcOffscreen, dstW - borderSizeDraw, borderSizeDraw, borderSizeDraw, dstH - 2 * borderSizeDraw, hdcSrc, srcW - borderSize, borderSize, borderSize, srcH - 2 * borderSize, bf); // 6
+
+				// Center
+				AlphaBlend(hdcOffscreen, borderSizeDraw, borderSizeDraw, dstW - 2 * borderSizeDraw, dstH - 2 * borderSizeDraw, hdcSrc, borderSize, borderSize, srcW - 2 * borderSize, srcH - 2 * borderSize, bf); // 5
+
+				SelectObject(hdcSrc, hOldSrc);
+				DeleteDC(hdcSrc);
+
+				BitBlt(hdc, left, top, dstW, dstH, hdcOffscreen, 0, 0, SRCCOPY);
+
+				SelectObject(hdcOffscreen, hOldOffscreen);
+				DeleteDC(hdcOffscreen);
+				DeleteObject(hOffscreenBmp);
 			}
 		}
 	}
 
-	wchar_t buttonText[256];
+	wchar_t buttonText[256] = {};
 	GetWindowTextW(pDIS->hwndItem, buttonText, _countof(buttonText));
 
 	if (wcslen(buttonText) > 0)
@@ -522,7 +518,7 @@ void CustomBSDR::CreateAppTileControls(IShutdownBlockingApp* blockingApp)
 		const wchar_t* captionStr = WindowsGetStringRawBuffer(caption, nullptr);
 		if (tile.isBlocking)
 		{
-			wchar_t waitingFor[256];
+			wchar_t waitingFor[256] = {};
 			LoadStringW(HINST_THISCOMPONENT, IDS_BSDR_WAITINGFOR, waitingFor, _countof(waitingFor));
 			titleText = std::wstring(waitingFor) + L" " + captionStr;
 		}
@@ -552,7 +548,7 @@ void CustomBSDR::CreateAppTileControls(IShutdownBlockingApp* blockingApp)
 		else if (_logonUIState == LogonUIState_Restarting)
 			stringId = IDS_BSDR_BLOCKINGAPP_RESTART;
 
-		wchar_t defaultReason[256];
+		wchar_t defaultReason[256] = {};
 		LoadStringW(HINST_THISCOMPONENT, stringId, defaultReason, _countof(defaultReason));
 		blockReasonText = defaultReason;
 	}
@@ -560,7 +556,7 @@ void CustomBSDR::CreateAppTileControls(IShutdownBlockingApp* blockingApp)
 	int iconSize = MulDiv(32, dpi, 96);
 
 	tile.hIcon = CreateWindowExW(0, L"Static", nullptr, WS_CHILD | WS_VISIBLE | SS_BITMAP, 0, 0, iconSize, iconSize, hAppList, nullptr, HINST_THISCOMPONENT, nullptr);
-	tile.hTitle = CreateWindowExW(0, L"Static", titleText.c_str(), WS_CHILD | WS_VISIBLE, 0, 0, 100, 20, hAppList, nullptr, HINST_THISCOMPONENT, nullptr);
+	tile.hTitle = CreateWindowExW(0, L"Static", titleText.c_str(), WS_CHILD | WS_VISIBLE | SS_ENDELLIPSIS, 0, 0, 100, 20, hAppList, nullptr, HINST_THISCOMPONENT, nullptr);
 
 	if (!blockReasonText.empty())
 	{
@@ -571,11 +567,27 @@ void CustomBSDR::CreateAppTileControls(IShutdownBlockingApp* blockingApp)
 		tile.hBlockReason = nullptr;
 	}
 
+	if (tile.hTitle) {
+		SendMessageW(tile.hTitle, WM_SETFONT, (WPARAM)hDescFont, FALSE);
+		HDC hdc = GetDC(tile.hTitle);
+		HFONT hOldFont = (HFONT)SelectObject(hdc, hDescFont);
+		SIZE textSize;
+		GetTextExtentPoint32W(hdc, titleText.c_str(), (int)titleText.length(), &textSize);
+		SelectObject(hdc, hOldFont);
+		ReleaseDC(tile.hTitle, hdc);
+		SetWindowPos(tile.hTitle, nullptr, 0, 0, textSize.cx, textSize.cy, SWP_NOMOVE | SWP_NOZORDER); // Width is corrected later
+	}
 	HFONT hFont = (HFONT)SendMessageW(hDlg, WM_GETFONT, 0, 0);
-	if (tile.hTitle)
-		SendMessageW(tile.hTitle, WM_SETFONT, (WPARAM)hFont, FALSE);
-	if (tile.hBlockReason)
+	if (tile.hBlockReason) {
 		SendMessageW(tile.hBlockReason, WM_SETFONT, (WPARAM)hFont, FALSE);
+		HDC hdc = GetDC(tile.hBlockReason);
+		HFONT hOldFont = (HFONT)SelectObject(hdc, hFont);
+		SIZE textSize;
+		GetTextExtentPoint32W(hdc, blockReasonText.c_str(), (int)blockReasonText.length(), &textSize);
+		SelectObject(hdc, hOldFont);
+		ReleaseDC(tile.hBlockReason, hdc);
+		SetWindowPos(tile.hBlockReason, nullptr, 0, 0, textSize.cx, textSize.cy * 2, SWP_NOMOVE | SWP_NOZORDER); // Always two lines
+	}
 
 	ABI::Windows::Storage::Streams::IRandomAccessStream* iconStream = nullptr;
 	if (SUCCEEDED(blockingApp->get_Icon(&iconStream)) && iconStream)
@@ -641,19 +653,20 @@ void CustomBSDR::UpdateAppListLayout()
 	int dpi = GetDpiForWindow(hDlg);
 
 	const int iconSize = MulDiv(32, dpi, 96);
-	const int topMargin = MulDiv(8, dpi, 96);
-	const int itemHeight = MulDiv(73, dpi, 96);
-	const int itemHeightNoReason = MulDiv(54, dpi, 96);
+	const int topMargin = MulDiv(11, dpi, 96);
+	const int iconTopMargin = MulDiv(6, dpi, 96);
+	const int reasonTopMargin = MulDiv(25, dpi, 96);
+	const int itemHeight = MulDiv(83, dpi, 96);
+	const int itemHeightNoReason = MulDiv(62, dpi, 96);
 	const int iconTextGap = MulDiv(8, dpi, 96);
-	const int textHeight = MulDiv(20, dpi, 96);
-	const int maxWidth = MulDiv(700, dpi, 96);
-
+	int maxWidth = MulDiv(700, dpi, 96);
 	int visibleHeight = MulDiv(300, dpi, 96);
 	if (hAppList)
 	{
 		RECT rcContainer;
 		GetClientRect(hAppList, &rcContainer);
 		visibleHeight = rcContainer.bottom - rcContainer.top;
+		maxWidth = rcContainer.right - rcContainer.left - iconSize - iconTextGap;
 	}
 
 	int totalContentHeight = 0;
@@ -695,28 +708,35 @@ void CustomBSDR::UpdateAppListLayout()
 	for (auto& tile : appTiles)
 	{
 		bool hasBlockReason = (tile.hBlockReason != nullptr);
-		int titleYOffset = 0;
 		int height = hasBlockReason ? itemHeight : itemHeightNoReason;
-
-		if (!hasBlockReason)
-		{
-			// Vertically center the title when there's no block reason
-			titleYOffset = 10;
-		}
 
 		if (tile.hIcon)
 		{
-			SetWindowPos(tile.hIcon, nullptr, 0, yPos + MulDiv(4, dpi, 96), iconSize, iconSize, SWP_NOZORDER | SWP_SHOWWINDOW);
+			SetWindowPos(tile.hIcon, nullptr, 0, yPos + iconTopMargin, iconSize, iconSize, SWP_NOZORDER | SWP_SHOWWINDOW);
 		}
 
 		if (tile.hTitle)
 		{
-			SetWindowPos(tile.hTitle, nullptr, iconSize + iconTextGap, yPos + titleYOffset, maxWidth, textHeight, SWP_NOZORDER | SWP_SHOWWINDOW);
+			RECT rcTitle;
+			GetWindowRect(tile.hTitle, &rcTitle);
+			int origHeight = rcTitle.bottom - rcTitle.top;
+
+			int titleYOffset = 0;
+			if (!hasBlockReason)
+			{
+				// Vertically center the title when there's no block reason
+				titleYOffset = MulDiv(8, dpi, 96);
+			}
+
+			SetWindowPos(tile.hTitle, nullptr, iconSize + iconTextGap, yPos + titleYOffset, maxWidth, origHeight, SWP_NOZORDER | SWP_SHOWWINDOW);
 		}
 
 		if (tile.hBlockReason)
 		{
-			SetWindowPos(tile.hBlockReason, nullptr, iconSize + iconTextGap, yPos + MulDiv(24, dpi, 96), maxWidth, textHeight * 2, SWP_NOZORDER | SWP_SHOWWINDOW);
+			RECT rcBlockReason;
+			GetWindowRect(tile.hBlockReason, &rcBlockReason);
+			int origHeight = rcBlockReason.bottom - rcBlockReason.top;
+			SetWindowPos(tile.hBlockReason, nullptr, iconSize + iconTextGap, yPos + reasonTopMargin, maxWidth, origHeight, SWP_NOZORDER | SWP_SHOWWINDOW);
 		}
 
 		yPos += height;
@@ -726,8 +746,8 @@ void CustomBSDR::UpdateAppListLayout()
 	// Set the title text based on the number of apps on the list
 	if (hTitleText)
 	{
-		wchar_t titleFormat[256];
-		wchar_t titleText[256];
+		wchar_t titleFormat[256] = {};
+		wchar_t titleText[256] = {};
 		if (appTiles.size() == 1)
 		{
 			LoadStringW(HINST_THISCOMPONENT, IDS_BSDR_BLOCKINGAPPCOUNT_SINGLE, titleFormat, _countof(titleFormat));
@@ -774,8 +794,8 @@ INT_PTR CALLBACK CustomBSDR::DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM
 			// Calculate the height of the app list container then resize it, also moving the controls below it
 			int dpi = GetDpiForWindow(hDlg);
 
-			int itemHeight = MulDiv(73, dpi, 96);
-			int itemHeightNoReason = MulDiv(54, dpi, 96);
+			int itemHeight = MulDiv(83, dpi, 96);
+			int itemHeightNoReason = MulDiv(62, dpi, 96);
 
 			int totalItemsHeight = 0;
 			for (auto& app : pendingApps)
@@ -1162,8 +1182,7 @@ DWORD WINAPI CustomBSDR::ThreadProc(LPVOID lpParameter)
 
 	if (!hBgWnd)
 	{
-		int gle = GetLastError();
-		return gle;
+		return GetLastError();
 	}
 
 	MSG msg;

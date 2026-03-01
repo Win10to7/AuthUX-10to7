@@ -53,9 +53,9 @@ ConsoleBSDRStub::~ConsoleBSDRStub()
 
 HRESULT ConsoleBSDRStub::Start(IUserSettingManager* settingsManager, ILogonUIStateInfo* stateInfo)
 {
-	LogonUIState logonUIState = LogonUIState_LoggingOff;
+	LogonUIState logonUIState = LogonUIState_Start;
 	stateInfo->get_CurrentLogonUIState(&logonUIState);
-	CustomBSDR::Start((Resolve_t)&ConsoleBSDRStub::Resolve, logonUIState);
+	CustomBSDR::Start(&ConsoleBSDRStub::Resolve, logonUIState);
 	return S_OK;
 }
 

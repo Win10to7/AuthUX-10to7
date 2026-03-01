@@ -42,12 +42,15 @@ The default values are displayed in the below table:
 | **Windows.Internal.UI.Logon.Controller.LogonUX**        | `%SystemRoot%\system32\Windows.UI.Logon.dll` |
 |---------------------------------------------------------|----------------------------------------------|
 | **Windows.Internal.UI.Logon.Controller.LockScreenHost** | `%SystemRoot%\system32\logoncontroller.dll`  |
+|---------------------------------------------------------|----------------------------------------------|
+| **Windows.Internal.UI.Logon.Controller.BlockedShutdownResolverUX** | `%SystemRoot%\system32\Windows.UI.BlockedShutdown.dll` |
 
 You can use the following commands to restore these default values, once again by opening a TrustedInstaller `cmd.exe` window via [RunTI](https://github.com/aubymori/RunTI):
 
 ```cmd
 reg add HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\WindowsRuntime\ActivatableClassId\Windows.Internal.UI.Logon.Controller.LogonUX /v DllPath /t REG_SZ /d %SystemRoot%\system32\Windows.UI.Logon.dll /f
 reg add HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\WindowsRuntime\ActivatableClassId\Windows.Internal.UI.Logon.Controller.LockScreenHost /v DllPath /t REG_SZ /d %SystemRoot%\system32\logoncontroller.dll /f
+reg add HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\WindowsRuntime\ActivatableClassId\Windows.Internal.UI.Logon.Controller.BlockedShutdownResolverUX /v DllPath /t REG_SZ /d %SystemRoot%\system32\Windows.UI.BlockedShutdown.dll /f
 ```
 
 Following this modification, the logon screen will immediately revert to the vanilla experience.
