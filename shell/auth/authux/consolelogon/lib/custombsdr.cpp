@@ -386,10 +386,15 @@ void CustomBSDR::DrawButton(HDC hdc, LPDRAWITEMSTRUCT pDIS)
 			SetBkMode(hdc, OPAQUE);
 			SetTextColor(hdc, GetSysColor(COLOR_BTNTEXT));
 		}
-		DrawTextW(hdc, buttonText, -1, &rcButton, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+		UINT format = DT_CENTER | DT_VCENTER | DT_SINGLELINE;
+		if (GetPropW(pDIS->hwndItem, L"CustomBSDR_HideAccel"))
+		{
+			format |= DT_HIDEPREFIX;
+		}
+		DrawTextW(hdc, buttonText, -1, &rcButton, format);
 	}
 
-	if (isHighContrast && isFocused)
+	if (isHighContrast && isFocused && !GetPropW(pDIS->hwndItem, L"CustomBSDR_HideFocus"))
 	{
 		int cxEdge = 2 * GetSystemMetrics(SM_CXEDGE);
 		int cxBorder = GetSystemMetrics(SM_CXBORDER) + cxEdge;
@@ -429,6 +434,19 @@ LRESULT CALLBACK CustomBSDR::ButtonSubclassProc(HWND hWnd, UINT uMsg, WPARAM wPa
 		{
 			hHoverButton = nullptr;
 			RedrawWindow(hWnd, nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
+		}
+		break;
+	}
+	case WM_UPDATEUISTATE:
+	{
+		switch (HIWORD(wParam))
+		{
+		case UISF_HIDEFOCUS:
+			SetPropW(hWnd, L"CustomBSDR_HideFocus", (HANDLE)(LOWORD(wParam) == UIS_SET));
+			break;
+		case UISF_HIDEACCEL:
+			SetPropW(hWnd, L"CustomBSDR_HideAccel", (HANDLE)(LOWORD(wParam) == UIS_SET));
+			break;
 		}
 		break;
 	}
@@ -853,9 +871,24 @@ INT_PTR CALLBACK CustomBSDR::DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM
 		}
 
 		SetWindowSubclass(hForceButton, ButtonSubclassProc, 0, 0);
+		LRESULT forceButtonUIState = SendMessageW(hForceButton, WM_QUERYUISTATE, 0, 0);
+		SetPropW(hForceButton, L"CustomBSDR_HideFocus", (HANDLE)(forceButtonUIState & UISF_HIDEFOCUS));
+		SetPropW(hForceButton, L"CustomBSDR_HideAccel", (HANDLE)(forceButtonUIState & UISF_HIDEACCEL));
+
 		SetWindowSubclass(hCancelButton, ButtonSubclassProc, 0, 0);
+		LRESULT cancelButtonUIState = SendMessageW(hCancelButton, WM_QUERYUISTATE, 0, 0);
+		SetPropW(hCancelButton, L"CustomBSDR_HideFocus", (HANDLE)(cancelButtonUIState & UISF_HIDEFOCUS));
+		SetPropW(hCancelButton, L"CustomBSDR_HideAccel", (HANDLE)(cancelButtonUIState & UISF_HIDEACCEL));
+
 		SetWindowSubclass(hYesButton, ButtonSubclassProc, 0, 0);
+		LRESULT yesButtonUIState = SendMessageW(hYesButton, WM_QUERYUISTATE, 0, 0);
+		SetPropW(hYesButton, L"CustomBSDR_HideFocus", (HANDLE)(yesButtonUIState & UISF_HIDEFOCUS));
+		SetPropW(hYesButton, L"CustomBSDR_HideAccel", (HANDLE)(yesButtonUIState & UISF_HIDEACCEL));
+
 		SetWindowSubclass(hNoButton, ButtonSubclassProc, 0, 0);
+		LRESULT noButtonUIState = SendMessageW(hNoButton, WM_QUERYUISTATE, 0, 0);
+		SetPropW(hNoButton, L"CustomBSDR_HideFocus", (HANDLE)(noButtonUIState & UISF_HIDEFOCUS));
+		SetPropW(hNoButton, L"CustomBSDR_HideAccel", (HANDLE)(noButtonUIState & UISF_HIDEACCEL));
 
 		// Set font for title and description/warning texts
 		HFONT hDialogFont = (HFONT)SendMessageW(hDlg, WM_GETFONT, 0, 0);
@@ -1087,8 +1120,8 @@ LRESULT CALLBACK CustomBSDR::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 		{
 			ShowWindow(hDlg, SW_SHOW);
 		}
+		return 0;
 	}
-	break;
 	case WM_PAINT:
 	{
 		PAINTSTRUCT ps;
@@ -1102,8 +1135,8 @@ LRESULT CALLBACK CustomBSDR::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 			DeleteDC(memDC);
 		}
 		EndPaint(hWnd, &ps);
+		return 0;
 	}
-	break;
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		return 0;
