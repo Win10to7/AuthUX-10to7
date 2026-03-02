@@ -1221,6 +1221,15 @@ DWORD WINAPI CustomBSDR::ThreadProc(LPVOID lpParameter)
 	MSG msg;
 	while (GetMessageW(&msg, nullptr, 0, 0) > 0)
 	{
+		if (msg.message == WM_SYSKEYDOWN && msg.wParam == VK_MENU)
+		{
+			SetPropW(hForceButton, L"CustomBSDR_HideAccel", (HANDLE)FALSE);
+			SetPropW(hCancelButton, L"CustomBSDR_HideAccel", (HANDLE)FALSE);
+			SetPropW(hYesButton, L"CustomBSDR_HideAccel", (HANDLE)FALSE);
+			SetPropW(hNoButton, L"CustomBSDR_HideAccel", (HANDLE)FALSE);
+			RedrawWindow(hDlg, nullptr, nullptr, RDW_FRAME | RDW_INVALIDATE);
+		}
+
 		if (!IsDialogMessageW(hDlg, &msg))
 		{
 			TranslateMessage(&msg);
