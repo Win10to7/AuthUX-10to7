@@ -1142,6 +1142,13 @@ LRESULT CALLBACK CustomBSDR::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 		EndPaint(hWnd, &ps);
 		return 0;
 	}
+	case WM_WINDOWPOSCHANGING:
+	{
+		// Deny window movement/resize from workarea resize, etc.
+		WINDOWPOS* pPos = (WINDOWPOS*)lParam;
+		pPos->flags |= SWP_NOMOVE | SWP_NOSIZE;
+		return 0;
+	}
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		return 0;
