@@ -47,6 +47,7 @@ HBITMAP CustomBSDR::btnSelectedHoverBitmap = nullptr;
 int CustomBSDR::bgOffsetX = 0;
 int CustomBSDR::bgOffsetY = 0;
 int CustomBSDR::scrollPos = 0;
+int CustomBSDR::totalContentHeight = 0;
 bool CustomBSDR::isOnSecureDesktop = true;
 std::vector<CustomBSDR::AppTile> CustomBSDR::appTiles;
 std::vector<ComPtr<IShutdownBlockingApp>> CustomBSDR::pendingApps;
@@ -687,7 +688,7 @@ void CustomBSDR::UpdateAppListLayout()
 		maxWidth = rcContainer.right - rcContainer.left - iconSize - iconTextGap;
 	}
 
-	int totalContentHeight = 0;
+	totalContentHeight = 0;
 	for (auto& tile : appTiles)
 	{
 		totalContentHeight += (tile.hBlockReason != nullptr) ? itemHeight : itemHeightNoReason;
@@ -1053,7 +1054,6 @@ INT_PTR CALLBACK CustomBSDR::DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM
 	case WM_MOUSEWHEEL:
 	{
 		int dpi = GetDpiForWindow(hDlg);
-		int itemHeight = MulDiv(60, dpi, 96);
 		int visibleHeight = MulDiv(300, dpi, 96);
 
 		if (hAppList)
@@ -1067,7 +1067,7 @@ INT_PTR CALLBACK CustomBSDR::DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM
 		scrollPos -= delta / 4;
 		if (scrollPos < 0) scrollPos = 0;
 
-		int maxScroll = (int)appTiles.size() * itemHeight - visibleHeight;
+		int maxScroll = totalContentHeight - visibleHeight;
 		if (maxScroll < 0) maxScroll = 0;
 		if (scrollPos > maxScroll) scrollPos = maxScroll;
 
@@ -1077,7 +1077,6 @@ INT_PTR CALLBACK CustomBSDR::DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM
 	case WM_VSCROLL:
 	{
 		int dpi = GetDpiForWindow(hDlg);
-		int itemHeight = MulDiv(60, dpi, 96);
 		int visibleHeight = MulDiv(300, dpi, 96);
 
 		if (hAppList)
@@ -1099,7 +1098,7 @@ INT_PTR CALLBACK CustomBSDR::DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM
 		}
 
 		if (scrollPos < 0) scrollPos = 0;
-		int maxScroll = (int)appTiles.size() * itemHeight - visibleHeight;
+		int maxScroll = totalContentHeight - visibleHeight;
 		if (maxScroll < 0) maxScroll = 0;
 		if (scrollPos > maxScroll) scrollPos = maxScroll;
 

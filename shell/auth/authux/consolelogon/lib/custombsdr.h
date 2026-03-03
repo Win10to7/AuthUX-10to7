@@ -65,6 +65,7 @@ private:
 	static int bgOffsetX;
 	static int bgOffsetY;
 	static int scrollPos;
+	static int totalContentHeight;
 	static bool isOnSecureDesktop;
 
 	// app list data stuff
