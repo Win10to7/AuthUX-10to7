@@ -833,14 +833,13 @@ INT_PTR CALLBACK CustomBSDR::DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM
 				}
 			}
 
-			RECT rcBgWnd, rcAppList, rcScrollBar;
-			GetWindowRect(hBgWnd, &rcBgWnd);
+			RECT rcAppList, rcScrollBar;
 			GetWindowRect(hAppList, &rcAppList);
 			GetWindowRect(hScrollBar, &rcScrollBar);
 			int currentWidth = rcAppList.right - rcAppList.left;
 			int scrollBarWidth = rcScrollBar.right - rcScrollBar.left;
 
-			int screenHeight = rcBgWnd.bottom - rcBgWnd.top;
+			int screenHeight = GetSystemMetrics(SM_CYSCREEN);
 			int minHeight = rcAppList.bottom - rcAppList.top;
 			int maxHeight = screenHeight - MulDiv(338, dpi, 96);
 
