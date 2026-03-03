@@ -55,12 +55,13 @@ std::vector<ComPtr<IShutdownBlockingApp>> CustomBSDR::addQueue;
 
 void CustomBSDR::CenterWindow(HWND hWnd)
 {
-	RECT rc;
-	GetWindowRect(hWnd, &rc);
-	int windowWidth = rc.right - rc.left;
-	int windowHeight = rc.bottom - rc.top;
-	int xPos = (GetSystemMetrics(SM_CXSCREEN) - windowWidth) / 2 - GetSystemMetrics(SM_XVIRTUALSCREEN);
-	int yPos = (GetSystemMetrics(SM_CYSCREEN) - windowHeight) / 2 - GetSystemMetrics(SM_YVIRTUALSCREEN);
+	RECT rcWindow, rcWorkArea;
+	GetWindowRect(hWnd, &rcWindow);
+	SystemParametersInfoW(SPI_GETWORKAREA, 0, &rcWorkArea, 0);
+	int windowWidth = rcWindow.right - rcWindow.left;
+	int windowHeight = rcWindow.bottom - rcWindow.top;
+	int xPos = rcWorkArea.left + (rcWorkArea.right - rcWorkArea.left - windowWidth) / 2 - GetSystemMetrics(SM_XVIRTUALSCREEN);
+	int yPos = rcWorkArea.top + (rcWorkArea.bottom - rcWorkArea.top - windowHeight) / 2 - GetSystemMetrics(SM_YVIRTUALSCREEN);
 	SetWindowPos(hWnd, 0, xPos, yPos, 0, 0, SWP_NOZORDER | SWP_NOSIZE);
 }
 
@@ -842,7 +843,7 @@ INT_PTR CALLBACK CustomBSDR::DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM
 
 			int screenHeight = GetSystemMetrics(SM_CYSCREEN);
 			int minHeight = rcAppList.bottom - rcAppList.top;
-			int maxHeight = screenHeight - MulDiv(338, dpi, 96);
+			int maxHeight = screenHeight - MulDiv(335, dpi, 96);
 
 			if (maxHeight < minHeight)
 				maxHeight = minHeight;
@@ -867,11 +868,17 @@ INT_PTR CALLBACK CustomBSDR::DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM
 				SetWindowPos(hwndSibling, nullptr, rcSibling.left, rcSibling.top, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
 			}
 
-			RECT rcDialog;
+			RECT rcDialog, rcTitle, rcNo;
 			GetWindowRect(hDlg, &rcDialog);
-			int dialogWidth = rcDialog.right - rcDialog.left;
+			OffsetRect(&rcDialog, -GetSystemMetrics(SM_XVIRTUALSCREEN), -GetSystemMetrics(SM_YVIRTUALSCREEN));
+			GetWindowRect(hTitleText, &rcTitle);
+			MapWindowPoints(HWND_DESKTOP, hDlg, (LPPOINT)&rcTitle, 2);
+			GetWindowRect(hNoButton, &rcNo);
+			MapWindowPoints(HWND_DESKTOP, hDlg, (LPPOINT)&rcNo, 2);
+			int topPadding = rcTitle.top - rcDialog.top;
+			int dialogWidth = rcTitle.right - rcDialog.left;
 			int dialogHeight = rcDialog.bottom - rcDialog.top;
-			int newDialogHeight = dialogHeight + heightDiff;
+			int newDialogHeight = rcNo.bottom - rcDialog.top + topPadding - 1;
 			SetWindowPos(hDlg, nullptr, 0, 0, dialogWidth, newDialogHeight, SWP_NOMOVE | SWP_NOZORDER);
 		}
 
