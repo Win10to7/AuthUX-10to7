@@ -58,8 +58,8 @@ void CustomBSDR::CenterWindow(HWND hWnd)
 	GetWindowRect(hWnd, &rc);
 	int windowWidth = rc.right - rc.left;
 	int windowHeight = rc.bottom - rc.top;
-	int xPos = (GetSystemMetrics(SM_CXSCREEN) - windowWidth) / 2;
-	int yPos = (GetSystemMetrics(SM_CYSCREEN) - windowHeight) / 2;
+	int xPos = (GetSystemMetrics(SM_CXSCREEN) - windowWidth) / 2 - GetSystemMetrics(SM_XVIRTUALSCREEN);
+	int yPos = (GetSystemMetrics(SM_CYSCREEN) - windowHeight) / 2 - GetSystemMetrics(SM_YVIRTUALSCREEN);
 	SetWindowPos(hWnd, 0, xPos, yPos, 0, 0, SWP_NOZORDER | SWP_NOSIZE);
 }
 
@@ -770,6 +770,10 @@ void CustomBSDR::UpdateAppListLayout()
 		{
 			LoadStringW(HINST_THISCOMPONENT, IDS_BSDR_BLOCKINGAPPCOUNT_SINGLE, titleFormat, _countof(titleFormat));
 		}
+		else if (appTiles.size() == 0)
+		{
+			LoadStringW(HINST_THISCOMPONENT, IDS_BSDR_BLOCKING_BGAPPS, titleFormat, _countof(titleFormat));
+		}
 		else
 		{
 			LoadStringW(HINST_THISCOMPONENT, IDS_BSDR_BLOCKINGAPPCOUNT_MULTI, titleFormat, _countof(titleFormat));
@@ -829,13 +833,14 @@ INT_PTR CALLBACK CustomBSDR::DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM
 				}
 			}
 
-			RECT rcAppList, rcScrollBar;
+			RECT rcBgWnd, rcAppList, rcScrollBar;
+			GetWindowRect(hBgWnd, &rcBgWnd);
 			GetWindowRect(hAppList, &rcAppList);
 			GetWindowRect(hScrollBar, &rcScrollBar);
 			int currentWidth = rcAppList.right - rcAppList.left;
 			int scrollBarWidth = rcScrollBar.right - rcScrollBar.left;
 
-			int screenHeight = GetSystemMetrics(SM_CYSCREEN);
+			int screenHeight = rcBgWnd.bottom - rcBgWnd.top;
 			int minHeight = rcAppList.bottom - rcAppList.top;
 			int maxHeight = screenHeight - MulDiv(338, dpi, 96);
 
@@ -1130,7 +1135,7 @@ LRESULT CALLBACK CustomBSDR::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 		{
 			HDC memDC = CreateCompatibleDC(hdc);
 			HBITMAP oldBitmap = (HBITMAP)SelectObject(memDC, bgBitmap);
-			BitBlt(hdc, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), memDC, 0, 0, SRCCOPY);
+			BitBlt(hdc, 0, 0, GetSystemMetrics(SM_CXVIRTUALSCREEN), GetSystemMetrics(SM_CYVIRTUALSCREEN), memDC, 0, 0, SRCCOPY);
 			SelectObject(memDC, oldBitmap);
 			DeleteDC(memDC);
 		}

@@ -509,6 +509,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
   IDS_BSDR_WARNING_RESTART,         "If you force restart you may lose work that you haven't saved.\nDo you still want to force restart?"
   IDS_BSDR_BLOCKINGAPPCOUNT_MULTI, 	"%d programs still need to close:"
   IDS_BSDR_BLOCKINGAPPCOUNT_SINGLE, "1 program still needs to close:"
+  IDS_BSDR_BLOCKING_BGAPPS,         "Waiting for background programs to close."
 }
 
 #include <ntverp.h>
