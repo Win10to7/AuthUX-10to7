@@ -26,6 +26,7 @@ private:
 	static HWND hBgWnd;
 	static HWND hTitleText;
 	static HWND hAppList;
+	static HWND hAppListScroll;
 	static HWND hScrollBar;
 	static HWND hWarningText;
 	static HWND hForceButton;
@@ -40,6 +41,7 @@ private:
 	// functions
 	static void CenterWindow(HWND hWnd);
 	static bool IsHighContrast();
+	static bool UseClassicScrollbar();
 	static HBITMAP LoadAlphaBitmap(UINT resourceId);
 	static void DrawSeparator(HDC hdc, LPDRAWITEMSTRUCT pDIS);
 	static void DrawButton(HDC hdc, LPDRAWITEMSTRUCT pDIS);
@@ -64,6 +66,8 @@ private:
 	// variables
 	static int bgOffsetX;
 	static int bgOffsetY;
+	static int bgWidth;
+	static int bgHeight;
 	static int scrollPos;
 	static int totalContentHeight;
 	static bool isOnSecureDesktop;

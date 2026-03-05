@@ -7,11 +7,13 @@
 #include <winerror.h>
 #include <wincodec.h>
 #include <robuffer.h>
+#include <Uxtheme.h>
 #include <wrl/wrappers/corewrappers.h>
 #include <vector>
 
 #pragma	comment(lib, "msimg32.lib")
 #pragma comment(lib, "windowscodecs.lib")
+#pragma comment(lib, "UxTheme.lib")
 
 #define WM_ADD_APP (WM_USER + 1)
 #define WM_REMOVE_APP (WM_USER + 2)
@@ -27,6 +29,7 @@ HWND CustomBSDR::hDlg = nullptr;
 HWND CustomBSDR::hBgWnd = nullptr;
 HWND CustomBSDR::hTitleText = nullptr;
 HWND CustomBSDR::hAppList = nullptr;
+HWND CustomBSDR::hAppListScroll = nullptr;
 HWND CustomBSDR::hScrollBar = nullptr;
 HWND CustomBSDR::hWarningText = nullptr;
 HWND CustomBSDR::hForceButton = nullptr;
@@ -46,6 +49,8 @@ HBITMAP CustomBSDR::btnSelectedBitmap = nullptr;
 HBITMAP CustomBSDR::btnSelectedHoverBitmap = nullptr;
 int CustomBSDR::bgOffsetX = 0;
 int CustomBSDR::bgOffsetY = 0;
+int CustomBSDR::bgWidth = 0;
+int CustomBSDR::bgHeight = 0;
 int CustomBSDR::scrollPos = 0;
 int CustomBSDR::totalContentHeight = 0;
 bool CustomBSDR::isOnSecureDesktop = true;
@@ -74,6 +79,23 @@ bool CustomBSDR::IsHighContrast()
 		return (highContrast.dwFlags & HCF_HIGHCONTRASTON) != 0;
 	}
 	return false;
+}
+
+bool CustomBSDR::UseClassicScrollbar()
+{
+	HKEY result;
+	if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"Software\\Microsoft\\Windows\\CurrentVersion\\Authentication\\LogonUI\\CustomBSDR", 0, KEY_READ, &result) == S_OK)
+	{
+		DWORD size = sizeof(DWORD);
+		DWORD type = REG_DWORD;
+
+		DWORD data;
+		if (RegQueryValueExW(result, L"ThemeScrollbar", nullptr, &type, (LPBYTE)&data, &size) == S_OK)
+		{
+			return data != 1;
+		}
+	}
+	return true;
 }
 
 // Load winsrv alpha bitmaps properly
@@ -496,14 +518,6 @@ LRESULT CALLBACK CustomBSDR::AppListSubclassProc(HWND hWnd, UINT uMsg, WPARAM wP
 		}
 		break;
 	}
-	case WM_ERASEBKGND:
-	{
-		if (!IsHighContrast())
-		{
-			return TRUE;
-		}
-		break;
-	}
 	case WM_NCDESTROY:
 	{
 		RemoveWindowSubclass(hWnd, AppListSubclassProc, uIdSubclass);
@@ -575,12 +589,12 @@ void CustomBSDR::CreateAppTileControls(IShutdownBlockingApp* blockingApp)
 
 	int iconSize = MulDiv(32, dpi, 96);
 
-	tile.hIcon = CreateWindowExW(0, L"Static", nullptr, WS_CHILD | WS_VISIBLE | SS_BITMAP, 0, 0, iconSize, iconSize, hAppList, nullptr, HINST_THISCOMPONENT, nullptr);
-	tile.hTitle = CreateWindowExW(0, L"Static", titleText.c_str(), WS_CHILD | WS_VISIBLE | SS_ENDELLIPSIS, 0, 0, 100, 20, hAppList, nullptr, HINST_THISCOMPONENT, nullptr);
+	tile.hIcon = CreateWindowExW(0, L"Static", nullptr, WS_CHILD | WS_VISIBLE | SS_BITMAP, 0, 0, iconSize, iconSize, hAppListScroll, nullptr, HINST_THISCOMPONENT, nullptr);
+	tile.hTitle = CreateWindowExW(0, L"Static", titleText.c_str(), WS_CHILD | WS_VISIBLE | SS_ENDELLIPSIS, 0, 0, 100, 20, hAppListScroll, nullptr, HINST_THISCOMPONENT, nullptr);
 
 	if (!blockReasonText.empty())
 	{
-		tile.hBlockReason = CreateWindowExW(0, L"Static", blockReasonText.c_str(), WS_CHILD | WS_VISIBLE | SS_EDITCONTROL, 0, 0, 100, 40, hAppList, nullptr, HINST_THISCOMPONENT, nullptr);
+		tile.hBlockReason = CreateWindowExW(0, L"Static", blockReasonText.c_str(), WS_CHILD | WS_VISIBLE | SS_EDITCONTROL, 0, 0, 100, 40, hAppListScroll, nullptr, HINST_THISCOMPONENT, nullptr);
 	}
 	else
 	{
@@ -722,7 +736,7 @@ void CustomBSDR::UpdateAppListLayout()
 		scrollPos = 0;
 	}
 
-	int yPos = topMargin - scrollPos;
+	int yPos = topMargin;
 
 	int index = 0;
 	for (auto& tile : appTiles)
@@ -763,11 +777,15 @@ void CustomBSDR::UpdateAppListLayout()
 		index++;
 	}
 
+	SetWindowPos(hAppListScroll, nullptr, 0, -scrollPos, 0, 0, SWP_NOZORDER | SWP_NOSIZE);
+
 	// Set the title text based on the number of apps on the list
 	if (hTitleText)
 	{
 		wchar_t titleFormat[256] = {};
 		wchar_t titleText[256] = {};
+		// Redraw the entire title control area to prevent artifacts from previous longer text when the number of apps decreases
+		InvalidateRect(hTitleText, nullptr, TRUE);
 		if (appTiles.size() == 1)
 		{
 			LoadStringW(HINST_THISCOMPONENT, IDS_BSDR_BLOCKINGAPPCOUNT_SINGLE, titleFormat, _countof(titleFormat));
@@ -794,7 +812,9 @@ INT_PTR CALLBACK CustomBSDR::DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM
 		CustomBSDR::hDlg = hDlg;
 
 		// Hide title bar
-		SetWindowLong(hDlg, GWL_STYLE, GetWindowLong(hDlg, GWL_STYLE) & ~WS_CAPTION);
+		SetWindowLongW(hDlg, GWL_STYLE, GetWindowLongW(hDlg, GWL_STYLE) & ~WS_CAPTION);
+		// Use composited style on dialog, not bg window, to prevent the scrollbar control from flickering on drag
+		SetWindowLongW(hDlg, GWL_EXSTYLE, GetWindowLongW(hDlg, GWL_EXSTYLE) | WS_EX_COMPOSITED);
 		
 		hTitleText = GetDlgItem(hDlg, IDC_BSDR_TITLE);
 		hAppList = GetDlgItem(hDlg, IDC_BSDR_APPLIST);
@@ -811,9 +831,16 @@ INT_PTR CALLBACK CustomBSDR::DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM
 		ShowWindow(hYesButton, SW_HIDE);
 		ShowWindow(hNoButton, SW_HIDE);
 
+		if (UseClassicScrollbar())
+		{
+			SetWindowTheme(hScrollBar, L" ", L"");
+		}
+
 		if (hAppList)
 		{
+			hAppListScroll = CreateWindowExW(0, L"STATIC", nullptr, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN, 0, 0, 100, 100, hAppList, nullptr, HINST_THISCOMPONENT, nullptr);
 			SetWindowSubclass(hAppList, AppListSubclassProc, 0, 0);
+			SetWindowSubclass(hAppListScroll, AppListSubclassProc, 0, 0);
 
 			// Calculate the height of the app list container then resize it, also moving the controls below it
 			int dpi = GetDpiForWindow(hDlg);
@@ -857,6 +884,7 @@ INT_PTR CALLBACK CustomBSDR::DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM
 			int heightDiff = newHeight - minHeight;
 
 			SetWindowPos(hAppList, nullptr, 0, 0, currentWidth, newHeight, SWP_NOMOVE | SWP_NOZORDER);
+			SetWindowPos(hAppListScroll, nullptr, 0, 0, currentWidth, totalItemsHeight, SWP_NOMOVE | SWP_NOZORDER);
 			SetWindowPos(hScrollBar, nullptr, 0, 0, scrollBarWidth, newHeight, SWP_NOMOVE | SWP_NOZORDER);
 
 			for (HWND hwndSibling = GetWindow(hScrollBar, GW_HWNDNEXT); hwndSibling; hwndSibling = GetWindow(hwndSibling, GW_HWNDNEXT))
@@ -977,6 +1005,41 @@ INT_PTR CALLBACK CustomBSDR::DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM
 		}
 		break;
 	}
+	case WM_PAINT:
+	{
+		PAINTSTRUCT ps;
+		HDC hdc = BeginPaint(hDlg, &ps);
+		if (bgBitmap)
+		{
+			RECT rcDlg;
+			GetClientRect(hDlg, &rcDlg);
+			MapWindowPoints(hDlg, hBgWnd, (LPPOINT)&rcDlg, 2);
+			rcDlg.left -= bgOffsetX;
+			rcDlg.top -= bgOffsetY;
+
+			HDC memDC = CreateCompatibleDC(hdc);
+			HBITMAP oldBitmap = (HBITMAP)SelectObject(memDC, bgBitmap);
+			BitBlt(hdc, 0, 0, rcDlg.right, rcDlg.bottom, memDC, rcDlg.left, rcDlg.top, SRCCOPY);
+			SelectObject(memDC, oldBitmap);
+			DeleteDC(memDC);
+		}
+		EndPaint(hDlg, &ps);
+		return 0;
+	}
+	case WM_ERASEBKGND:
+	{
+		if (!IsHighContrast())
+		{
+			HDC hdc = (HDC)wParam;
+			RECT rcDlg;
+			GetClientRect(hDlg, &rcDlg);
+			HBRUSH hBrush = (HBRUSH)GetStockObject(BLACK_BRUSH);
+			FillRect(hdc, &rcDlg, hBrush);
+			DeleteObject(hBrush);
+			return TRUE;
+		}
+		break;
+	}
 	case WM_DRAWITEM:
 	{
 		LPDRAWITEMSTRUCT pDIS = (LPDRAWITEMSTRUCT)lParam;
@@ -1071,6 +1134,7 @@ INT_PTR CALLBACK CustomBSDR::DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM
 		}
 
 		int delta = GET_WHEEL_DELTA_WPARAM(wParam);
+		int oldPos = scrollPos;
 		scrollPos -= delta / 4;
 		if (scrollPos < 0) scrollPos = 0;
 
@@ -1078,7 +1142,16 @@ INT_PTR CALLBACK CustomBSDR::DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM
 		if (maxScroll < 0) maxScroll = 0;
 		if (scrollPos > maxScroll) scrollPos = maxScroll;
 
-		UpdateAppListLayout();
+		if (oldPos != scrollPos)
+		{
+			SCROLLINFO si = {};
+			si.cbSize = sizeof(SCROLLINFO);
+			si.fMask = SIF_POS;
+			si.nPos = scrollPos;
+			SetScrollInfo(hScrollBar, SB_CTL, &si, TRUE);
+			SetWindowPos(hAppListScroll, nullptr, 0, -scrollPos, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_NOREDRAW);
+			RedrawWindow(hAppList, nullptr, nullptr, RDW_INVALIDATE | RDW_ERASE | RDW_UPDATENOW | RDW_ALLCHILDREN);
+		}
 		return TRUE;
 	}
 	case WM_VSCROLL:
@@ -1111,7 +1184,13 @@ INT_PTR CALLBACK CustomBSDR::DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM
 
 		if (oldPos != scrollPos)
 		{
-			UpdateAppListLayout();
+			SCROLLINFO si = {};
+			si.cbSize = sizeof(SCROLLINFO);
+			si.fMask = SIF_POS;
+			si.nPos = scrollPos;
+			SetScrollInfo(hScrollBar, SB_CTL, &si, FALSE);
+			SetWindowPos(hAppListScroll, nullptr, 0, -scrollPos, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_NOREDRAW);
+			RedrawWindow(hAppList, nullptr, nullptr, RDW_INVALIDATE | RDW_ERASE | RDW_UPDATENOW | RDW_ALLCHILDREN);
 		}
 		return TRUE;
 	}
@@ -1140,7 +1219,7 @@ LRESULT CALLBACK CustomBSDR::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 		{
 			HDC memDC = CreateCompatibleDC(hdc);
 			HBITMAP oldBitmap = (HBITMAP)SelectObject(memDC, bgBitmap);
-			BitBlt(hdc, 0, 0, GetSystemMetrics(SM_CXVIRTUALSCREEN), GetSystemMetrics(SM_CYVIRTUALSCREEN), memDC, 0, 0, SRCCOPY);
+			BitBlt(hdc, 0, 0, bgWidth, bgHeight, memDC, 0, 0, SRCCOPY);
 			SelectObject(memDC, oldBitmap);
 			DeleteDC(memDC);
 		}
@@ -1152,6 +1231,18 @@ LRESULT CALLBACK CustomBSDR::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 		// Deny window movement/resize from workarea resize, etc.
 		WINDOWPOS* pPos = (WINDOWPOS*)lParam;
 		pPos->flags |= SWP_NOMOVE | SWP_NOSIZE;
+		return 0;
+	}
+	case WM_DISPLAYCHANGE:
+	{
+		int x = GetSystemMetrics(SM_XVIRTUALSCREEN);
+		int y = GetSystemMetrics(SM_YVIRTUALSCREEN);
+		int cx = GetSystemMetrics(SM_CXVIRTUALSCREEN);
+		int cy = GetSystemMetrics(SM_CYVIRTUALSCREEN);
+		SetWindowPos(hWnd, nullptr, x, y, cx, cy, SWP_NOSENDCHANGING);
+		CenterWindow(hDlg);
+		UpdateAppListLayout();
+		RedrawWindow(hDlg, nullptr, nullptr, RDW_INVALIDATE | RDW_ERASE | RDW_FRAME | RDW_UPDATENOW);
 		return 0;
 	}
 	case WM_DESTROY:
@@ -1185,7 +1276,8 @@ DWORD WINAPI CustomBSDR::ThreadProc(LPVOID lpParameter)
 
 	wndClass.cbSize = sizeof(WNDCLASSEXW);
 	wndClass.style = CS_GLOBALCLASS;
-	wndClass.hbrBackground = (HBRUSH)COLOR_WINDOWFRAME;
+	wndClass.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
+	wndClass.hInstance = HINST_THISCOMPONENT;
 	wndClass.hCursor = LoadCursorW(nullptr, IDC_ARROW);
 	wndClass.lpfnWndProc = WndProc;
 	wndClass.lpszClassName = L"BlockedShutdownResolver";
@@ -1202,6 +1294,8 @@ DWORD WINAPI CustomBSDR::ThreadProc(LPVOID lpParameter)
 
 	bgOffsetX = x;
 	bgOffsetY = y;
+	bgWidth = cx;
+	bgHeight = cy;
 
 	if (!IsHighContrast())
 	{
@@ -1228,7 +1322,7 @@ DWORD WINAPI CustomBSDR::ThreadProc(LPVOID lpParameter)
 		btnSelectedHoverBitmap = LoadAlphaBitmap(IDB_BSDR_BTN_SELECTED_HOVER);
 	}
 
-	hBgWnd = CreateWindowExW(WS_EX_TOPMOST | WS_EX_COMPOSITED, wndClass.lpszClassName, NULL, WS_POPUP | WS_VISIBLE, x, y, cx, cy, NULL, NULL, NULL, NULL);
+	hBgWnd = CreateWindowExW(WS_EX_TOPMOST, wndClass.lpszClassName, NULL, WS_POPUP | WS_VISIBLE, x, y, cx, cy, NULL, NULL, NULL, NULL);
 
 	if (!hBgWnd)
 	{
