@@ -22,42 +22,6 @@ using namespace Microsoft::WRL;
 
 using namespace Windows::Internal::UI::Logon::Controller;
 
-Resolve_t CustomBSDR::_resolve = nullptr;
-LogonUIState CustomBSDR::_logonUIState = LogonUIState_Start;
-HANDLE CustomBSDR::hThread = nullptr;
-HWND CustomBSDR::hDlg = nullptr;
-HWND CustomBSDR::hBgWnd = nullptr;
-HWND CustomBSDR::hTitleText = nullptr;
-HWND CustomBSDR::hAppList = nullptr;
-HWND CustomBSDR::hAppListScroll = nullptr;
-HWND CustomBSDR::hScrollBar = nullptr;
-HWND CustomBSDR::hWarningText = nullptr;
-HWND CustomBSDR::hForceButton = nullptr;
-HWND CustomBSDR::hCancelButton = nullptr;
-HWND CustomBSDR::hDescText = nullptr;
-HWND CustomBSDR::hYesButton = nullptr;
-HWND CustomBSDR::hNoButton = nullptr;
-HWND CustomBSDR::hHoverButton = nullptr;
-HFONT CustomBSDR::hTitleFont = nullptr;
-HFONT CustomBSDR::hDescFont = nullptr;
-HBITMAP CustomBSDR::bgBitmap = nullptr;
-HBITMAP CustomBSDR::separatorBitmap = nullptr;
-HBITMAP CustomBSDR::btnNormalBitmap = nullptr;
-HBITMAP CustomBSDR::btnHoverBitmap = nullptr;
-HBITMAP CustomBSDR::btnPressedBitmap = nullptr;
-HBITMAP CustomBSDR::btnSelectedBitmap = nullptr;
-HBITMAP CustomBSDR::btnSelectedHoverBitmap = nullptr;
-int CustomBSDR::bgOffsetX = 0;
-int CustomBSDR::bgOffsetY = 0;
-int CustomBSDR::bgWidth = 0;
-int CustomBSDR::bgHeight = 0;
-int CustomBSDR::scrollPos = 0;
-int CustomBSDR::totalContentHeight = 0;
-bool CustomBSDR::isOnSecureDesktop = true;
-std::vector<CustomBSDR::AppTile> CustomBSDR::appTiles;
-std::vector<ComPtr<IShutdownBlockingApp>> CustomBSDR::pendingApps;
-std::vector<ComPtr<IShutdownBlockingApp>> CustomBSDR::addQueue;
-
 void CustomBSDR::CenterWindow(HWND hWnd)
 {
 	RECT rcWindow, rcWorkArea;
@@ -81,7 +45,7 @@ bool CustomBSDR::IsHighContrast()
 	return false;
 }
 
-bool CustomBSDR::UseClassicScrollbar()
+bool CustomBSDR::ShouldUseClassicScrollbar()
 {
 	HKEY result;
 	if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"Software\\Microsoft\\Windows\\CurrentVersion\\Authentication\\LogonUI\\CustomBSDR", 0, KEY_READ, &result) == S_OK)
@@ -831,7 +795,7 @@ INT_PTR CALLBACK CustomBSDR::DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM
 		ShowWindow(hYesButton, SW_HIDE);
 		ShowWindow(hNoButton, SW_HIDE);
 
-		if (UseClassicScrollbar())
+		if (ShouldUseClassicScrollbar())
 		{
 			SetWindowTheme(hScrollBar, L" ", L"");
 		}
@@ -1014,9 +978,6 @@ INT_PTR CALLBACK CustomBSDR::DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM
 			RECT rcDlg;
 			GetClientRect(hDlg, &rcDlg);
 			MapWindowPoints(hDlg, hBgWnd, (LPPOINT)&rcDlg, 2);
-			rcDlg.left -= bgOffsetX;
-			rcDlg.top -= bgOffsetY;
-
 			HDC memDC = CreateCompatibleDC(hdc);
 			HBITMAP oldBitmap = (HBITMAP)SelectObject(memDC, bgBitmap);
 			BitBlt(hdc, 0, 0, rcDlg.right, rcDlg.bottom, memDC, rcDlg.left, rcDlg.top, SRCCOPY);
