@@ -1209,6 +1209,30 @@ LRESULT CALLBACK CustomBSDR::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 		{
 			ShowWindow(hDlg, SW_SHOW);
 		}
+		if (!IsHighContrast())
+		{
+			// Screenshot desktop and dim it
+			HDC hDC = GetDC(nullptr);
+			HDC hMemDC = CreateCompatibleDC(hDC);
+			bgBitmap = CreateCompatibleBitmap(hDC, bgWidth, bgHeight);
+			HBITMAP oldBitmap = (HBITMAP)SelectObject(hMemDC, bgBitmap);
+
+			RECT rect = { 0, 0, bgWidth, bgHeight };
+			HBRUSH hBrush = (HBRUSH)GetStockObject(BLACK_BRUSH);
+			FillRect(hMemDC, &rect, hBrush);
+
+			AlphaBlend(hMemDC, 0, 0, bgWidth, bgHeight, hDC, bgOffsetX, bgOffsetY, bgWidth, bgHeight, { AC_SRC_OVER, 0, 31, 0 });
+			SelectObject(hMemDC, oldBitmap);
+			DeleteDC(hMemDC);
+			ReleaseDC(nullptr, hDC);
+
+			separatorBitmap = LoadAlphaBitmap(IDB_BSDR_SEPARATOR);
+			btnNormalBitmap = LoadAlphaBitmap(IDB_BSDR_BTN_NORMAL);
+			btnHoverBitmap = LoadAlphaBitmap(IDB_BSDR_BTN_HOVER);
+			btnPressedBitmap = LoadAlphaBitmap(IDB_BSDR_BTN_PRESSED);
+			btnSelectedBitmap = LoadAlphaBitmap(IDB_BSDR_BTN_SELECTED);
+			btnSelectedHoverBitmap = LoadAlphaBitmap(IDB_BSDR_BTN_SELECTED_HOVER);
+		}
 		return 0;
 	}
 	case WM_PAINT:
@@ -1287,42 +1311,12 @@ DWORD WINAPI CustomBSDR::ThreadProc(LPVOID lpParameter)
 		return GetLastError();
 	}
 
-	int x = GetSystemMetrics(SM_XVIRTUALSCREEN);
-	int y = GetSystemMetrics(SM_YVIRTUALSCREEN);
-	int cx = GetSystemMetrics(SM_CXVIRTUALSCREEN);
-	int cy = GetSystemMetrics(SM_CYVIRTUALSCREEN);
+	bgOffsetX = GetSystemMetrics(SM_XVIRTUALSCREEN);
+	bgOffsetY = GetSystemMetrics(SM_YVIRTUALSCREEN);
+	bgWidth = GetSystemMetrics(SM_CXVIRTUALSCREEN);
+	bgHeight = GetSystemMetrics(SM_CYVIRTUALSCREEN);
 
-	bgOffsetX = x;
-	bgOffsetY = y;
-	bgWidth = cx;
-	bgHeight = cy;
-
-	if (!IsHighContrast())
-	{
-		HDC hDC = GetDC(nullptr);
-		HDC hMemDC = CreateCompatibleDC(hDC);
-		bgBitmap = CreateCompatibleBitmap(hDC, cx, cy);
-		HBITMAP oldBitmap = (HBITMAP)SelectObject(hMemDC, bgBitmap);
-
-		RECT rect = { 0, 0, cx, cy };
-		HBRUSH hBrush = (HBRUSH)GetStockObject(BLACK_BRUSH);
-		FillRect(hMemDC, &rect, hBrush);
-
-		AlphaBlend(hMemDC, 0, 0, cx, cy, hDC, x, y, cx, cy, { AC_SRC_OVER, 0, 31, 0 });
-
-		SelectObject(hMemDC, oldBitmap);
-		DeleteDC(hMemDC);
-		ReleaseDC(nullptr, hDC);
-
-		separatorBitmap = LoadAlphaBitmap(IDB_BSDR_SEPARATOR);
-		btnNormalBitmap = LoadAlphaBitmap(IDB_BSDR_BTN_NORMAL);
-		btnHoverBitmap = LoadAlphaBitmap(IDB_BSDR_BTN_HOVER);
-		btnPressedBitmap = LoadAlphaBitmap(IDB_BSDR_BTN_PRESSED);
-		btnSelectedBitmap = LoadAlphaBitmap(IDB_BSDR_BTN_SELECTED);
-		btnSelectedHoverBitmap = LoadAlphaBitmap(IDB_BSDR_BTN_SELECTED_HOVER);
-	}
-
-	hBgWnd = CreateWindowExW(WS_EX_TOPMOST, wndClass.lpszClassName, NULL, WS_POPUP | WS_VISIBLE, x, y, cx, cy, NULL, NULL, NULL, NULL);
+	hBgWnd = CreateWindowExW(WS_EX_TOPMOST, wndClass.lpszClassName, NULL, WS_POPUP | WS_VISIBLE, bgOffsetX, bgOffsetY, bgWidth, bgHeight, NULL, NULL, NULL, NULL);
 
 	if (!hBgWnd)
 	{
