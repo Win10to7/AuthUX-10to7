@@ -505,11 +505,11 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
   IDS_BSDR_BLOCKINGAPP_LOGOFF,      "This program is preventing Windows from logging off."
   IDS_BSDR_BLOCKINGAPP_RESTART,     "This program is preventing Windows from restarting."
   IDS_BSDR_WAITINGFOR, 	            "(Waiting for)"
+  IDS_BSDR_BLOCKING_BGAPPS,         "Waiting for background programs to close."
   IDS_BSDR_WARNING_LOGOFF,          "If you force log off you may lose work that you haven't saved.\nDo you still want to force log off?"
   IDS_BSDR_WARNING_RESTART,         "If you force restart you may lose work that you haven't saved.\nDo you still want to force restart?"
   IDS_BSDR_BLOCKINGAPPCOUNT_MULTI, 	"%d programs still need to close:"
   IDS_BSDR_BLOCKINGAPPCOUNT_SINGLE, "1 program still needs to close:"
-  IDS_BSDR_BLOCKING_BGAPPS,         "Waiting for background programs to close."
 }
 
 #include <ntverp.h>
