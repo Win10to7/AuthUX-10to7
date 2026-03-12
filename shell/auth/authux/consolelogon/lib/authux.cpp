@@ -553,17 +553,40 @@ HRESULT AuthUX::Hide()
 
 HRESULT AuthUX::Stop()
 {
-	HANDLE logFile = CreateFileW(L"C:\\log.txt",GENERIC_READ | GENERIC_WRITE|FILE_APPEND_DATA ,0,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL);
+	// Check if logging is enabled: debug builds always enabled, release builds require registry key
+	bool loggingEnabled = false;
+#ifndef NDEBUG
+	loggingEnabled = true;
+#else
+	HKEY hKey = NULL;
+	if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\AuthUX", 0, KEY_READ, &hKey) == ERROR_SUCCESS)
+	{
+		DWORD dwData = 0;
+		DWORD dwSize = sizeof(dwData);
+		DWORD dwType = REG_DWORD;
+		if (RegQueryValueExW(hKey, L"EnableLogging", NULL, &dwType, (LPBYTE)&dwData, &dwSize) == ERROR_SUCCESS)
+		{
+			loggingEnabled = (dwData != 0);
+		}
+		RegCloseKey(hKey);
+	}
+#endif
 
+	HANDLE logFile = INVALID_HANDLE_VALUE;
 	auto fileCloser = wil::scope_exit([&]() -> void {if (logFile != INVALID_HANDLE_VALUE) CloseHandle(logFile);});
 
-	if (logFile != INVALID_HANDLE_VALUE)
+	if (loggingEnabled)
 	{
-		WORD bom = 0xFEFF;
-		WriteFile(logFile, &bom, sizeof(bom), NULL, NULL);
+		logFile = CreateFileW(L"C:\\log.txt",GENERIC_READ | GENERIC_WRITE|FILE_APPEND_DATA ,0,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL);
 
-		const WCHAR log[] = L"AuthUX::Stop called\n";
-		WriteFile(logFile,log,_ARRAYSIZE(log)*sizeof(WCHAR),NULL,NULL);
+		if (logFile != INVALID_HANDLE_VALUE)
+		{
+			WORD bom = 0xFEFF;
+			WriteFile(logFile, &bom, sizeof(bom), NULL, NULL);
+
+			const WCHAR log[] = L"AuthUX::Stop called\n";
+			WriteFile(logFile,log,_ARRAYSIZE(log)*sizeof(WCHAR),NULL,NULL);
+		}
 	}
 
 	Wrappers::SRWLock::SyncLockExclusive lock = m_Lock.LockExclusive();
@@ -594,7 +617,7 @@ HRESULT AuthUX::Stop()
 		);
 		RETURN_IF_FAILED(hr); // 426
 
-		if (logFile != INVALID_HANDLE_VALUE)
+		if (loggingEnabled && logFile != INVALID_HANDLE_VALUE)
 		{
 			const WCHAR log[] = L"Created async helper\n";
 			WriteFile(logFile,log,_ARRAYSIZE(log)*sizeof(WCHAR),NULL,NULL);
@@ -602,7 +625,7 @@ HRESULT AuthUX::Stop()
 
 		RETURN_IF_FAILED(WaitForCompletion<IAsyncActionCompletedHandler>(cleanupAction.Get())); // 428
 
-		if (logFile != INVALID_HANDLE_VALUE)
+		if (loggingEnabled && logFile != INVALID_HANDLE_VALUE)
 		{
 			const WCHAR log[] = L"Waited for completion async helper\n";
 			WriteFile(logFile,log,_ARRAYSIZE(log)*sizeof(WCHAR),NULL,NULL);
@@ -610,7 +633,7 @@ HRESULT AuthUX::Stop()
 	}
 	else
 	{
-		if (logFile != INVALID_HANDLE_VALUE)
+		if (loggingEnabled && logFile != INVALID_HANDLE_VALUE)
 		{
 			const WCHAR log[] = L"UI NOT STARTED!!\n";
 			WriteFile(logFile,log,_ARRAYSIZE(log)*sizeof(WCHAR),NULL,NULL);
