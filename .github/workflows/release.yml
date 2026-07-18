@@ -1,0 +1,65 @@
+name: Build release
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-upload:
+    runs-on: windows-2022
+
+    steps:
+      - name: Check out release tag
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name }}
+
+      - name: Set up MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Build VB x64 release
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $configuration = 'Release.VB'
+          $platform = 'x64'
+          $packageRoot = Join-Path $env:RUNNER_TEMP 'AuthUX-release'
+          $outputDirectory = Join-Path $packageRoot 'VB\x64'
+          New-Item -ItemType Directory -Path $outputDirectory -Force | Out-Null
+
+          msbuild AuthUX.sln `
+            /m `
+            /restore `
+            /t:Rebuild `
+            /p:Configuration=$configuration `
+            /p:Platform=$platform `
+            /p:OutDir="$outputDirectory" `
+            /p:PreferredToolArchitecture=x64
+
+          if ($LASTEXITCODE -ne 0) {
+            throw "MSBuild failed for $configuration|$platform"
+          }
+
+      - name: Create release archive
+        id: archive
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $tag = '${{ github.event.release.tag_name }}'
+          $safeTag = $tag -replace '[^A-Za-z0-9._-]', '-'
+          $archiveName = "AuthUX-$safeTag.zip"
+          $archivePath = Join-Path $env:RUNNER_TEMP $archiveName
+          Compress-Archive `
+            -Path (Join-Path $env:RUNNER_TEMP 'AuthUX-release\*') `
+            -DestinationPath $archivePath `
+            -CompressionLevel Optimal
+          "path=$archivePath" >> $env:GITHUB_OUTPUT
+
+      - name: Upload archive to release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload '${{ github.event.release.tag_name }}' '${{ steps.archive.outputs.path }}' --clobber
