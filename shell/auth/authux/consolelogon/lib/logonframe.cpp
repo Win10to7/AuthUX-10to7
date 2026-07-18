@@ -16,6 +16,7 @@ using namespace Microsoft::WRL;
 
 DirectUI::IClassInfo* CLogonFrame::Class = nullptr;
 CLogonFrame* CLogonFrame::_pSingleton = nullptr;
+static bool g_suppressNextShutdownInformationIcon = false;
 
 CLogonFrame::~CLogonFrame()
 {
@@ -838,6 +839,8 @@ void CLogonFrame::_DisplayLogonDialog(const wchar_t* messageCaptionContent, cons
 {
 	LPWSTR iconId;
     int iconFlags = flags & 0xF0;
+	const bool suppressShutdownInformationIcon = g_suppressNextShutdownInformationIcon;
+	g_suppressNextShutdownInformationIcon = false;
 	if (iconFlags == 16)
 	{
 		iconId = IDI_ERROR;
@@ -852,6 +855,8 @@ void CLogonFrame::_DisplayLogonDialog(const wchar_t* messageCaptionContent, cons
 		if (iconFlags != 64)
 			iconId = 0;
 	}
+	if (suppressShutdownInformationIcon)
+		iconId = 0;
 
     DirectUI::Element* ButtonToFocus;
 
@@ -926,7 +931,7 @@ void CLogonFrame::_DisplayLogonDialog(const wchar_t* messageCaptionContent, cons
 
         SetContentAndAcc(element, messageContent);
 		DirectUI::Element* ShortIcon = m_ShortMessageFrame->FindDescendent(DirectUI::StrToID(L"ShortIcon"));
-		if (iconId == 0)
+		if (!suppressShutdownInformationIcon && iconId == 0)
 			iconId = IDI_INFORMATION;
 		bool IconAsContent = LoadIconAsContent(ShortIcon, iconId);
 		ShortIcon->SetLayoutPos(IconAsContent != 0 ? -1 : -3);
@@ -947,7 +952,7 @@ void CLogonFrame::_DisplayLogonDialog(const wchar_t* messageCaptionContent, cons
 
 		SetContentAndAcc(element, messageCaptionContent);
 		DirectUI::Element* ShortIcon = m_ShortMessageFrame->FindDescendent(DirectUI::StrToID(L"ShortIcon"));
-		if (iconId == 0)
+		if (!suppressShutdownInformationIcon && iconId == 0)
 			iconId = IDI_INFORMATION;
 		bool IconAsContent = LoadIconAsContent(ShortIcon, iconId);
         ShortIcon->SetLayoutPos(IconAsContent != 0 ? -1 : -3);
@@ -1144,21 +1149,66 @@ void CLogonFrame::_HandleShutdownChoices()
 
 void CLogonFrame::_ShutdownCommon(DWORD choice)
 {
-	if ((choice & 6) != 0)
+	LC::LogonUIShutdownChoice shutdownChoice = LC::LogonUIShutdownChoice_None;
+
+	switch (choice & 0x56)
 	{
-		_TOKEN_ELEVATION_TYPE v12;
-		if (!SetPrivilegeAttribute(0,2,&v12))
-		{
-			InitiateShutdownW(0,0,0,choice,0);
-		}
+	case SHUTDOWN_FORCE_SELF:
+		shutdownChoice = LC::LogonUIShutdownChoice_TurnOff;
+		if ((choice & 0x20000) != 0)
+			shutdownChoice |= LC::LogonUIShutdownChoice_InstallUpdates;
+		break;
+	case SHUTDOWN_RESTART:
+		shutdownChoice = LC::LogonUIShutdownChoice_Restart;
+		if ((GetKeyState(VK_SHIFT) & 0x8000) != 0)
+			shutdownChoice |= LC::LogonUIShutdownChoice_BootOptions;
+		break;
+	case 0x10:
+		shutdownChoice = LC::LogonUIShutdownChoice_StandBy;
+		break;
+	case 0x40:
+		shutdownChoice = LC::LogonUIShutdownChoice_Hibernate;
+		break;
+	default:
+		return;
 	}
-	else if ((choice & 0x50) != 0)
+	g_suppressNextShutdownInformationIcon =
+		(static_cast<DWORD>(shutdownChoice) & static_cast<DWORD>(
+			LC::LogonUIShutdownChoice_TurnOff | LC::LogonUIShutdownChoice_Restart)) != 0;
+
+	if (!m_SecurityOptionsCompletion && m_consoleUIManager && m_consoleUIManager->m_requestCredentialsComplete)
 	{
-		SetSuspendState((choice & 0x40) != 0, 0, 0);
+		ComPtr<LC::IRequestCredentialsDataFactory> factory;
+		if (FAILED(WF::GetActivationFactory(
+			Wrappers::HStringReference(RuntimeClass_Windows_Internal_UI_Logon_Controller_RequestCredentialsData).Get(),
+			&factory)))
+			return;
+
+		ComPtr<LC::IRequestCredentialsData> data;
+		if (FAILED(factory->CreateRequestCredentialsData(nullptr, shutdownChoice, nullptr, &data)) ||
+			FAILED(m_consoleUIManager->m_requestCredentialsComplete->GetResult().Set(data.Get())))
+			return;
+
+		::SetCursor(LoadCursorW(nullptr, IDC_ARROW));
+		auto completion = std::move(m_consoleUIManager->m_requestCredentialsComplete);
+		completion->Complete(S_OK);
 	}
-	else
+	else if (m_SecurityOptionsCompletion)
 	{
-		MessageBoxW(0,L"I did not implement this edge case because i did not think its needed! MAKE AN ISSUE",L"Oops!",0);
-		//WinStationDisconnect();
+		ComPtr<LC::ILogonUISecurityOptionsResultFactory> factory;
+		if (FAILED(WF::GetActivationFactory(
+			Wrappers::HStringReference(RuntimeClass_Windows_Internal_UI_Logon_Controller_LogonUISecurityOptionsResult).Get(),
+			&factory)))
+			return;
+
+		ComPtr<LC::ILogonUISecurityOptionsResult> optionResult;
+		if (FAILED(factory->CreateSecurityOptionsResult(
+			LC::LogonUISecurityOptions_Cancel, shutdownChoice, &optionResult)) ||
+			FAILED(m_SecurityOptionsCompletion->GetResult().Set(optionResult.Get())))
+			return;
+
+		::SetCursor(LoadCursorW(nullptr, IDC_ARROW));
+		auto completion = std::move(m_SecurityOptionsCompletion);
+		completion->Complete(S_OK);
 	}
 }
