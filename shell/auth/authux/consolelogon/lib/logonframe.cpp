@@ -353,8 +353,8 @@ void CLogonFrame::ShowSecurityOptions(LC::LogonUISecurityOptions SecurityOptsFla
 	//	optsFlag = 96;
 	//}
 	SetOptions(MessageOptionFlag::Cancel | MessageOptionFlag::ShutDownFrame | MessageOptionFlag::Accessibility);
-	//if (!_IsSwitchUserAllowed())
-	//    SecurityOptsFlag &= ~0x200u;
+	if (!_IsSwitchUserAllowed())
+		SecurityOptsFlag &= ~LC::LogonUISecurityOptions_SwitchUser;
 	bool bPastFirst = false;
 	for (int i = 0; i < ARRAYSIZE(secOptsFlags); ++i)
 	{
@@ -593,6 +593,35 @@ void CLogonFrame::_SetBrandingGraphic()
 	graphic->Release();
 }
 
+static bool IsShutdownWithoutLogonAllowed()
+{
+	DWORD value = 1;
+	DWORD size = sizeof(value);
+	if (RegGetValueW(
+			HKEY_LOCAL_MACHINE,
+			L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon",
+			L"ShutdownWithoutLogon",
+			RRF_RT_REG_DWORD,
+			nullptr,
+			&value,
+			&size) != ERROR_SUCCESS)
+	{
+		value = 1;
+	}
+
+	size = sizeof(value);
+	RegGetValueW(
+		HKEY_LOCAL_MACHINE,
+		L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System",
+		L"ShutdownWithoutLogon",
+		RRF_RT_REG_DWORD,
+		nullptr,
+		&value,
+		&size);
+
+	return value != 0;
+}
+
 void CLogonFrame::SetOptions(MessageOptionFlag optionsFlag)
 {
 	struct OptionFlags
@@ -605,6 +634,8 @@ void CLogonFrame::SetOptions(MessageOptionFlag optionsFlag)
 	StartDefer(&cookie);
 
 	bool bAllowSwitchUser = _IsSwitchUserAllowed();
+	if (!IsShutdownWithoutLogonAllowed())
+		optionsFlag &= ~MessageOptionFlag::ShutDownFrame;
 
 	//OptionFlags opts[] = { {1,m_SwitchUser},{2,m_OtherTiles},{4,m_Ok},{8,m_Yes},{16,m_No},{32,m_Cancel},{64,m_ShutDownFrame},{128,m_ShowPLAP},{256,m_Accessibility},{512,m_DisconnectPLAP}};
 	OptionFlags opts[] =
