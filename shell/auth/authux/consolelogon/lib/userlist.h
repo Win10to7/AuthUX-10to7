@@ -25,6 +25,7 @@ public:
 	void DestroyAllTiles();
 
 	CDUIUserTileElement* FindTileByCredential(const Microsoft::WRL::ComPtr<LCPD::ICredential>& credential);
+	HRESULT ShowOnlyTile(CDUIUserTileElement* userTile);
 	HRESULT ZoomTile(CDUIUserTileElement* userTile);
 	HRESULT UnzoomList(CDUIUserTileElement* userTile);
 	CDUIUserTileElement* GetZoomedTile();

@@ -1051,6 +1051,19 @@ HRESULT LogonViewManager::ShowCredentialView()
 
 		RETURN_HR_IF_NULL_MSG(E_FAIL,tileToZoom,"FAILED TO FIND TILE FOR SELECTEDCREDENTIAL");
 
+		BOOLEAN isLocalNoPasswordUser = FALSE;
+		if (selectedUser)
+			RETURN_IF_FAILED(selectedUser->get_IsLocalNoPasswordUser(&isLocalNoPasswordUser));
+
+		if (isLocalNoPasswordUser && m_currentReason != LC::LogonUIRequestReason_LogonUIChange)
+		{
+			RETURN_IF_FAILED(CLogonFrame::GetSingleton()->m_LogonUserList->ShowOnlyTile(tileToZoom));
+			m_currentViewType = LogonView::SelectedCredential;
+			return S_OK;
+		}
+
+
+
 		CLogonFrame::GetSingleton()->m_LogonUserList->ZoomTile(tileToZoom);
 
 		ComPtr<LCPD::IOptionalDependencyProvider> optionalDependencyProvider;
@@ -1225,6 +1238,8 @@ HRESULT LogonViewManager::StartCredProvsIfNecessary(LC::LogonUIRequestReason rea
 	RETURN_IF_FAILED(hr); // 1119
 	return S_OK;
 }
+
+
 
 HRESULT LogonViewManager::OnCredProvInitComplete()
 {

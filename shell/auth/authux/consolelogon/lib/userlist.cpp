@@ -230,6 +230,38 @@ CDUIUserTileElement* UserList::FindTileByCredential(const Microsoft::WRL::ComPtr
 	return ret;
 }
 
+HRESULT UserList::ShowOnlyTile(CDUIUserTileElement* userTile)
+{
+	DirectUI::Value* childVal;
+	auto children = m_UserListSelector->GetChildren(&childVal);
+	if (!children)
+	{
+		childVal->Release();
+		return E_FAIL;
+	}
+
+	int visibleIndex = -1;
+	for (UINT i = 0; i < children->GetSize(); ++i)
+	{
+		if (children->GetItem(i) == userTile)
+		{
+			visibleIndex = i;
+			break;
+		}
+	}
+	childVal->Release();
+
+	RETURN_HR_IF(E_INVALIDARG, visibleIndex < 0);
+
+	_ShowEnumeratedTilesWorker(visibleIndex);
+	m_UserListSelector->SetWidth(MulDiv(180 + 12, GetScreenDPI(), 96));
+	CLogonFrame::GetSingleton()->SetOptions(
+		MessageOptionFlag::SwitchUser | MessageOptionFlag::Accessibility | MessageOptionFlag::ShutDownFrame);
+	RETURN_IF_FAILED(m_UserListSelector->SetSelection(userTile));
+	userTile->SetKeyFocus();
+	return S_OK;
+}
+
 HRESULT STDMETHODCALLTYPE SetOneElementZoomed(DirectUI::Element* a1, LPVOID a2)
 {
 	if (IsElementOfClass(a1, L"ZoomableElement"))
