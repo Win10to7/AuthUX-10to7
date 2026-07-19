@@ -21,6 +21,13 @@ jobs:
       - name: Set up MSBuild
         uses: microsoft/setup-msbuild@v2
 
+      - name: Set up NuGet
+        uses: NuGet/setup-nuget@v2
+
+      - name: Restore NuGet packages
+        shell: pwsh
+        run: nuget restore packages.config -PackagesDirectory packages -NonInteractive
+
       - name: Build VB x64 release
         shell: pwsh
         run: |
@@ -33,7 +40,6 @@ jobs:
 
           msbuild AuthUX.sln `
             /m `
-            /restore `
             /t:Rebuild `
             /p:Configuration=$configuration `
             /p:Platform=$platform `
