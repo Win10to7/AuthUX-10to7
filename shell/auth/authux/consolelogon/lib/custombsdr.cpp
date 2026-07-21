@@ -765,6 +765,14 @@ void CustomBSDR::UpdateAppListLayout()
 		swprintf_s(titleText, _countof(titleText), titleFormat, (int)appTiles.size());
 		SetWindowTextW(hTitleText, titleText);
 	}
+
+	// WS_EX_COMPOSITED can leave owner-drawn siblings with stale backing pixels after
+	// the app list is resized or moved. Queue a fresh paint for each button once the
+	// layout changes instead of waiting for mouse input to invalidate it.
+	InvalidateRect(hForceButton, nullptr, FALSE);
+	InvalidateRect(hCancelButton, nullptr, FALSE);
+	InvalidateRect(hYesButton, nullptr, FALSE);
+	InvalidateRect(hNoButton, nullptr, FALSE);
 }
 
 INT_PTR CALLBACK CustomBSDR::DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
