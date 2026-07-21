@@ -1247,16 +1247,32 @@ LRESULT CALLBACK CustomBSDR::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 
 DWORD WINAPI CustomBSDR::ThreadProc(LPVOID lpParameter)
 {
-	// Attempt to create window on the input desktop, as the thread is always running in secure desktop at this point,
-	// but the Windhawk mod can force this phase of session end to run in the default desktop
-	HDESK hDesktop = OpenInputDesktop(0, FALSE, DESKTOP_CREATEWINDOW | DESKTOP_WRITEOBJECTS | DESKTOP_READOBJECTS);
-	if (hDesktop)
+	// During shutdown, the input desktop can still be "Default" briefly before
+	// Winlogon switches to its desktop. Creating the resolver in that interval
+	// leaves it on the old desktop, where HWND z-order changes cannot put it
+	// above the shutdown UI. Allow the desktop transition to settle first.
+	HDESK hDesktop = nullptr;
+	for (int attempt = 0; attempt < 20; ++attempt)
 	{
+		hDesktop = OpenInputDesktop(0, FALSE, DESKTOP_CREATEWINDOW | DESKTOP_WRITEOBJECTS | DESKTOP_READOBJECTS);
+		if (!hDesktop)
+			break;
+
 		wchar_t desktopName[256] = {};
 		if (GetUserObjectInformationW(hDesktop, UOI_NAME, desktopName, sizeof(desktopName), nullptr))
 		{
 			isOnSecureDesktop = (_wcsicmp(desktopName, L"winlogon") == 0);
+			if (isOnSecureDesktop || attempt == 19)
+				break;
 		}
+
+		CloseDesktop(hDesktop);
+		hDesktop = nullptr;
+		Sleep(50);
+	}
+
+	if (hDesktop)
+	{
 		if (!SetThreadDesktop(hDesktop))
 		{
 			CloseDesktop(hDesktop);
@@ -1291,6 +1307,7 @@ DWORD WINAPI CustomBSDR::ThreadProc(LPVOID lpParameter)
 	{
 		return GetLastError();
 	}
+
 
 	MSG msg;
 	while (GetMessageW(&msg, nullptr, 0, 0) > 0)
